@@ -1,0 +1,46 @@
+<%- include('../layouts/header.ejs') %>
+<div class="full-page">
+<div class="container">
+<div class="text-center  center-div">
+    <div class="container col-6 py-5 p-4">
+        <div class="title pb-3">
+            <h2><strong>Registration</strong></h2>
+        </div>
+            <form action="" method="post" encypte="multipart/form-data">
+                <div class="form-group mt-3">
+                <input type="text" class="form-control" name="fname" placeholder="Enter First Name" required>
+                <br>
+                <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" required>
+                <br>
+                <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
+                <br>
+                <input type="text" class="form-control" name="mobileno" placeholder="Enter MobileNo" required>
+                <br>
+                <input type="password" class="form-control" name="password" placeholder="Enter Password" id="password" required>
+                <br>
+                <input type="password" class="form-control" name="cpassword" placeholder="Confirm Password" id="cpassword" pattern="^[^\s]+(\s+[^\s]+)*$" title="Passwords must match" required>
+                <div id="password-mismatch" class="alert alert-danger mt-2" style="display: none;">
+                    Passwords do not match. Please try again.
+                  </div>
+                </div>
+                <br><br>
+                <input type="submit" class="btn btn-success rounded-pill" value="Register">
+
+            </form>
+            <br>
+            <p>Already Registered? <a href="/login">Login Here</a></p>
+            <%
+                if(typeof message !== 'undefined'){
+                    %>
+                    <div id="success-msg" class="alert alert-success text-center">
+                    <%- message %></p>
+                    </div>
+                    <%
+                }
+                %>
+    </div>
+</div>
+</div>
+</div>
+
+<%- include('../layouts/footer.ejs') %>
