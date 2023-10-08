@@ -1,0 +1,31 @@
+<%- include('../layouts/header.ejs') %>
+
+<div class="full-page">
+  <div class="container">
+    <div class="text-center center-div">
+      <div class="container col-6 py-5 p-4">
+        <div class="title pb-3">
+          <h2><strong>Verify OTP</strong></h2>
+        </div>
+        <form action="/submit-otp" method="post">
+          <div class="form-group mt-3">
+            <input type="text" class="form-control" name="otp" placeholder="Enter OTP" required>
+          </div>
+          <% 
+          if (typeof message !== 'undefined') {
+            %>
+            <div id="invalid-msg" class="alert alert-danger mt-3">
+              <p><%- message %></p>
+            </div>
+            <%
+          }
+          %>
+          <br><br>
+          <input type="submit" class="btn btn-primary rounded-pill" value="Submit OTP">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer.ejs') %>

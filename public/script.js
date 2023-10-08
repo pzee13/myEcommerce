@@ -14,3 +14,24 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
   });
+
+
+  const invalidMsgSignup = document.getElementById('invalid-msg');
+        if(invalidMsgSignup)
+            {
+                setTimeout(() => {
+                    invalidMsgSignup.style.display = 'none'; 
+                    window.location.href = '/signup'; 
+                }, 5000);
+            }
+
+  const invalidMsgOTP = document.getElementById('invalid-msg');
+          if(invalidMsgOTP)
+            {
+                    setTimeout(() => {
+                        invalidMsgOTP.style.display = 'none'; 
+                        window.location.href = '/user-otp'; 
+                    }, 5000);
+              }
+  
+  

@@ -28,11 +28,11 @@
 
             </form>
             <br>
-            <p>Already Registered? <a href="/login">Login Here</a></p>
+            <p>Already Registered? <a href="/">Login Here</a></p>
             <%
                 if(typeof message !== 'undefined'){
                     %>
-                    <div id="success-msg" class="alert alert-success text-center">
+                    <div id="invalid-msg" class="alert alert-danger text-center">
                     <%- message %></p>
                     </div>
                     <%
