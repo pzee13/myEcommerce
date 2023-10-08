@@ -81,7 +81,7 @@ const showverifyOTPPage = async (req, res) => {
         // Generate OTP
         const otpCode = generateOTP();
         const otpExpiry = new Date();
-        otpExpiry.setMinutes(otpExpiry.getMinutes() + 15); // OTP expires in 15 minutes
+        otpExpiry.setSeconds(otpExpiry.setSeconds() + 60); // OTP expires in 1 minutes
 
         const userCheck = await User.findOne({email:req.body.email})
         if(userCheck)
@@ -123,8 +123,7 @@ const showverifyOTPPage = async (req, res) => {
 const verifyOTP = async (req, res)=>{
     try {
         if(req.body.otp === req.session.otp.code){
-            console.log("entr")
-
+           
             const user = new User({
                 firstName: req.session.fname,
                 lastName: req.session.lname,
@@ -146,15 +145,48 @@ const verifyOTP = async (req, res)=>{
 }
 
 
-// const resendOTP = async (req,res)=>{
-//     try{
+const resendOTP = async (req,res)=>{
+    try{
+        if (
+            req.session.fname &&
+            req.session.lname &&
+            req.session.mobileno &&
+            req.session.email &&
+            req.session.password &&
+            req.session.otp
+        ) {
+            const currentTime = new Date();
+            const oldOTPExpiry = new Date(req.session.otp.expiry);
 
-//     }
-//     catch (error)
-//     {
-//         console.log(error.message)
-//     }
-// }
+            // Check if the old OTP has expired
+            if (currentTime > oldOTPExpiry) {
+                // Generate a new OTP
+                const newOTPCode = generateOTP();
+                const newOTPExpiry = new Date();
+                newOTPExpiry.setSeconds(newOTPExpiry.getSeconds() + 60); // OTP expires in 1 minutes
+
+                // Update the session with the new OTP
+                req.session.otp.code = newOTPCode;
+                req.session.otp.expiry = newOTPExpiry;
+
+                // Resend the new OTP to the user's email
+                sendVerificationEmail(req.session.email, newOTPCode);
+
+                res.render("user-otp", { message: "OTP resent successfully" });
+            } else {
+                // Old OTP has not expired yet, provide an error message
+                res.render("user-otp", { message: "You can request a resend after the old OTP expires." });
+            }
+        } else {
+            // Session data is incomplete, handle the error accordingly
+            res.render("user-otp", { message: "Session data incomplete. Please start registration again." });
+        }
+    }
+    catch (error)
+    {
+        console.log(error.message)
+    }
+}
 
 
 
@@ -164,6 +196,6 @@ module.exports = {
     insertUser,
     showverifyOTPPage,
     verifyOTP, 
-    sendVerificationEmail
+    resendOTP
 }
 

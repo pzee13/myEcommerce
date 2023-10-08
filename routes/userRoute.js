@@ -33,4 +33,6 @@ user_route.get('/submit-otp', userController.showverifyOTPPage)
 
 user_route.post('/submit-otp', userController.verifyOTP)
 
+user_route.post('/submit-otp', userController.resendOTP)
+
 module.exports = user_route

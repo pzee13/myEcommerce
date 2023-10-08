@@ -20,8 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if(invalidMsgSignup)
             {
                 setTimeout(() => {
-                    invalidMsgSignup.style.display = 'none'; 
-                    window.location.href = '/signup'; 
+                    invalidMsgSignup.style.display = 'none';  
                 }, 5000);
             }
 
@@ -29,8 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
           if(invalidMsgOTP)
             {
                     setTimeout(() => {
-                        invalidMsgOTP.style.display = 'none'; 
-                        window.location.href = '/user-otp'; 
+                        invalidMsgOTP.style.display = 'none';  
                     }, 5000);
               }
   
