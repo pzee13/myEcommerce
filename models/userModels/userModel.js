@@ -23,7 +23,11 @@ const userSchema = mongoose.Schema({
                 },
                 isVerified: {
                     type: Boolean,
-                    default: 0,
+                    default: 0
+                },
+                isBlock:{
+                    type: Boolean,
+                    default: false
                 }
                 
 

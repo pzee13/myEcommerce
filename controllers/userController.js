@@ -2,6 +2,7 @@ const User = require('../models/userModels/userModel')
 const nodemailer = require("nodemailer")
 const bcrypt = require('bcrypt')
 const path = require("path")
+const otpGenerator = require("otp-generator")
 
 const securePassword = async(password)=>{
     try {
@@ -56,6 +57,14 @@ const loginLoad = async(req,res)=>{
     }
 }
 
+const loadHome = async (req, res) => {
+    try {
+      res.redirect('/');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
 const loadRegister = async(req,res)=>{
     try {
         res.render('registration')
@@ -75,13 +84,58 @@ const showverifyOTPPage = async (req, res) => {
     }
   }
 
-  const insertUser = async (req, res) => {
+//   const insertUser = async (req, res) => {
+//     try {
+        
+//         // Generate OTP
+//         const otpCode = generateOTP();
+//         const otpExpiry = new Date();
+//         otpExpiry.setMinutes(otpExpiry.setMinutes() + 1); // OTP expires in 1 minutes
+
+//         const userCheck = await User.findOne({email:req.body.email})
+//         if(userCheck)
+//         {
+//             res.render('registration',{message:"User already exist"});
+//         }
+//         else{
+//             const spassword = await securePassword(req.body.password);
+//             req.session.fname = req.body.fname;
+//             req.session.lname = req.body.lname;
+//             req.session.mobileno = req.body.mobileno;
+//             req.session.email = req.body.email;
+//             if(req.body.fname && req.body.email && req.session.lname && req.session.mobileno){
+//                 if(req.body.password === req.body.cpassword) {
+//                     req.session.password = spassword;
+//                     req.session.otp = {
+//                         code: otpCode,
+//                         expiry: otpExpiry,
+//                     };        
+//                         // Send OTP to the user's email
+//                         sendVerificationEmail(req.session.email, req.session.otp.code);
+//                         res.render("user-otp")
+//                     } else {
+//                         res.render("registration",{message: "Password doesn't match"})
+//                     }
+//                 }
+//                 else{
+//                     res.render("registration",{message: "Please enter all details"})
+//                 }
+//                 }
+         
+
+
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// }
+
+const insertUser = async (req, res) => {
     try {
         
         // Generate OTP
         const otpCode = generateOTP();
-        const otpExpiry = new Date();
-        otpExpiry.setSeconds(otpExpiry.setSeconds() + 60); // OTP expires in 1 minutes
+        const otpcurTime = Date.now()/1000
+        const otpExpiry = otpcurTime + 60
 
         const userCheck = await User.findOne({email:req.body.email})
         if(userCheck)
@@ -120,10 +174,38 @@ const showverifyOTPPage = async (req, res) => {
     }
 }
 
+// const verifyOTP = async (req, res)=>{
+//     try {
+//         if(req.body.otp === req.session.otp.code){
+//             const currentTime = new Date()
+//             if (currentTime <= req.session.otp.expiry) {
+//             const user = new User({
+//                 firstName: req.session.fname,
+//                 lastName: req.session.lname,
+//                 email: req.session.email,
+//                 mobile: req.session.mobileno,
+//                 password: req.session.password,
+//                 isVerified:1
+//             });
+
+//             const result = await user.save()
+//             res.redirect("/login")
+//         } else {
+//             // OTP has expired, handle accordingly
+//             res.render('user-otp', { message: "OTP has expired. Please request a new OTP." });
+//         }
+//         }
+//         else{
+//             res.render('user-otp',{message:"invalid OTP"});
+//         }
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// }
+
 const verifyOTP = async (req, res)=>{
     try {
         if(req.body.otp === req.session.otp.code){
-           
             const user = new User({
                 firstName: req.session.fname,
                 lastName: req.session.lname,
@@ -134,7 +216,7 @@ const verifyOTP = async (req, res)=>{
             });
 
             const result = await user.save()
-            res.redirect("/")
+            res.redirect("/login")
         }
         else{
             res.render('user-otp',{message:"invalid OTP"});
@@ -145,50 +227,82 @@ const verifyOTP = async (req, res)=>{
 }
 
 
-const resendOTP = async (req,res)=>{
-    try{
-        if (
-            req.session.fname &&
-            req.session.lname &&
-            req.session.mobileno &&
-            req.session.email &&
-            req.session.password &&
-            req.session.otp
-        ) {
-            const currentTime = new Date();
-            const oldOTPExpiry = new Date(req.session.otp.expiry);
+// const resendOTP = async (req,res)=>{
+//     try{
+//         const currentTime = Date.now()/1000;
+//         console.log("current",currentTime)
+//         if (req.session.otp.expiry != null) {
+//         if(currentTime > req.session.otp.expiry){
+//             console.log("expire",req.session.otp.expiry);
+//             const newDigit = otpGenerator.generate(6, { 
+//                 digits: true,
+//                 alphabets: false, 
+//                 specialChars: false, 
+//                 upperCaseAlphabets: false,
+//                 lowerCaseAlphabets: false 
+//             });
+//                 req.session.otp.code = newDigit;
+//                 sendVerificationEmail(req.session.email, req.session.otp.code);
+//                 res.render("user-otp",{message:"OTP has been send"});
+//             }else{
+//                 res.render("user-otp",{message: "You can request a new otp after old otp expires"});
+//             }
+//         }
+//         else{
+//             res.send("Please register again")
+//         }
+//     }
+//     catch (error)
+//     {
+//         console.log(error.message)
+//     }
+// }
 
-            // Check if the old OTP has expired
-            if (currentTime > oldOTPExpiry) {
-                // Generate a new OTP
-                const newOTPCode = generateOTP();
-                const newOTPExpiry = new Date();
-                newOTPExpiry.setSeconds(newOTPExpiry.getSeconds() + 60); // OTP expires in 1 minutes
+const verifyLogin = async (req, res,next) => {
+    try {
+        const Email = req.body.email
+        const Password = req.body.password
 
-                // Update the session with the new OTP
-                req.session.otp.code = newOTPCode;
-                req.session.otp.expiry = newOTPExpiry;
+        const userData = await User.findOne({ email:Email})
+        if (userData) {
 
-                // Resend the new OTP to the user's email
-                sendVerificationEmail(req.session.email, newOTPCode);
+            if (userData.isBlock == false) {
 
-                res.render("user-otp", { message: "OTP resent successfully" });
+
+                const passwordMatch = await bcrypt.compare(Password, userData.password)
+
+                if (passwordMatch) {
+                    if (userData.is_verified == false) {
+
+                        res.render('login', { message: "please verify your mail" })
+                    }
+                    else {
+
+
+                        req.session.userid = userData._id
+
+                        res.redirect('/')
+                    }
+                }
+                else {
+                    res.render('login', { message: "Email and  password is incorrect" })
+                }
+
             } else {
-                // Old OTP has not expired yet, provide an error message
-                res.render("user-otp", { message: "You can request a resend after the old OTP expires." });
+
+                res.render('login', { message: "This User is blocked" })
             }
-        } else {
-            // Session data is incomplete, handle the error accordingly
-            res.render("user-otp", { message: "Session data incomplete. Please start registration again." });
+        }
+        else {
+            res.render('login', { message: "Email and  password is incorrect" })
+
         }
     }
-    catch (error)
-    {
-        console.log(error.message)
+    catch (err) {
+
+        next(err)
     }
 }
-
-
 
 module.exports = {
     loginLoad,
@@ -196,6 +310,9 @@ module.exports = {
     insertUser,
     showverifyOTPPage,
     verifyOTP, 
-    resendOTP
+    loadHome,
+    verifyLogin
+    // resendOTP
+    // sendVerificationEmail
 }
 

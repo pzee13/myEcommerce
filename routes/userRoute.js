@@ -21,18 +21,23 @@ user_route.use(session({
 }))
 
 user_route.use('/public',express.static(path.join(__dirname,'../public')))
-user_route.use('/assets',express.static(path.join(__dirname,'../public/assets')))
+user_route.use('/userlogin',express.static(path.join(__dirname,'../public/userlogin')))
+user_route.use('/assets',express.static(path.join(__dirname,'../public/userlogin/assets')))
 
 user_route.get('/signup',userController.loadRegister)
 
 user_route.post('/signup',userController.insertUser)
 
-user_route.get('/',userController.loginLoad)
+user_route.post('/',userController.loadHome)
+
+user_route.get('/login',userController.loginLoad)
 
 user_route.get('/submit-otp', userController.showverifyOTPPage)
 
 user_route.post('/submit-otp', userController.verifyOTP)
 
-user_route.post('/submit-otp', userController.resendOTP)
-
-module.exports = user_route
+user_route.post('/login',userController.verifyLogin)
+  
+// user_route.post('/submit-otp', userController.resendOTP) 
+ 
+module.exports = user_route 
