@@ -28,7 +28,9 @@ user_route.get('/signup',userController.loadRegister)
 
 user_route.post('/signup',userController.insertUser)
 
-user_route.post('/',userController.loadHome)
+user_route.get('/',userController.loaduserHome)
+
+user_route.get('/home',userController.loaduserHome)
 
 user_route.get('/login',userController.loginLoad)
 
@@ -37,6 +39,9 @@ user_route.get('/submit-otp', userController.showverifyOTPPage)
 user_route.post('/submit-otp', userController.verifyOTP)
 
 user_route.post('/login',userController.verifyLogin)
+
+user_route.get('/product',userController.userPoductload)
+
   
 // user_route.post('/submit-otp', userController.resendOTP) 
  

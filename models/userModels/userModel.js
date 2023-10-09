@@ -28,6 +28,10 @@ const userSchema = mongoose.Schema({
                 isBlock:{
                     type: Boolean,
                     default: false
+                },
+                is_admin:{
+                    type:Number,
+                    default:0
                 }
                 
 

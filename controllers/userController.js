@@ -57,13 +57,13 @@ const loginLoad = async(req,res)=>{
     }
 }
 
-const loadHome = async (req, res) => {
-    try {
-      res.redirect('/');
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+// const loadHome = async (req, res) => {
+//     try {
+//       res.redirect('/');
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   }
 
 const loadRegister = async(req,res)=>{
     try {
@@ -304,14 +304,32 @@ const verifyLogin = async (req, res,next) => {
     }
 }
 
+const loaduserHome = async (req, res) => {
+    try {
+      res.render('userHome');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+const userPoductload = async (req, res) => {
+    try {
+      res.render('userProduct');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
 module.exports = {
     loginLoad,
     loadRegister,
     insertUser,
     showverifyOTPPage,
     verifyOTP, 
-    loadHome,
-    verifyLogin
+    // loadHome,
+    verifyLogin,
+    loaduserHome,
+    userPoductload
     // resendOTP
     // sendVerificationEmail
 }
