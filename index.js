@@ -22,7 +22,7 @@ const userRoute = require('./routes/userRoute.js')
 app.use('/',userRoute)
 
 const adminRoute = require('./routes/adminRoute')
-app.use('/admin',adminRoute)
+app.use('/admin',adminRoute) 
 
 app.listen(PORT,function(){
     console.log("Server is running on Port http://localhost:4000")  

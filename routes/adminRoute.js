@@ -29,7 +29,11 @@ admin_route.post('/',adminController.verifyadlogin)
 
 admin_route.post('/login',adminController.verifyadlogin)
 
+admin_route.get('/add_category',adminController.loadaddCategory)
 
+admin_route.get('/home',adminController.loadadHome)
+
+admin_route.post('/add_category',adminController.addCategory)
 
 // admin_route.post('/login',adminController.verifyLogin);
 

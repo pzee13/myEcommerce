@@ -23,11 +23,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 .center-div {
     width: 100%;
     max-width: 650px; 
-    background-color: rgba(248, 245, 234, 0.937);
+    background-color: rgba(151, 145, 145, 0.937);
     border-radius: 10px;
 }
 
