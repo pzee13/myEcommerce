@@ -75,7 +75,7 @@ const loadadHome = async(req,res)=>{
 const addCategory = async (req,res)=>{
     try {
       
-      const category =await new Category({
+      const category = await new Category({
         categoryName:req.body.category_name,
         categoryDescription:req.body.category_description,
         is_listed:true
@@ -89,20 +89,21 @@ const addCategory = async (req,res)=>{
     }
   }
 
-//   const loadusers = async(req,res)=>{
-//     try{
-
-//     }
-//     catch(error)
-//     {
-
-//     }
-//   }
+  const loadusers = async(req,res)=>{
+    try{
+        res.render("users")
+    }
+    catch(error)
+    {
+        console.log(error.message)
+    }
+  }
 
 module.exports = {
     loadadlogin,
     verifyadlogin,
     loadaddCategory,
     loadadHome,
-    addCategory
+    addCategory,
+    loadusers
 }

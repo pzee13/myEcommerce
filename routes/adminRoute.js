@@ -35,6 +35,8 @@ admin_route.get('/home',adminController.loadadHome)
 
 admin_route.post('/add_category',adminController.addCategory)
 
+admin_route.get('/users',adminController.loadusers)
+
 // admin_route.post('/login',adminController.verifyLogin);
 
 
