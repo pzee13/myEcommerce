@@ -25,6 +25,12 @@ admin_route.get('/',adminController.loadadlogin);
 
 admin_route.get('/login',adminController.loadadlogin);
 
+admin_route.post('/',adminController.verifyadlogin)
+
+admin_route.post('/login',adminController.verifyadlogin)
+
+
+
 // admin_route.post('/login',adminController.verifyLogin);
 
 
