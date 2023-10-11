@@ -131,8 +131,46 @@ const addCategory = async (req,res)=>{
     }
   };
 
+  const loadEditCatogories = async (req, res) => {
+    try {
+      const id = req.query.id;
+      console.log("ID:", id);
+  
+      const datacategory = await Category.findById(id);
+    //   console.log(category);
+  
+      if (datacategory) {
+        res.render('editCategory', { category: datacategory }); // Pass the category object to the template
+      } else {
+        res.redirect('/admin/categories');
+      }
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+  
 
-
+//   const adeditCategory = async (req, res) => {
+//     try {
+//       const categoryId = req.body.category_id; // Get the category ID from the form
+//       const category = await Category.findById(categoryId);
+  
+//       if (category) {
+//         category.categoryName = req.body.category_name; // Update the category details
+//         category.categoryDescription = req.body.category_description;
+        
+//         await category.save(); // Save the changes
+  
+//         res.render('editCategory'); // Redirect to the category listing page
+//       } else {
+//         res.status(404).send('Category not found');
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send('Internal Server Error');
+//     }
+//   };
 
   
 
@@ -144,6 +182,8 @@ module.exports = {
     addCategory,
     loadusers,
     loadviewCtegory,
-    unlistCategory
+    unlistCategory,
+    loadEditCatogories
+    // adeditCategory
     
-}
+} 

@@ -15,7 +15,7 @@ const admin_route = express();
 //       saveUninitialized:true,
 //   })
 //   );
-   
+    
 
 admin_route.set('view engine','ejs');
 admin_route.set('views','./views/admin');
@@ -39,8 +39,12 @@ admin_route.post('/add_category',adminController.addCategory)
 
 admin_route.get('/users',adminController.loadusers)
 
-admin_route.get('/view_category',adminController.loadviewCtegory)
+admin_route.get('/view_category',adminController.loadviewCtegory) 
  
-admin_route.get('/unlist_category',adminController.unlistCategory)  
+admin_route.get('/unlist_category',adminController.unlistCategory)
+ 
+admin_route.get('/edit_category',adminController.loadEditCatogories)   
 
-module.exports = admin_route;  
+// admin_route.post('/edit_category',adminController.adeditCategory) 
+
+module.exports = admin_route;   

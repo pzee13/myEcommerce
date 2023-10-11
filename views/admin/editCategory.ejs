@@ -4,6 +4,7 @@
 
 <%-include('../admin/layouts/navbar.ejs') %>
 
+        <!-- partial -->
 
         <!--============================ Adding categories table=============== -->
         <div class="main-panel">
@@ -23,14 +24,14 @@
 
                     <div class="form-group">
                       <label for="exampleInputName1">Category Name</label>
-                      <input type="text" class="form-control" id="exampleInputName1" name="categoryname" placeholder=" Category Name" value="<%= data.categoryname %>">
+                      <input type="text" class="form-control" id="exampleInputName1" name="categoryname" placeholder=" Category Name" value="<%= category.categoryName %>">
                     </div>      
                     <div class="form-group">
                       <label for="exampleTextarea1">Category Description</label>
-                      <textarea class="form-control" id="exampleTextarea1" rows="4" name="categorydes" placeholder="Category Description"><%= data.description %></textarea>
+                      <textarea class="form-control" id="exampleTextarea1" rows="4" name="categorydes" placeholder="Category Description"><%= category.categoryDescription %></textarea>
                     </div>
                     <div class="input-container">
-                      <input type="hidden" name="id" value="<%= data._id %>">
+                      <input type="hidden" name="id" value="<%= category._id %>">
                     </div>
                     <button type="submit" class="btn btn-primary mr-2">Submit</button>
                     <button class="btn btn-dark" value="Update categories">Cancel</button>
@@ -42,9 +43,9 @@
           <!-- partial:../../partials/_footer.html -->
        
           <!-- partial -->
-        </div>
+         </div>
         <!-- main-panel ends -->
-      
+      </div>
+   
 
-
-        <%-include('../admin/layouts/footer.ejs') %>
+        <%-include('../admin/layouts/footer.ejs') %> 
