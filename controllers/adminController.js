@@ -99,11 +99,51 @@ const addCategory = async (req,res)=>{
     }
   }
 
+  const loadviewCtegory =  async (req, res) => {
+    try {
+      const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
+      res.render('viewCategory', { Category: categories });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+   }
+  };
+
+
+  const unlistCategory = async (req, res) => {
+    try {
+      
+      const id = req.query.id;
+      const Category1 = await Category.findById(id);
+
+      if (Category1) {
+        Category1.is_listed = !Category1.is_listed 
+        await Category1.save(); 
+        
+      }
+  
+      const categories = await Category.find();
+ 
+      res.render('viewCategory', { Category: categories });
+
+    } catch (error) {   
+      console.log(error);   
+    }
+  };
+
+
+
+
+  
+
 module.exports = {
     loadadlogin,
     verifyadlogin,
     loadaddCategory,
     loadadHome,
     addCategory,
-    loadusers
+    loadusers,
+    loadviewCtegory,
+    unlistCategory
+    
 }

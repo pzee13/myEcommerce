@@ -1,5 +1,7 @@
 const express = require('express'); 
 const adminController = require("../controllers/adminController"); 
+
+
 // const session = require('express-session');
 // const config = require('../config/config');
 // const auth = require('../middleware/adminAuth'); 
@@ -37,7 +39,8 @@ admin_route.post('/add_category',adminController.addCategory)
 
 admin_route.get('/users',adminController.loadusers)
 
-// admin_route.post('/login',adminController.verifyLogin);
+admin_route.get('/view_category',adminController.loadviewCtegory)
+ 
+admin_route.get('/unlist_category',adminController.unlistCategory)  
 
-
-module.exports = admin_route;
+module.exports = admin_route;  
