@@ -39,7 +39,7 @@ admin_route.post('/add_category',adminController.addCategory)
 
 admin_route.get('/users',adminController.loadusers)
 
-admin_route.get('/view_category',adminController.loadviewCtegory) 
+admin_route.get('/view_category',adminController.loadviewCategory) 
  
 admin_route.get('/unlist_category',adminController.unlistCategory)
  
@@ -47,6 +47,9 @@ admin_route.get('/edit_category',adminController.loadEditCatogories)
 
 admin_route.post('/edit_category',adminController.adeditCategory)
 
+admin_route.get('/view_users',adminController.loadviewUsers)
+
+admin_route.get('/block_users',adminController.blockUser)
 // admin_route.post('/edit_category',adminController.adeditCategory) 
 
 module.exports = admin_route;   

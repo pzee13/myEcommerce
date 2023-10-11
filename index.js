@@ -8,8 +8,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/ecommercemg")
 const express = require("express")
 const app = express() 
 
-const PORT = process.env.PORT || 4000
-
+const PORT = process.env.PORT || 4000  
+   
 app.use(session({
     secret:config.sessionSecret,
     resave:false,

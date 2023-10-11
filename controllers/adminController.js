@@ -1,4 +1,5 @@
 const Admin = require("../models/adminModels/adminModel")
+const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
@@ -99,7 +100,7 @@ const addCategory = async (req,res)=>{
     }
   }
 
-  const loadviewCtegory =  async (req, res) => {
+  const loadviewCategory =  async (req, res) => {
     try {
       const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
       res.render('viewCategory', { Category: categories });
@@ -163,6 +164,40 @@ const addCategory = async (req,res)=>{
       console.log(error.message);
     }
   }
+
+
+  const loadviewUsers =  async (req, res) => {
+    try {
+      const user = await User.find(); 
+      res.render('users', { users: user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error'); 
+   }
+  };
+
+  const blockUser = async (req, res) => {
+    try {
+      
+      const id = req.query.id;
+      const user1 = await User.findById(id);
+
+      if (user1) {
+        user1.isBlock = !user1.isBlock 
+        await user1.save(); 
+        
+      }
+  
+      const users2 = await User.find();
+ 
+      res.render('users', { users: users2 });
+
+    } catch (error) {   
+      console.log(error);   
+    }
+  };
+
+
   
   
 
@@ -173,9 +208,11 @@ module.exports = {
     loadadHome,
     addCategory,
     loadusers,
-    loadviewCtegory,
+    loadviewCategory,
     unlistCategory,
     loadEditCatogories,
-    adeditCategory
+    adeditCategory,
+    loadviewUsers,
+    blockUser
     
 }   

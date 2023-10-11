@@ -4,8 +4,7 @@
 
 <%-include('../admin/layouts/navbar.ejs') %>
 
-
-<!-- <div class="main-panel">
+<div class="main-panel">
   <div class="content-wrapper">
 
       <div class="row ">
@@ -15,9 +14,9 @@
                   <div class="card-body">
                       <div class="mb-5 ">
                           <ul class="navbar-nav w-100">
-                              <li class="nav-item w-100"> -->
+                              <li class="nav-item w-100">
                                   <!-- d-none -->
-                                  <!-- <form action="/admin/searchUsers" method="get" class="nav-link mt-2 mt-md-0 col-12 d-lg-flex search">
+                                  <form action="/admin/searchUsers" method="get" class="nav-link mt-2 mt-md-0 col-12 d-lg-flex search">
                                       <input type="text" name="key" class="form-control mb-1 text-light" placeholder="Search Users">
                                       <button type="submit" class="btn-inverse-info mb-1">search</button>
                                   </form>
@@ -28,7 +27,7 @@
                       <div class="table-responsive">
                           <table class="table" id="user-table">
                               <thead>
-                                  <tr> -->
+                                  <tr>
 
                                       <th> Full Name </th>
                                       <th> Email </th>
@@ -47,7 +46,7 @@
                                       <td> <%= users[i].mobile %> </td>
 
                                      <td>
-                                           <% if(users[i].verified==0){ %>
+                                           <% if(users[i].isVerified==false){ %>
                                            <span class="pl-2 text-danger">Not verified</span>
                                            <% } else{ %> 
                                               <span class="pl-2 text-success">verified</span>
@@ -58,11 +57,23 @@
                                       <td> <%= new Date(users[i].createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })%> </td>
                                       <td>
                                           <!-- Add a data-id attribute with the user's _id -->
-                                          <% if (users[i].isBlock == true) { %>
+                                          <!-- <% if (users[i].isBlock == true) { %>
                                               <button data-id="<%= users[i]._id %>" onclick="blockButton('<%= users[i]._id %>')"  class="btn btn-inverse-danger">unBlock</button>
                                               <% } else { %>
                                                   <button data-id="<%= users[i]._id %>" onclick="blockButton('<%= users[i]._id %>')" class="btn btn-inverse-success">block</button>
-                                          <% } %>
+                                          <% } %> -->
+
+                                        
+                                            <!-- Add a data-id attribute with the user's _id -->
+                                            <% if (users[i].isBlock == false) { %>
+                                                <a href="/admin/block_users?id=<%= users[i]._id %>">
+                                              <button type="button" class="btn btn-inverse-danger">unBlock</button>
+                                            </a>
+                                            <% } else { %>
+                                                <a href="/admin/block_users?id=<%= users[i]._id %>">
+                                              <button type="button" class="btn btn-inverse-success">block</button>
+                                            </a>
+                                            <% } %>
                                       </td>
                                       
                                       
@@ -83,6 +94,7 @@
 
 
     </div>
+    
 </div>
 
 
