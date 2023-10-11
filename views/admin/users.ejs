@@ -41,7 +41,7 @@
                                 <% for (var i = 0; i < users.length; i++) { %>
                                   <tr>
                                       <!-- list -->
-                                      <td> <%= users[i].firstName+ ' '+users[i].secondName %> </td>
+                                      <td> <%= users[i].firstName+ ' '+users[i].lastName %> </td>
                                       <td> <%= users[i].email %> </td>
                                       <td> <%= users[i].mobile %> </td>
 
@@ -96,6 +96,7 @@
     </div>
     
 </div>
+
 
 
 <%-include('../admin/layouts/footer.ejs') %>

@@ -198,6 +198,19 @@ const addCategory = async (req,res)=>{
   };
 
 
+  const loadaddProducts = async (req, res) => {
+    try {
+      // Fetch categories from the database
+      const categories = await Category.find();
+  
+      // Render the addProducts.ejs template with the Category variable
+      res.render('addProduct', { Category: categories });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+  
   
   
 
@@ -213,6 +226,7 @@ module.exports = {
     loadEditCatogories,
     adeditCategory,
     loadviewUsers,
-    blockUser
+    blockUser,
+    loadaddProducts
     
 }   
