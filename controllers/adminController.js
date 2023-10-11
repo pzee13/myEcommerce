@@ -151,27 +151,19 @@ const addCategory = async (req,res)=>{
   }
   
 
-//   const adeditCategory = async (req, res) => {
-//     try {
-//       const categoryId = req.body.category_id; // Get the category ID from the form
-//       const category = await Category.findById(categoryId);
-  
-//       if (category) {
-//         category.categoryName = req.body.category_name; // Update the category details
-//         category.categoryDescription = req.body.category_description;
-        
-//         await category.save(); // Save the changes
-  
-//         res.render('editCategory'); // Redirect to the category listing page
-//       } else {
-//         res.status(404).send('Category not found');
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).send('Internal Server Error');
-//     }
-//   };
+  const adeditCategory = async(req,res) => {
 
+    try{
+  
+      const editData = await Category.findByIdAndUpdate({ _id:req.body.id },{$set:{ categoryName:req.body.categoryname, categoryDescription:req.body.categorydes }});
+  
+      res.redirect('/admin/view_category');
+  
+    }catch(error){
+      console.log(error.message);
+    }
+  }
+  
   
 
 module.exports = {
@@ -183,7 +175,7 @@ module.exports = {
     loadusers,
     loadviewCtegory,
     unlistCategory,
-    loadEditCatogories
-    // adeditCategory
+    loadEditCatogories,
+    adeditCategory
     
-} 
+}   

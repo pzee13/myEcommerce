@@ -43,7 +43,9 @@ admin_route.get('/view_category',adminController.loadviewCtegory)
  
 admin_route.get('/unlist_category',adminController.unlistCategory)
  
-admin_route.get('/edit_category',adminController.loadEditCatogories)   
+admin_route.get('/edit_category',adminController.loadEditCatogories)
+
+admin_route.post('/edit_category',adminController.adeditCategory)
 
 // admin_route.post('/edit_category',adminController.adeditCategory) 
 
