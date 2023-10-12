@@ -73,6 +73,8 @@ admin_route.get('/add_product',adminController.loadaddProducts)
 
 admin_route.post('/add_product',upload.single('image'),adminController.addProduct)
 
-admin_route.get('/view_products')
+admin_route.get('/view_products',adminController.viewProducts)
+
+admin_route.get('/edit_product',adminController.loadeditProducts)
 
 module.exports = admin_route;   

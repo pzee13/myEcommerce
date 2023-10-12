@@ -249,6 +249,45 @@ const addCategory = async (req,res)=>{
 }
 
 
+const viewProducts = async(req,res) =>{
+
+  try {
+    const products = await Product.find().populate("category"); // Populate the category field
+    const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
+    res.render('viewProduct', { product: products, category: categories });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+const loadeditProducts = async (req, res) => {
+  try {
+    // Fetch categories from the database
+    const products = await Product.find();
+
+    // Render the addProducts.ejs template with the Category variable
+    res.render('editProduct', { data: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+// const editProduct = async(req,res)=>{
+//   try{
+  
+//     const editData = await Product.findByIdAndUpdate({ _id:req.body.id },{$set:{ productName:req.body.categoryname, category:req.body.categorydes }});
+
+//     res.redirect('/admin/view_products');
+
+//   }catch(error){
+//     console.log(error.message);
+//   }
+// }
+
+
+
 
   
   
@@ -269,6 +308,8 @@ module.exports = {
     loadviewUsers,
     blockUser,
     loadaddProducts,
-    addProduct
+    addProduct,
+    viewProducts,
+    loadeditProducts
     
 }   
