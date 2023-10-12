@@ -39,7 +39,8 @@ const verifyadlogin = async (req, res) => {
     
           const passwordMatch = await bcrypt.compare(password,adminData.password);
     
-          if(passwordMatch){              
+          if(passwordMatch){   
+            req.session.admin_id = adminData._id           
               res.redirect('/admin/home');
             }else{
                 res.render('adlogin',{message:"Login details are incorrect" });
@@ -370,13 +371,27 @@ const unlistProduct = async (req, res) => {
     }
 
     const products = await Product.find();
+    const categories = await Category.find()
 
-    res.render('viewProduct', { data: products });
+    res.render('viewProduct', { data: products , category: categories });
 
   } catch (error) {   
     console.log(error);   
   }
-};  
+}
+
+
+const adLogout = async(req,res)=>{
+
+  try{
+      req.session.destroy()
+      res.redirect('/admin')
+  }
+  catch (error)
+      {
+          console.log(error.message)
+      }
+}
   
 
 module.exports = {
@@ -397,6 +412,7 @@ module.exports = {
     viewProducts,
     loadeditProducts,
     editProduct,
-    unlistProduct
+    unlistProduct,
+    adLogout
     
 }   
