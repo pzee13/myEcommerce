@@ -144,7 +144,7 @@ const addCategory = async (req,res)=>{
       if (datacategory) {
         res.render('editCategory', { category: datacategory }); // Pass the category object to the template
       } else {
-        res.redirect('/admin/categories');
+        res.redirect('/admin/view_category');
       }
     } catch (error) {
       console.log(error.message);
@@ -248,13 +248,51 @@ const addCategory = async (req,res)=>{
   }
 }
 
+// const addProduct = async (req, res) => {
+//   try {
+//       const productname = req.body.productname;
+//       const category = req.body.category;
+//       const size = req.body.size;
+//       const description = req.body.description;
+//       const price = req.body.price;
+//       const quantity = req.body.quantity;
+
+//       if (req.file) {
+//           const image = req.file.filename;
+
+//           const newProduct = new Product({
+//               productName: productname,
+//               category: category,
+//               size: size,
+//               description: description,
+//               price: price,
+//               image: image,
+//               quantity: quantity,
+//           });
+
+//           const productData = await newProduct.save();
+//           if (productData) {
+//               res.redirect('/admin/view_products');
+//           } else {
+//               res.render('add_product', { message: "Something went wrong" });
+//           }
+//       } else {
+//           res.render('add_product', { message: "No image file uploaded" });
+//       }
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).send('Internal Server Error');
+//   }
+// }
+
+
 
 const viewProducts = async(req,res) =>{
 
   try {
     const products = await Product.find().populate("category"); // Populate the category field
     const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
-    res.render('viewProduct', { product: products, category: categories });
+    res.render('viewProduct', { data: products, category: categories });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -263,35 +301,82 @@ const viewProducts = async(req,res) =>{
 
 const loadeditProducts = async (req, res) => {
   try {
-    // Fetch categories from the database
-    const products = await Product.find();
+    const id = req.query.id;
+    console.log("ID:", id);
 
-    // Render the addProducts.ejs template with the Category variable
-    res.render('editProduct', { data: products });
+    const dataproduct = await Product.findById(id);
+  //   console.log(category);
+
+    if (dataproduct) {
+      res.render('editProduct', { data: dataproduct }); // Pass the category object to the template
+    } else {
+      res.redirect('/admin/view_product');
+    }
   } catch (error) {
-    console.error(error);
+    console.log(error.message);
     res.status(500).send('Internal Server Error');
   }
-};
+}
 
-// const editProduct = async(req,res)=>{
-//   try{
+
+
+const editProduct = async(req,res)=>{
+  try{
   
-//     const editData = await Product.findByIdAndUpdate({ _id:req.body.id },{$set:{ productName:req.body.categoryname, category:req.body.categorydes }});
+    const editData = await Product.findByIdAndUpdate({ _id:req.body.id },{$set:{ productName:req.body.productname, price:req.body.price , quantity:req.body.quantity, description:req.body.description,image:req.file.filename,size:req.body.size}});
 
-//     res.redirect('/admin/view_products');
+    res.redirect('/admin/view_products');
 
-//   }catch(error){
-//     console.log(error.message);
+  }catch(error){
+    console.log(error.message);
+  }
+}
+
+// const editProduct = async (req, res) => {
+//   try {
+//       const editData = await Product.findByIdAndUpdate({ _id: req.body.id }, {
+//           $set: {
+//               productName: req.body.productname,
+//               price: req.body.price,
+//               quantity: req.body.quantity,
+//               description: req.body.description,
+//               size: req.body.size,
+//           }
+//       });
+
+//       if (req.file) {
+//           editData.image = req.file.filename;
+//       }
+
+//       const updatedProduct = await editData.save();
+//       res.redirect('/admin/view_products');
+//   } catch (error) {
+//       console.log(error.message);
+//       res.status(500).send('Internal Server Error');
 //   }
 // }
 
-
-
-
   
-  
-  
+const unlistProduct = async (req, res) => {
+  try {
+    
+    const id = req.query.id;
+    const product1 = await Product.findById(id);
+
+    if (product1) {
+      product1.status = !product1.status 
+      await product1.save(); 
+      
+    }
+
+    const products = await Product.find();
+
+    res.render('viewProduct', { data: products });
+
+  } catch (error) {   
+    console.log(error);   
+  }
+};  
   
 
 module.exports = {
@@ -310,6 +395,8 @@ module.exports = {
     loadaddProducts,
     addProduct,
     viewProducts,
-    loadeditProducts
+    loadeditProducts,
+    editProduct,
+    unlistProduct
     
 }   

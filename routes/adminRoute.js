@@ -77,4 +77,8 @@ admin_route.get('/view_products',adminController.viewProducts)
 
 admin_route.get('/edit_product',adminController.loadeditProducts)
 
+admin_route.post('/edit_product',upload.single('image'),adminController.editProduct)
+
+admin_route.get('/unlist_product',adminController.unlistProduct)
+
 module.exports = admin_route;   
