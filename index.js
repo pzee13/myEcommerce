@@ -1,11 +1,13 @@
 const mongoose = require("mongoose")
+const express = require("express")
 const path = require("path")
 const session = require("express-session")
 const config = require("./config/config")
+const multer = require("multer")
 
 mongoose.connect("mongodb://127.0.0.1:27017/ecommercemg")
 
-const express = require("express")
+
 const app = express() 
 
 const PORT = process.env.PORT || 4000  
@@ -15,6 +17,8 @@ app.use(session({
     resave:false,
     saveUninitialized:true
 })) 
+
+
 
 app.use('/public',express.static(path.join(__dirname,'../public')))
 

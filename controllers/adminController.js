@@ -1,6 +1,7 @@
 const Admin = require("../models/adminModels/adminModel")
 const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
+const Product = require("../models/productModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
 
@@ -210,6 +211,46 @@ const addCategory = async (req,res)=>{
       res.status(500).send('Internal Server Error');
     }
   };
+
+
+  const addProduct = async(req,res)=>{
+    try{
+
+      const productname = req.body.productname;
+      const category = req.body.category;
+      const size = req.body.size
+      const description = req.body.description;
+      const price = req.body.price;
+      const quantity = req.body.quantity;
+      const image = req.file.filename;
+  
+      console.log("kjhgffg");
+      const newProduct = new Product({
+        productName:productname,
+        category:category,
+        size:size,
+        description:description,
+        price:price,
+        image:image,
+        quantity:quantity,
+      })
+      const productData = await newProduct.save();
+    console.log(productData);
+    if(productData){
+      res.redirect('/admin/view_products');
+    }else{
+      res.render('add_product',{message:"Something went wrong"});
+    }
+
+  }catch(error){
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+
+
+  
   
   
   
@@ -227,6 +268,7 @@ module.exports = {
     adeditCategory,
     loadviewUsers,
     blockUser,
-    loadaddProducts
+    loadaddProducts,
+    addProduct
     
 }   

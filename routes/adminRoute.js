@@ -1,21 +1,38 @@
 const express = require('express'); 
 const adminController = require("../controllers/adminController"); 
 
+const session = require('express-session');
+const config = require('../config/config');
 
-// const session = require('express-session');
-// const config = require('../config/config');
+const multer = require("multer");
+const path = require("path");
+
+
 // const auth = require('../middleware/adminAuth'); 
 
 const admin_route = express();
 
-// admin_route.use(
-//     session({
-//       secret: config.sessionSecret,
-//       resave: false, 
-//       saveUninitialized:true,
-//   })
-//   );
-    
+admin_route.use(
+    session({
+      secret: config.sessionSecret,
+      resave: false, 
+      saveUninitialized:true,
+  })
+  );
+
+
+const storage = multer.diskStorage({
+    destination:function(req,file,cb){
+      cb(null,path.join(__dirname,'../public/adminAssets/assets/images/products'));
+    },
+    filename:function(req,file,cb) {
+      const name = Date.now()+'-'+file.originalname;
+      cb(null,name)
+    }
+  })
+   
+  const upload = multer({storage:storage});
+  
 
 admin_route.set('view engine','ejs');
 admin_route.set('views','./views/admin');
@@ -51,5 +68,11 @@ admin_route.get('/view_users',adminController.loadviewUsers)
 
 admin_route.get('/block_users',adminController.blockUser)
 // admin_route.post('/edit_category',adminController.adeditCategory) 
+
+admin_route.get('/add_product',adminController.loadaddProducts)
+
+admin_route.post('/add_product',upload.single('image'),adminController.addProduct)
+
+admin_route.get('/view_products')
 
 module.exports = admin_route;   
