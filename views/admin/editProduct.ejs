@@ -1,125 +1,140 @@
-<%-include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
 
-<%-include('../admin/layouts/sidebar.ejs') %>
-
-<%-include('../admin/layouts/navbar.ejs') %>
-        <!-- partial -->
-
-        <!--============================ Adding categories table=============== -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-
-            <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h2 class="card-title">EDIT PRODUCTS</h2>
-                  <form class="forms-sample" action="edit_product" method="post" enctype="multipart/form-data">
-                    <div class="form-row">
-                      <label for="exampleInputName1">Product Name</label>
-                      <input type="text" class="form-control" id="exampleInputName1" name="productname" placeholder="Product Name" value="<%= data.productName %>">
-                    </div>
-                    <br>
-                    <div class="form-row align-items-center">
-                    
-                      <div class="col-sm-4 my-1">
-                        <label for="exampleInputName1">Price</label>
-                        <input type="text" class="form-control" id="inlineFormInputName1" name="price" placeholder="Price" value="<%= data.price %>">
-                      </div>
-                      <div class="col-sm-4 my-1">
-                        <label for="exampleInputName1">Quantity</label>
-                        <div class="input-group">
-                          <input type="text" class="form-control" id="inlineFormInputGroupUsername2" name="quantity" placeholder="Quantity" value="<%= data.quantity %>">
-                        </div>
-                      </div>
-                    </div>
-                    <br>
-                    <div class="form-row">
-                      <label for="exampleInputName1">Description</label>
-                      <textarea class="form-control" id="exampleTextarea1" rows="4" name="description"><%= data.description %></textarea>
-                    </div>
-
-                   <br>
-
-                      <div class="form-row">
-                        <label for="">File upload</label>
-                      </div>
-                      <div class="container">
-                        <div class="row" style="height: 140px;">
-                            <div class="col-md-6 mb-0" style="height: 140px;">
-                                <div style="width: 400px; height: 100px; border: 2px solid rgb(86, 89, 88); align-items: center;" class="d-flex justify-content-center">
-                                    <input type="file" name="image" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="col-md-12 grid-margin">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="form-row">
-                                                <label for="file">Size</label>
-                                            </div>
-                                            <div class="form-group">
-                                                <select class="form-control" name="size" value="<%= data.size %>" id="exampleFormControlSelect2">
-                                                    <option>28</option>
-                                                    <option>30</option>
-                                                    <option>32</option>
-                                                    <option>34</option>
-                                                    <option>36</option>
-                                                    <option>38</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                      <!-- <div class="form-row">
-                        <label for="file">Color</label>
-                      </div>
-
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <div class="form-check form-check-primary">
-                            <label class="form-check-label">
-                              <input type="radio" class="form-check-input" name="ExampleRadio1" id="ExampleRadio1" checked> Primary </label>
-                          </div>
-                          <div class="form-check form-check-success">
-                            <label class="form-check-label">
-                              <input type="radio" class="form-check-input" name="ExampleRadio2" id="ExampleRadio2" checked> Success </label>
-                          </div>
-                          <div class="form-check form-check-info">
-                            <label class="form-check-label">
-                              <input type="radio" class="form-check-input" name="ExampleRadio3" id="ExampleRadio3" checked> Info </label>
-                          </div>
-                          <div class="form-check form-check-danger">
-                            <label class="form-check-label">
-                              <input type="radio" class="form-check-input" name="ExampleRadio4" id="ExampleRadio4" checked> Danger </label>
-                          </div>
-                          <div class="form-check form-check-warning">
-                            <label class="form-check-label">
-                              <input type="radio" class="form-check-input" name="ExampleRadio5" id="ExampleRadio5" checked> Warning </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div> -->
-                    <div class="input-container">
-                        <input type="hidden" name="id" value="<%= data._id %>">
-                      </div>
-                  
-                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                    <button class="btn btn-dark">Cancel</button>
-                  </form>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">EDIT PRODUCTS</h2>
+          <form class="forms-sample" action="edit_product" method="post" enctype="multipart/form-data">
+            <div class="form-row">
+              <label for="exampleInputName1">Product Name</label>
+              <input type="text" class="form-control" id="exampleInputName1" name="productname" placeholder="Product Name" value="<%= data.productName %>">
+            </div>
+            <br>
+            <div class="form-row align-items-center">
+              <div class="col-sm-4 my-1">
+                <label for="exampleInputName1">Price</label>
+                <input type="text" class="form-control" id="inlineFormInputName1" name="price" placeholder="Price" value="<%= data.price %>">
+              </div>
+              <div class="col-sm-4 my-1">
+                <label for="exampleInputName1">Quantity</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="inlineFormInputGroupUsername2" name="quantity" placeholder="Quantity" value="<%= data.quantity %>">
                 </div>
               </div>
             </div>
-            
-            
-          <!-- content-wrapper ends -->
-        </div>
-        <!-- main-panel ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
+            <br>
+            <div class="form-row">
+              <label for="exampleInputName1">Description</label>
+              <textarea class="form-control" id="exampleTextarea1" rows="4" name="description"><%= data.description %></textarea>
+            </div>
+            <br>
+            <div class="form-row">
+              <label for="">File upload (Multiple Images)</label>
+            </div>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-6 mb-0">
+                  <div class="dynamic-image-inputs">
+                    <div class="input-group">
+                      <input type="file" name="images" class="form-control" required>
+                      <div class="input-group-append">
+                        <button class="btn btn-primary add-image-input" type="button">Add Image</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <div class="col-md-12 grid-margin">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="form-row">
+                          <label for="file">Size</label>
+                        </div>
+                        <div class="form-group">
+                          <select class="form-control" name="size" id="exampleFormControlSelect2">
+                            <option>28</option>
+                            <option>30</option>
+                            <option>32</option>
+                            <option>34</option>
+                            <option>36</option>
+                            <option>38</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      <%- include('../admin/layouts/footer.ejs') %>
+            <div class="input-container">
+              <input type="hidden" name="id" value="<%= data._id %>">
+            </div>
+
+            <!-- Hidden input for marking images for deletion -->
+            <div class="form-row">
+              <label for="deleteImages">Delete Existing Images</label>
+              <% for (let i = 0; i < data.images.length; i++) { %>
+                <div class="existing-image">
+                  <img src="/public/adminAssets/assets/images/products/<%= data.images[i] %>" alt="Existing Image" class="product-image">
+                  <input type="checkbox" name="deleteImages" value="<%= data.images[i] %>"> Delete
+                </div>
+              <% } %>
+            </div>
+
+            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            <button class="btn btn-dark">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* CSS for image size and overflow */
+  .product-image {
+    max-width: 10%; /* Limit image width */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
+  }
+
+  .existing-image {
+    margin-bottom: 10px; /* Add some space between images */
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const addImageButton = document.querySelector(".add-image-input");
+    const dynamicImageInputs = document.querySelector(".dynamic-image-inputs");
+
+    addImageButton.addEventListener("click", function () {
+      const inputGroup = document.createElement("div");
+      inputGroup.className = "input-group";
+      const inputFile = document.createElement("input");
+      inputFile.type = "file";
+      inputFile.name = "images";
+      inputFile.className = "form-control";
+      inputFile.required = true;
+      const inputGroupAppend = document.createElement("div");
+      inputGroupAppend.className = "input-group-append";
+      const removeButton = document.createElement("button");
+      removeButton.className = "btn btn-danger remove-image-input";
+      removeButton.type = "button";
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", function () {
+        inputGroup.remove();
+      });
+      inputGroupAppend.appendChild(removeButton);
+      inputGroup.appendChild(inputFile);
+      inputGroup.appendChild(inputGroupAppend);
+      dynamicImageInputs.appendChild(inputGroup);
+    });
+  });
+</script>
+<%- include('../admin/layouts/footer.ejs') %>

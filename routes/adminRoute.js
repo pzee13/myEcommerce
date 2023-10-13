@@ -73,13 +73,13 @@ admin_route.get('/block_users',auth.isLogin,adminController.blockUser)
 
 admin_route.get('/add_product',auth.isLogin,adminController.loadaddProducts)
 
-admin_route.post('/add_product',upload.single('image'),adminController.addProduct)
+admin_route.post('/add_product',upload.array('images',3),adminController.addProduct)
 
 admin_route.get('/view_products',auth.isLogin,adminController.viewProducts)
 
 admin_route.get('/edit_product',auth.isLogin,adminController.loadeditProducts)
 
-admin_route.post('/edit_product',upload.single('image'),adminController.editProduct)
+admin_route.post('/edit_product',upload.array('images',3),adminController.editProduct)
 
 admin_route.get('/unlist_product',auth.isLogin,adminController.unlistProduct)
 

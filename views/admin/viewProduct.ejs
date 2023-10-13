@@ -30,7 +30,7 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Description</th>
-                <th>Image</th>
+                <th>Images</th> <!-- Updated column name -->
                 <th>Size</th>
                 <th> Edit </th>
                 <th> Action </th>
@@ -44,7 +44,11 @@
                   <td><%= data.price %></td>
                   <td><%= data.quantity %></td>
                   <td><%= data.description %></td>
-                  <td><img src="/public/adminAssets/assets/images/products/<%= data.image %>" alt="<%= data.productName %>"></td>
+                  <td>
+                    <% data.images.forEach(image => { %>
+                      <img src="/public/adminAssets/assets/images/products/<%= image %>" alt="<%= data.productName %>">
+                    <% }); %>
+                  </td>
                   <td><%= data.size %></td>
                   <td> <a href="/admin/edit_product?id=<%= data._id%>">
                     <button type="button" class="btn btn-outline-secondary btn-icon-text">
@@ -73,7 +77,6 @@
     </div>
   </div>
 </div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

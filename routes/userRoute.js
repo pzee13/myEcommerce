@@ -20,6 +20,8 @@ user_route.use(session({
     saveUninitialized:true
 }))
 
+const auth = require("../middleware/userAuth")
+
 user_route.use('/public',express.static(path.join(__dirname,'../public')))
 user_route.use('/userlogin',express.static(path.join(__dirname,'../public/userlogin')))
 user_route.use('/assets',express.static(path.join(__dirname,'../public/userlogin/assets')))
@@ -30,7 +32,7 @@ user_route.post('/signup',userController.insertUser)
 
 user_route.get('/',userController.loaduserHome)
 
-user_route.get('/home',userController.loaduserHome)
+user_route.get('/home',auth.isLogin,userController.loaduserHome)
 
 user_route.get('/login',userController.loginLoad)
 
@@ -40,9 +42,11 @@ user_route.post('/submit-otp', userController.verifyOTP)
 
 user_route.post('/login',userController.verifyLogin)
 
-user_route.get('/product',userController.userPoductload)
+// user_route.get('/product',userController.userPoductload)
 
-  
+user_route.get('/logout',auth.isLogin,userController.userLogout)
 // user_route.post('/submit-otp', userController.resendOTP) 
+
+user_route.get('/product',userController.viewProducts)
  
 module.exports = user_route 

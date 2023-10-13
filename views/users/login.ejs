@@ -4,7 +4,8 @@
 <div class="text-center  center-div">
     <div class="container col-6 py-5 p-4">
         <div class="title pb-3">
-            <h1>Login</h1>
+            <h1>PZEE FASHION STORE</h1> 
+            <h3> Login </h3>
                         <% 
                         if(typeof message !== 'undefined'){
                             %>
@@ -16,7 +17,7 @@
                         %>
          </div>
 
-        <form action="/login" method="post">
+        <form action="/login" method="post" onsubmit="return validateForm()">
             <div class="form-group mt-3">
                 <input type="email" class="form-control" name="email" placeholder="Enter email" id="email">
                 <p id="email-error" class="error-message"></p>

@@ -406,6 +406,13 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</script>
 <!--===============================================================================================-->
 	<script src="/public/userAssets/js/main.js"></script>
-
+	
+	<script>
+		// Initialize Zoom.js for all product images
+		const productImages = document.querySelectorAll('.product-image');
+		productImages.forEach(image => {
+		  new Zoom(image);
+		});
+	  </script>
 </body>
 </html>

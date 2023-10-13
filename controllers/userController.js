@@ -1,8 +1,10 @@
 const User = require('../models/userModels/userModel') 
+const Product = require('../models/productModel')
 const nodemailer = require("nodemailer")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const otpGenerator = require("otp-generator")
+
 
 const securePassword = async(password)=>{
     try {
@@ -84,50 +86,6 @@ const showverifyOTPPage = async (req, res) => {
     }
   }
 
-//   const insertUser = async (req, res) => {
-//     try {
-        
-//         // Generate OTP
-//         const otpCode = generateOTP();
-//         const otpExpiry = new Date();
-//         otpExpiry.setMinutes(otpExpiry.setMinutes() + 1); // OTP expires in 1 minutes
-
-//         const userCheck = await User.findOne({email:req.body.email})
-//         if(userCheck)
-//         {
-//             res.render('registration',{message:"User already exist"});
-//         }
-//         else{
-//             const spassword = await securePassword(req.body.password);
-//             req.session.fname = req.body.fname;
-//             req.session.lname = req.body.lname;
-//             req.session.mobileno = req.body.mobileno;
-//             req.session.email = req.body.email;
-//             if(req.body.fname && req.body.email && req.session.lname && req.session.mobileno){
-//                 if(req.body.password === req.body.cpassword) {
-//                     req.session.password = spassword;
-//                     req.session.otp = {
-//                         code: otpCode,
-//                         expiry: otpExpiry,
-//                     };        
-//                         // Send OTP to the user's email
-//                         sendVerificationEmail(req.session.email, req.session.otp.code);
-//                         res.render("user-otp")
-//                     } else {
-//                         res.render("registration",{message: "Password doesn't match"})
-//                     }
-//                 }
-//                 else{
-//                     res.render("registration",{message: "Please enter all details"})
-//                 }
-//                 }
-         
-
-
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
 
 const insertUser = async (req, res) => {
     try {
@@ -312,13 +270,40 @@ const loaduserHome = async (req, res) => {
     }
   }
 
-const userPoductload = async (req, res) => {
+// const userPoductload = async (req, res) => {
+//     try {
+//       res.render('userProduct');
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   }
+
+
+  const userLogout = async(req,res)=>{
+
+    try
+    {
+        req.session.destroy()
+        res.redirect('/')
+    }
+    catch (error)
+    {
+        console.log(error.message)
+        res.status(500).send('Server Error');
+        return
+    }
+}
+
+const viewProducts = async (req, res) => {
     try {
-      res.render('userProduct');
+      const products = await Product.find({});
+      res.render('userProduct', { product: products });
     } catch (error) {
-      console.log(error.message);
+      console.error(error);
+      res.status(500).send('Internal Server Error');
     }
   }
+
 
 module.exports = {
     loginLoad,
@@ -329,7 +314,9 @@ module.exports = {
     // loadHome,
     verifyLogin,
     loaduserHome,
-    userPoductload
+    // userPoductload,
+    userLogout,
+    viewProducts
     // resendOTP
     // sendVerificationEmail
 }
