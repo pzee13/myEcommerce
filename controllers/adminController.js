@@ -84,7 +84,7 @@ const addCategory = async (req,res)=>{
         categoryDescription:req.body.category_description,
         is_listed:true
       })
-  
+      
       const result = await category.save()
       
       res.redirect('/admin/add_category')

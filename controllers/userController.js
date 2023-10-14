@@ -296,7 +296,7 @@ const loaduserHome = async (req, res) => {
 
 const viewProducts = async (req, res) => {
     try {
-      const products = await Product.find({});
+      const products = await Product.find({ status: 1 });
       res.render('userProduct', { product: products });
     } catch (error) {
       console.error(error);
