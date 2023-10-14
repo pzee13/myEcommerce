@@ -78,7 +78,16 @@ const loadadHome = async(req,res)=>{
 
 const addCategory = async (req,res)=>{
     try {
-      
+      const categoryname=req.body.category_name
+        const already=await Category.findOne({categoryName:{$regex:categoryname,'$options':'i'}})
+        if(already){
+            res.render('addCategory',{message : "Category Already Created"})
+        }else{
+        //  const data=new Category({
+        //     categoryname:categoryname,
+        //     isListed:true
+        //  })
+
       const category = await new Category({
         categoryName:req.body.category_name,
         categoryDescription:req.body.category_description,
@@ -88,7 +97,7 @@ const addCategory = async (req,res)=>{
       const result = await category.save()
       
       res.redirect('/admin/add_category')
-    } catch (error) {
+    }} catch (error) {
       console.log(error);
     }
   }
@@ -254,42 +263,7 @@ const addCategory = async (req,res)=>{
   }
 }
 
-// const addProduct = async (req, res) => {
-//   try {
-//       const productname = req.body.productname;
-//       const category = req.body.category;
-//       const size = req.body.size;
-//       const description = req.body.description;
-//       const price = req.body.price;
-//       const quantity = req.body.quantity;
 
-//       if (req.file) {
-//           const image = req.file.filename;
-
-//           const newProduct = new Product({
-//               productName: productname,
-//               category: category,
-//               size: size,
-//               description: description,
-//               price: price,
-//               image: image,
-//               quantity: quantity,
-//           });
-
-//           const productData = await newProduct.save();
-//           if (productData) {
-//               res.redirect('/admin/view_products');
-//           } else {
-//               res.render('add_product', { message: "Something went wrong" });
-//           }
-//       } else {
-//           res.render('add_product', { message: "No image file uploaded" });
-//       }
-//   } catch (error) {
-//       console.error(error);
-//       res.status(500).send('Internal Server Error');
-//   }
-// }
 
 
 
@@ -324,151 +298,6 @@ const loadeditProducts = async (req, res) => {
   }
 }
 
-
-
-// const editProduct = async(req,res)=>{
-//   try{
-    
-//     const editData = await Product.findByIdAndUpdate({ _id:req.body.id },{$set:{ productName:req.body.productname, price:req.body.price , quantity:req.body.quantity, description:req.body.description,images:req.files[0].filename,size:req.body.size}});
-   
-//     res.redirect('/admin/view_products');
-
-//   }catch(error){
-//     console.log(error.message);
-//   }
-// }
-
-// const editProduct = async (req, res) => {
-//   try {
-//     const id = req.body.id;
-//     const productname = req.body.productname;
-//     const price = req.body.price;
-//     const quantity = req.body.quantity;
-//     const description = req.body.description;
-//     const size = req.body.size;
-
-//     // Check if there are new images
-//     const newImages = [];
-//     if (req.files && req.files.length > 0) {
-//       for (let i = 0; i < req.files.length; i++) {
-//         newImages.push(req.files[i].filename);
-//       }
-//     }
-
-//     // Find the existing product
-//     const existingProduct = await Product.findById(id);
-
-//     if (existingProduct) {
-//       // Update the product details
-//       existingProduct.productName = productname;
-//       existingProduct.price = price;
-//       existingProduct.quantity = quantity;
-//       existingProduct.description = description;
-//       existingProduct.size = size;
-
-//       // Add new images, if any
-//       if (newImages.length > 0) {
-//         existingProduct.images = existingProduct.images.concat(newImages);
-//       }
-
-//       // Handle image deletion
-//       if (req.body.deleteImages) {
-//         // req.body.deleteImages should be an array of image filenames to delete
-//         for (const imageToDelete of req.body.deleteImages) {
-//           // Remove the deleted image from the existing images
-//           existingProduct.images = existingProduct.images.filter(
-//             (image) => image !== imageToDelete
-//           );
-
-//           // Optionally, you can delete the image file from your storage here
-//           fs.unlinkSync(path.join(__dirname, '../public/adminAssets/assets/images/products', imageToDelete));
-//         }
-//       }
-
-//       const updatedProduct = await existingProduct.save();
-
-//       if (updatedProduct) {
-//         res.redirect('/admin/view_products');
-//       } else {
-//         res.render('editProduct', { data: existingProduct, message: 'Failed to update the product' });
-//       }
-//     } else {
-//       res.redirect('/admin/view_products');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// };
-
-// const editProduct = async (req, res) => {
-//   try {
-//     const id = req.body.id;
-//     let productname = req.body.productname;
-//     let category = req.body.category
-//     let price = req.body.price;
-//     let quantity = req.body.quantity;
-//     let description = req.body.description;
-//     let size = req.body.size;
-
-//     // Check if there are new images
-//     const newImages = [];
-//     if (req.files && req.files.length > 0) {
-//       for (let i = 0; i < req.files.length; i++) {
-//         newImages.push(req.files[i].filename);
-//       }
-//     }
-
-//     // Find the existing product
-//     const existingProduct = await Product.findById(id);
-
-//     if (existingProduct) {
-//       // Update the product details
-//       productName = productname;
-//       category =  category
-//       price =  price;
-//       quantity =  quantity;
-//       description =  description;
-//       size =  size;
-
-//       // Add new images, if any
-//       if (newImages.length > 0) {
-//         existingProduct.images = existingProduct.images.concat(newImages);
-//       }
-
-//       // Handle image deletion
-//       if (req.body.deleteImages) {
-//         console.log('Images to delete:', req.body.deleteImages); // Debugging
-//         // req.body.deleteImages should be an array of image filenames to delete
-//         for (const imageToDelete of req.body.deleteImages) {
-//           console.log('Deleting image:', imageToDelete); // Debugging
-//           // Remove the deleted image from the existing images
-//           existingProduct.images = existingProduct.images.filter(
-//             (image) => image !== imageToDelete
-//           );
-
-//           // Optionally, you can delete the image file from your storage here
-//           const imagePath = path.join(__dirname, '../public/adminAssets/assets/images/products', imageToDelete);
-//           console.log('Deleting image file:', imagePath); // Debugging
-//           fs.unlink(imagePath);
-//         }
-//       }
-
-//       const updatedProduct = await existingProduct.save();
-
-//       if (updatedProduct) {
-//         res.redirect('/admin/view_products');
-//       } else {
-//         res.render('editProduct', { data: existingProduct, message: 'Failed to update the product' });
-//       }
-//     } else {
-//       res.redirect('/admin/view_products');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// };
 
 const editProduct = async (req, res) => {
   try {
@@ -542,33 +371,6 @@ const editProduct = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
-
-
-
-
-// const editProduct = async (req, res) => {
-//   try {
-//       const editData = await Product.findByIdAndUpdate({ _id: req.body.id }, {
-//           $set: {
-//               productName: req.body.productname,
-//               price: req.body.price,
-//               quantity: req.body.quantity,
-//               description: req.body.description,
-//               size: req.body.size,
-//           }
-//       });
-
-//       if (req.file) {
-//           editData.image = req.file.filename;
-//       }
-
-//       const updatedProduct = await editData.save();
-//       res.redirect('/admin/view_products');
-//   } catch (error) {
-//       console.log(error.message);
-//       res.status(500).send('Internal Server Error');
-//   }
-// }
 
   
 const unlistProduct = async (req, res) => {

@@ -29,6 +29,16 @@
 
               </div>
 
+              <% 
+              if(typeof message !== 'undefined'){
+                  %>
+                  <div id="invalid-msg" class="alert alert-danger text-center">
+                      <h4><%- message %></h4>
+                  </div>
+                  <%
+              }
+              %>
+
           </form>
 
       </div>
