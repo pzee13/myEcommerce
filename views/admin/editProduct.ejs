@@ -16,6 +16,17 @@
             <br>
             <div class="form-row align-items-center">
               <div class="col-sm-4 my-1">
+                <label for="category">Category</label>
+                <select class="form-control" id="category" name="category" required>
+                  <% Category.forEach(cat => { %>
+                    <option value="<%= cat._id %>" <%= data.category == cat._id ? 'selected' : '' %>><%= cat.categoryName %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+    
+            <div class="form-row align-items-center">
+              <div class="col-sm-4 my-1">
                 <label for="exampleInputName1">Price</label>
                 <input type="text" class="form-control" id="inlineFormInputName1" name="price" placeholder="Price" value="<%= data.price %>">
               </div>
