@@ -11,20 +11,19 @@
           <div class="form-group mt-3">
             <input type="text" class="form-control" name="otp" placeholder="Enter OTP" required>
           </div>
-          <% 
-          if (typeof message !== 'undefined') {
-            %>
+          <% if (typeof message !== 'undefined') { %>
             <div id="invalid-msg" class="alert alert-danger mt-3">
               <p><%- message %></p>
             </div>
-            <%
-          }
-          %>
+          <% } %>
           <br><br>
           <input type="submit" class="btn btn-primary rounded-pill" value="Submit OTP">
         </form>
         <div class="mt-3">
-          <a href="/submit-otp">Resend OTP</a>
+          <% if (typeof otp !== 'undefined' && typeof timeRemaining !== 'undefined') { %>
+            <p>Time remaining: <span id="otp-timer"><%- timeRemaining %></span> seconds</p>
+          <% } %>
+          <a href="/resend-otp">Resend OTP</a>
         </div>
       </div>
     </div>
@@ -32,3 +31,4 @@
 </div>
 
 <%- include('../layouts/footer.ejs') %>
+

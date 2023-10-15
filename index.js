@@ -5,7 +5,7 @@ const session = require("express-session")
 const config = require("./config/config")
 const multer = require("multer")
 
-mongoose.connect("mongodb://127.0.0.1:27017/ecommercemg")
+mongoose.connect("mongodb://127.0.0.1:27017/ecommercemg") 
 
 
 const app = express() 
@@ -16,8 +16,8 @@ app.use(session({
     secret:config.sessionSecret, 
     resave:false,
     saveUninitialized:true
-})) 
-
+}))  
+ 
 
 
 app.use('/public',express.static(path.join(__dirname,'../public')))

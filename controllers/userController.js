@@ -18,9 +18,21 @@ const securePassword = async(password)=>{
     }
 }
 
-const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-};
+// const generateOTP = () => {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+
+// async function generateRandomOtp(length){
+//     if(length % 2 != 0){
+//         throw new Error('Length must be even For OTP Generation.');
+//     }
+
+//     const randomBytes = crypto.randomBytes(length/2);
+//     const otp = randomBytes.toString('hex')
+//     return otp;
+
+// }
 
 
 const sendVerificationEmail = async (email, otp) => {
@@ -128,9 +140,15 @@ const insertUser = async (req, res) => {
     try {
         
         // Generate OTP
-        const otpCode = generateOTP();
+        const otpCode = otpGenerator.generate(6, { 
+            digits: true,
+            alphabets: false, 
+            specialChars: false, 
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false 
+        });
         const otpcurTime = Date.now()/1000
-        const otpExpiry = otpcurTime + 60
+        const otpExpiry = otpcurTime + 45
 
         const userCheck = await User.findOne({email:req.body.email})
         if(userCheck)
@@ -200,7 +218,8 @@ const insertUser = async (req, res) => {
 
 const verifyOTP = async (req, res)=>{
     try {
-        if(req.body.otp === req.session.otp.code){
+        const currentTime = Math.floor(Date.now() / 1000)
+        if(req.body.otp === req.session.otp.code&&currentTime<=req.session.otp.expiry){
             const user = new User({
                 firstName: req.session.fname,
                 lastName: req.session.lname,
@@ -222,36 +241,167 @@ const verifyOTP = async (req, res)=>{
 }
 
 
-// const resendOTP = async (req,res)=>{
+const resendOTP = async (req,res)=>{
+    try{
+        const currentTime = Date.now()/1000;
+        console.log("current",currentTime)
+        if (req.session.otp.expiry != null) {
+        if(currentTime > req.session.otp.expiry){
+            console.log("expire",req.session.otp.expiry);
+            const newDigit = otpGenerator.generate(6, { 
+                digits: true,
+                alphabets: false, 
+                specialChars: false, 
+                upperCaseAlphabets: false,
+                lowerCaseAlphabets: false 
+            });
+                req.session.otp.code = newDigit;
+                const newExpiry = currentTime + 45;
+                req.session.otp.expiry = newExpiry;
+                sendVerificationEmail(req.session.email, req.session.otp.code);
+                res.render("user-otp",{message:"OTP has been send"});
+            }else{
+                res.render("user-otp",{message: "You can request a new otp after old otp expires"});
+            }
+        }
+        else{
+            res.send("Please register again")
+        }
+    }
+    catch (error)
+    {
+        console.log(error.message)
+    }
+}
+
+// const calculateTimeRemaining = (expiry) => {
+//     const currentTime = Math.floor(Date.now() / 1000);
+//     return Math.max(0, expiry - currentTime);
+//   };
+
+//   const resendOTP = async (req, res) => {
+//     try {
+//       if (req.session.otp.expiry) {
+//         const currentTime = Math.floor(Date.now() / 1000);
+//         if (currentTime > req.session.otp.expiry) {
+//           const newDigit = otpGenerator.generate(6, {
+//             digits: true,
+//             alphabets: false,
+//             specialChars: false,
+//             upperCaseAlphabets: false,
+//             lowerCaseAlphabets: false,
+//           });
+//           req.session.otp.code = newDigit;
+  
+//           // Calculate the new OTP expiry
+//           const newExpiry = currentTime + 60;
+//           req.session.otp.expiry = newExpiry;
+  
+//           // Calculate the time remaining
+//           const timeRemaining = calculateTimeRemaining(newExpiry);
+  
+//           // Render the "user-otp" template and pass the OTP and timeRemaining
+//           res.render("user-otp", {
+//             message: "OTP has been sent",
+//             otp: newExpiry, // Pass the updated OTP expiry
+//             timeRemaining: timeRemaining, // Calculate time remaining
+//           });
+//         } else {
+//           // If OTP hasn't expired, just render the template with the existing values
+//           const timeRemaining = calculateTimeRemaining(req.session.otp.expiry);
+  
+//           res.render("user-otp", {
+//             message: "You can request a new OTP after the old OTP expires",
+//             otp: req.session.otp.expiry, // Pass the current OTP expiry
+//             timeRemaining: timeRemaining, // Calculate time remaining
+//           });
+//         }
+//       } else {
+//         res.send("Please register again");
+//       }
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   };
+  
+  
+
+// const resendOTP = (req, res)=>{
 //     try{
 //         const currentTime = Date.now()/1000;
 //         console.log("current",currentTime)
-//         if (req.session.otp.expiry != null) {
-//         if(currentTime > req.session.otp.expiry){
-//             console.log("expire",req.session.otp.expiry);
-//             const newDigit = otpGenerator.generate(6, { 
-//                 digits: true,
-//                 alphabets: false, 
-//                 specialChars: false, 
-//                 upperCaseAlphabets: false,
-//                 lowerCaseAlphabets: false 
-//             });
+//         if (req.session.otp.expire != null) {
+//              if(currentTime > req.session.otp.expire){
+//                 console.log("expire",req.session.otp.expire);
+//                 const newDigit = otpGenerator.generate(6, { 
+//                     digits: true,
+//                     alphabets: false, 
+//                     specialChars: false, 
+//                     upperCaseAlphabets: false,
+//                     lowerCaseAlphabets: false 
+//                 });
 //                 req.session.otp.code = newDigit;
-//                 sendVerificationEmail(req.session.email, req.session.otp.code);
-//                 res.render("user-otp",{message:"OTP has been send"});
-//             }else{
-//                 res.render("user-otp",{message: "You can request a new otp after old otp expires"});
-//             }
+//                 sendVerifyMail(req.session.username, req.session.email, req.session.otp.code);
+//                 res.render("userOTP",{message: New OTP send to ${req.session.email}});
+//              }else{
+//                 res.render("userOTP",{message: OTP send to ${req.session.email}, resend after 30 second});
+//              }
 //         }
 //         else{
-//             res.send("Please register again")
+//             res.send("Already registered")
 //         }
 //     }
-//     catch (error)
-//     {
-//         console.log(error.message)
+//     catch(error){
+//         console.log(error.message);
 //     }
 // }
+
+
+
+// const calculateTimeRemaining = (expiry) => {
+//     const currentTime = Math.floor(Date.now() / 1000);
+//     return Math.max(0, expiry - currentTime);
+//   };
+  
+//   const resendOTP = async (req, res) => {
+//     try {
+//       if (req.session.otp.expiry) {
+//         const currentTime = Date.now() / 1000;
+//         if (currentTime > req.session.otp.expiry) {
+//           const newDigit = otpGenerator.generate(6, {
+//             digits: true,
+//             alphabets: false,
+//             specialChars: false,
+//             upperCaseAlphabets: false,
+//             lowerCaseAlphabets: false,
+//           });
+//           req.session.otp.code = newDigit;
+//           sendVerificationEmail(req.session.email, req.session.otp.code);
+  
+//           // Calculate the new OTP expiry
+//           const newExpiry = currentTime + 60;
+//           req.session.otp.expiry = newExpiry;
+  
+//           res.render("user-otp", {
+//             message: "OTP has been sent",
+//             otp: newExpiry, // Pass the updated OTP expiry
+//             timeRemaining: calculateTimeRemaining(newExpiry), // Calculate time remaining
+//           });
+//         } else {
+//           res.render("user-otp", {
+//             message: "You can request a new OTP after the old OTP expires",
+//             otp: req.session.otp.expiry, // Pass the current OTP expiry
+//             timeRemaining: calculateTimeRemaining(req.session.otp.expiry), // Calculate time remaining
+//           });
+//         }
+//       } else {
+//         res.send("Please register again");
+//       }
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   };
+  
 
 const verifyLogin = async (req, res,next) => {
     try {
@@ -430,8 +580,8 @@ module.exports = {
     forgetPasswordLoad,
     resetPassword,
     userLogout,
-    viewProducts
-    // resendOTP
+    viewProducts,
+    resendOTP
     // sendVerificationEmail
 }
 
