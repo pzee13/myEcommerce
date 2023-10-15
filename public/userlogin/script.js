@@ -1,4 +1,6 @@
 
+//for password and confirm password checking 
+
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.querySelector("form");
     const passwordField = document.getElementById("password");
@@ -15,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-
+//for invalid messages 
   const invalidMsgSignup = document.getElementById('invalid-msg');
         if(invalidMsgSignup)
             {
@@ -32,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     }, 5000);
               }
 
+
+              //for login validation 
               function validateForm()
               {
                  document.getElementById('email-error').textContent = '';
@@ -54,5 +58,35 @@ document.addEventListener("DOMContentLoaded", function() {
          
                  return true;
               }
+
+
+            // for only password validation 
+              function validatePassword()
+              {
+                
+                 document.getElementById('password-error').textContent = '';
+         
+                 const password = document.getElementById('password').value;
+         
+                 if (!password || password.length < 6) 
+                 {
+                     document.getElementById('password-error').textContent = 'Password must be at least 6 characters';
+                     return false;
+                 }
+         
+                 return true;
+              }
+
+
+    //for regitration field validation
+
+    function validRegister()
+    {
+      
+    }
+
+
+
+  
   
   

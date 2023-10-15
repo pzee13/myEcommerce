@@ -42,6 +42,14 @@ user_route.post('/submit-otp', userController.verifyOTP)
 
 user_route.post('/login',userController.verifyLogin)
 
+user_route.get('/forget',userController.forgotLoad)
+
+user_route.post('/forget',userController.forgotVerify)
+
+user_route.get('/forget-password',userController.forgetPasswordLoad)
+
+user_route.post('/forget-password',userController.resetPassword)
+
 // user_route.get('/product',userController.userPoductload)
 
 user_route.get('/logout',auth.isLogin,userController.userLogout)
