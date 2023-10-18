@@ -1,4 +1,5 @@
 const User = require('../models/userModels/userModel') 
+const Category = require('../models/categoryModel')
 const Product = require('../models/productModel')
 const nodemailer = require("nodemailer")
 const bcrypt = require('bcrypt')
@@ -17,22 +18,6 @@ const securePassword = async(password)=>{
         console.log(error.message)
     }
 }
-
-// const generateOTP = () => {
-//     return Math.floor(100000 + Math.random() * 900000).toString();
-// };
-
-
-// async function generateRandomOtp(length){
-//     if(length % 2 != 0){
-//         throw new Error('Length must be even For OTP Generation.');
-//     }
-
-//     const randomBytes = crypto.randomBytes(length/2);
-//     const otp = randomBytes.toString('hex')
-//     return otp;
-
-// }
 
 
 const sendVerificationEmail = async (email, otp) => {
@@ -187,34 +172,6 @@ const insertUser = async (req, res) => {
     }
 }
 
-// const verifyOTP = async (req, res)=>{
-//     try {
-//         if(req.body.otp === req.session.otp.code){
-//             const currentTime = new Date()
-//             if (currentTime <= req.session.otp.expiry) {
-//             const user = new User({
-//                 firstName: req.session.fname,
-//                 lastName: req.session.lname,
-//                 email: req.session.email,
-//                 mobile: req.session.mobileno,
-//                 password: req.session.password,
-//                 isVerified:1
-//             });
-
-//             const result = await user.save()
-//             res.redirect("/login")
-//         } else {
-//             // OTP has expired, handle accordingly
-//             res.render('user-otp', { message: "OTP has expired. Please request a new OTP." });
-//         }
-//         }
-//         else{
-//             res.render('user-otp',{message:"invalid OTP"});
-//         }
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
 
 const verifyOTP = async (req, res)=>{
     try {
@@ -274,134 +231,6 @@ const resendOTP = async (req,res)=>{
     }
 }
 
-// const calculateTimeRemaining = (expiry) => {
-//     const currentTime = Math.floor(Date.now() / 1000);
-//     return Math.max(0, expiry - currentTime);
-//   };
-
-//   const resendOTP = async (req, res) => {
-//     try {
-//       if (req.session.otp.expiry) {
-//         const currentTime = Math.floor(Date.now() / 1000);
-//         if (currentTime > req.session.otp.expiry) {
-//           const newDigit = otpGenerator.generate(6, {
-//             digits: true,
-//             alphabets: false,
-//             specialChars: false,
-//             upperCaseAlphabets: false,
-//             lowerCaseAlphabets: false,
-//           });
-//           req.session.otp.code = newDigit;
-  
-//           // Calculate the new OTP expiry
-//           const newExpiry = currentTime + 60;
-//           req.session.otp.expiry = newExpiry;
-  
-//           // Calculate the time remaining
-//           const timeRemaining = calculateTimeRemaining(newExpiry);
-  
-//           // Render the "user-otp" template and pass the OTP and timeRemaining
-//           res.render("user-otp", {
-//             message: "OTP has been sent",
-//             otp: newExpiry, // Pass the updated OTP expiry
-//             timeRemaining: timeRemaining, // Calculate time remaining
-//           });
-//         } else {
-//           // If OTP hasn't expired, just render the template with the existing values
-//           const timeRemaining = calculateTimeRemaining(req.session.otp.expiry);
-  
-//           res.render("user-otp", {
-//             message: "You can request a new OTP after the old OTP expires",
-//             otp: req.session.otp.expiry, // Pass the current OTP expiry
-//             timeRemaining: timeRemaining, // Calculate time remaining
-//           });
-//         }
-//       } else {
-//         res.send("Please register again");
-//       }
-//     } catch (error) {
-//       console.log(error.message);
-//     }
-//   };
-  
-  
-
-// const resendOTP = (req, res)=>{
-//     try{
-//         const currentTime = Date.now()/1000;
-//         console.log("current",currentTime)
-//         if (req.session.otp.expire != null) {
-//              if(currentTime > req.session.otp.expire){
-//                 console.log("expire",req.session.otp.expire);
-//                 const newDigit = otpGenerator.generate(6, { 
-//                     digits: true,
-//                     alphabets: false, 
-//                     specialChars: false, 
-//                     upperCaseAlphabets: false,
-//                     lowerCaseAlphabets: false 
-//                 });
-//                 req.session.otp.code = newDigit;
-//                 sendVerifyMail(req.session.username, req.session.email, req.session.otp.code);
-//                 res.render("userOTP",{message: New OTP send to ${req.session.email}});
-//              }else{
-//                 res.render("userOTP",{message: OTP send to ${req.session.email}, resend after 30 second});
-//              }
-//         }
-//         else{
-//             res.send("Already registered")
-//         }
-//     }
-//     catch(error){
-//         console.log(error.message);
-//     }
-// }
-
-
-
-// const calculateTimeRemaining = (expiry) => {
-//     const currentTime = Math.floor(Date.now() / 1000);
-//     return Math.max(0, expiry - currentTime);
-//   };
-  
-//   const resendOTP = async (req, res) => {
-//     try {
-//       if (req.session.otp.expiry) {
-//         const currentTime = Date.now() / 1000;
-//         if (currentTime > req.session.otp.expiry) {
-//           const newDigit = otpGenerator.generate(6, {
-//             digits: true,
-//             alphabets: false,
-//             specialChars: false,
-//             upperCaseAlphabets: false,
-//             lowerCaseAlphabets: false,
-//           });
-//           req.session.otp.code = newDigit;
-//           sendVerificationEmail(req.session.email, req.session.otp.code);
-  
-//           // Calculate the new OTP expiry
-//           const newExpiry = currentTime + 60;
-//           req.session.otp.expiry = newExpiry;
-  
-//           res.render("user-otp", {
-//             message: "OTP has been sent",
-//             otp: newExpiry, // Pass the updated OTP expiry
-//             timeRemaining: calculateTimeRemaining(newExpiry), // Calculate time remaining
-//           });
-//         } else {
-//           res.render("user-otp", {
-//             message: "You can request a new OTP after the old OTP expires",
-//             otp: req.session.otp.expiry, // Pass the current OTP expiry
-//             timeRemaining: calculateTimeRemaining(req.session.otp.expiry), // Calculate time remaining
-//           });
-//         }
-//       } else {
-//         res.send("Please register again");
-//       }
-//     } catch (error) {
-//       console.log(error.message);
-//     }
-//   };
-  
 
 const verifyLogin = async (req, res,next) => {
     try {
@@ -556,13 +385,54 @@ const loaduserHome = async (req, res) => {
 
 const viewProducts = async (req, res) => {
     try {
-      const products = await Product.find({ status: 1 });
-      res.render('userProduct', { product: products });
+      const products = await Product.find({ status: 1 }).populate('category');
+      const categories = await Category.find()
+      res.render('userProduct', { product: products , category:categories});
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
     }
   }
+
+
+
+  const getProductDetails = async (req, res) => {
+    try {
+        const id = req.query.id; // You should adjust this based on your route structure
+        const product = await Product.findById({_id:id}).populate('category');
+
+        if (!product) {
+            return res.status(404).render('error', { message: 'Product not found' });
+        }
+
+        res.render('productDetails', { product:product});
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { message: 'Internal Server Error' });
+    }
+};
+
+// const getProductDetails = async (req, res) => {
+//     try {
+//         // Access the productId from query parameters
+//         const productId = req.query.id;
+
+//         if (!productId) {
+//             return res.status(400).render('error', { message: 'Product ID is missing' });
+//         }
+
+//         const product = await Product.findById(productId).populate('category');
+
+//         if (!product) {
+//             return res.status(404).render('error', { message: 'Product not found' });
+//         }
+
+//         res.render('productDetails', { product: product });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).render('error', { message: 'Internal Server Error' });
+//     }
+// };
 
 
 module.exports = {
@@ -581,7 +451,8 @@ module.exports = {
     resetPassword,
     userLogout,
     viewProducts,
-    resendOTP
+    resendOTP,
+    getProductDetails
     // sendVerificationEmail
 }
 

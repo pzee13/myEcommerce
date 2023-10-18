@@ -6,15 +6,15 @@
         <div class="title pb-3">
             <h2><strong>Registration</strong></h2>
         </div>
-            <form action="" method="post" encypte="multipart/form-data" onsubmit="return validateForm()" >
+            <form action="/signup" method="post" onsubmit="return validRegister()" >
                 <div class="form-group mt-3">
-                <input type="text" class="form-control" name="fname" placeholder="Enter First Name" required>
+                <input type="text" class="form-control" name="fname" placeholder="Enter First Name" id="myname" required>
                 <br>
-                <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" required>
+                <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" id="mynamel" required>
                 <br>
                 <input type="email" class="form-control" name="email" placeholder="Enter Email" id="email" required>
                 <br>
-                <input type="text" class="form-control" name="mobileno" placeholder="Enter MobileNo" required>
+                <input type="text" class="form-control" name="mobileno" placeholder="Enter MobileNo" id="mno" required>
                 <br>
                 <input type="password" class="form-control" name="password" placeholder="Enter Password" id="password" required>
                 <br>
@@ -23,8 +23,8 @@
                     Passwords do not match. Please try again.
                   </div>
                 </div>
-                <p id="email-error" class="error-message"></p>
-                <p id="password-error" class="error-message"></p>
+                <p id="email-error" class="error-message"></p><p id="name-error" class="error-message"></p>
+                <p id="password-error" class="error-message"></p><p id="mobile-error" class="error-message"></p>
                 <br><br>
                 <input type="submit" class="btn btn-success rounded-pill" value="Register">
 

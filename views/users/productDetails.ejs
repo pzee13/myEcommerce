@@ -1,0 +1,126 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+<!-- Product Details -->
+<br><br><br>
+<section class="bg0 p-t-40 p-b-38">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-lg-7">
+                <div class="p-l-25 p-r-30 p-lr-0-lg">
+                    <div class="wrap-slick3 flex-sb flex-w">
+                        <div class="wrap-slick3-arrows flex-sb-m flex-w">
+                        </div>
+                        <div class="slick3 gallery-lb">
+                            <% product.images.forEach(function(image) { %>
+                                <div class="item-slick3">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="/public/adminAssets/assets/images/products/<%= image %>" alt="<%= product.productName %>" style="width: 100%; height: 100%;">
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5">
+                <div class="p-r-50 p-t-5 p-lr-0-lg">
+                    <!-- Product Name -->
+                    <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                        <%= product.productName %>
+                    </h4>
+
+                    <!-- Product Category -->
+                    <span class="mtext-106 cl2">
+                        Category: <%= product.category.categoryName %>
+                    </span>
+
+                    <!-- Product Price -->
+                    <p class="stext-102 cl3 p-t-23">
+                        Price: $<%= product.price %>
+                    </p>
+
+                    <!-- Product Quantity -->
+                    <p class="stext-102 cl3 p-t-23">
+                        Quantity: <%= product.quantity %>
+                    </p>
+
+                    <!-- Product Description -->
+                    <p class="stext-102 cl3 p-t-23">
+                        Description: <%= product.description %>
+                    </p>
+
+                    <!-- Product Size -->
+                    <p class="stext-102 cl3 p-t-23">
+                        Size: <%= product.size %>
+                    </p>
+
+                    <div class="flex-w flex-r-m p-b-10">
+                        <div class="size-204 flex-w flex-m respon6-next">
+                            <div class="wrap-num-product flex-w m-r-20 m-tb-10">
+                                <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                    <i class="fs-16 zmdi zmdi-minus"></i>
+                                </div>
+
+                                <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1">
+
+                                <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                    <i class="fs-16 zmdi zmdi-plus"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button class="flex-c-m stext-101 mx-3 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                    Add to cart
+                                </button>
+                                <button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                    Add to wishlist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Sharing Icons -->
+                    <div class="flex-w flex-r-m p-b-10">
+                        <div class="flex-m bor9 p-r-10 m-r-11">
+                            <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail" data-tooltip="Add to Wishlist">
+                                <i class="zmdi zmdi-favorite"></i>
+                            </a>
+                        </div>
+
+                        <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8" data-tooltip="Facebook">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+
+                        <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8" data-tooltip="Twitter">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+
+                        <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8" data-tooltip="Google Plus">
+                            <i class="fa fa-google-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<script>
+    $(document).ready(function(){
+        $('.slick3').slick({
+            dots: true,  // Show dots navigation
+            arrows: true,  // Show next/prev arrows
+            infinite: true,  // Infinite loop
+            speed: 500,  // Transition speed
+            slidesToShow: 1,  // Number of slides to show at once
+            slidesToScroll: 1,  // Number of slides to scroll
+            autoplay: true,  // Autoplay the slider
+            autoplaySpeed: 2000  // Autoplay speed in milliseconds
+        });
+    });
+</script>
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

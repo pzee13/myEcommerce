@@ -1451,14 +1451,18 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
   -o-transition: all 0.4s;
   -moz-transition: all 0.4s;
   transition: all 0.4s;
+  margin-left: -94px;
+  margin-right: 94px;
 }
 
 .arrow-slick3:hover {
   background-color: rgba(0,0,0,0.9);
 }
 
-.prev-slick3 {left: 0px;}
-.next-slick3 {right: 0px;}
+.prev-slick3 {left: 0px;
+margin-left: -94px;}
+.next-slick3 {right: 0px;
+}
 
 /*---------------------------------------------*/
 .wrap-slick3-dots {

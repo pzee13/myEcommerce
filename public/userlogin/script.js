@@ -1,21 +1,64 @@
 
+function validRegister() {
+  const name = document.getElementById('myname').value;
+  const lname = document.getElementById('mynamel').value;
+  const email = document.getElementById('email').value;
+  const mobile = document.getElementById('mno').value;
+  const password = document.getElementById('password').value;
+  const cpassword = document.getElementById('cpassword').value;
+
+  // Clear any previous error messages
+  document.getElementById('name-error').textContent = '';
+  document.getElementById('email-error').textContent = '';
+  document.getElementById('mobile-error').textContent = '';
+  document.getElementById('password-error').textContent = '';
+  document.getElementById('password-mismatch').style.display = 'none';
+
+  if (!name || !lname) {
+      document.getElementById('name-error').textContent = 'First name or last name field should not be empty!';
+      return false;
+  }
+
+  if (!email) {
+      document.getElementById('email-error').textContent = 'Email field should not be empty!';
+      return false;
+  }
+
+  if (!mobile || mobile.length < 10) {
+      document.getElementById('mobile-error').textContent = 'Mobile number should be at least 10 characters.';
+      return false;
+  }
+
+  if (!password || password.length < 6) {
+      document.getElementById('password-error').textContent = 'Password must be at least 6 characters.';
+      return false;
+  }
+
+  if (password !== cpassword) {
+      document.getElementById('password-mismatch').style.display = 'block';
+      return false;
+  }
+
+  return true;
+}
+
 //for password and confirm password checking 
 
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.querySelector("form");
-    const passwordField = document.getElementById("password");
-    const confirmPasswordField = document.getElementById("cpassword");
-    const passwordMismatchDiv = document.getElementById("password-mismatch");
+// document.addEventListener("DOMContentLoaded", function() {
+//     const form = document.querySelector("form");
+//     const passwordField = document.getElementById("password");
+//     const confirmPasswordField = document.getElementById("cpassword");
+//     const passwordMismatchDiv = document.getElementById("password-mismatch");
   
-    form.addEventListener("submit", function(event) {
-      if (passwordField.value !== confirmPasswordField.value) {
-        passwordMismatchDiv.style.display = "block";
-        event.preventDefault(); // Prevent form submission
-      } else {
-        passwordMismatchDiv.style.display = "none";
-      }
-    });
-  });
+//     form.addEventListener("submit", function(event) {
+//       if (passwordField.value !== confirmPasswordField.value) {
+//         passwordMismatchDiv.style.display = "block";
+//         event.preventDefault(); // Prevent form submission
+//       } else {
+//         passwordMismatchDiv.style.display = "none";
+//       }
+//     });
+//   });
 
 //for invalid messages 
   const invalidMsgSignup = document.getElementById('invalid-msg');
@@ -80,13 +123,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //for regitration field validation
 
-    function validRegister()
-    {
-      
-    }
-
-
-
-  
-  
-  
+   
