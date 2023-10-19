@@ -62,6 +62,17 @@
                     
                      </table>
                   </div>
+                  <div class="pagination" style="display: flex; justify-content: center;">
+                    <% if (currentPage > 1) { %>
+                      <a href="/admin/view_category?page=<%= currentPage - 1 %>" class="page-link"> Previous</a>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                      <a href="/admin/view_category?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                      &nbsp; <a href="/admin/view_category?page=<%= currentPage + 1 %>" class="page-link"> Next</a>
+                    <% } %>
+                  </div>
                 </div>
               </div>
             </div>

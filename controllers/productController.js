@@ -66,9 +66,23 @@ const loadaddProducts = async (req, res) => {
 const viewProducts = async(req,res) =>{
 
   try {
-    const products = await Product.find().populate("category"); // Populate the category field
+    const page = req.query.page || 1; // Get the current page from query parameters
+    const pageSize = 10; // Set your desired page size
+
+    const skip = (page - 1) * pageSize;
+        
+        const products = await Product.find().populate('category').skip(skip)
+        .limit(pageSize);
+        
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / pageSize);
+     
+        
+ // Populate the category field
     const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
-    res.render('viewProduct', { data: products, category: categories });
+    res.render('viewProduct', { data:products , category: categories ,
+      currentPage: page,
+      totalPages: totalPages });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -171,6 +185,10 @@ const editProduct = async (req, res) => {
   
 const unlistProduct = async (req, res) => {
   try {
+    const page = req.query.page || 1; // Get the current page from query parameters
+    const pageSize = 10; // Set your desired page size
+
+    const skip = (page - 1) * pageSize;
     
     const id = req.query.id;
     const product1 = await Product.findById(id);
@@ -181,15 +199,60 @@ const unlistProduct = async (req, res) => {
       
     }
 
-    const products = await Product.find();
+    const products = await Product.find().skip(skip)
+    .limit(pageSize);
+    
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
     const categories = await Category.find()
 
-    res.render('viewProduct', { data: products , category: categories });
+    res.redirect('/admin/view_products')
 
   } catch (error) {   
     console.log(error);   
   }
 }
+
+const searchProducts = async (req, res) => {
+  try {
+    const keyword = req.query.keyword; // Get the search keyword from the query string
+    const page = req.query.page || 1; // Get the current page from query parameters
+    const pageSize = 10; // Set your desired page size
+
+    // Perform a case-insensitive search on product names and descriptions
+    const products = await Product.find({
+      $or: [
+        { productName: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+      ],
+    })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate('category'); // Populate the category field
+
+    const totalProducts = await Product.countDocuments({
+      $or: [
+        { productName: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+      ],
+    });
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    // Fetch categories for the sidebar
+    const categories = await Category.find();
+
+    res.render('viewProduct', {
+      data: products,
+      category: categories,
+      currentPage: page,
+      totalPages: totalPages,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
 
 module.exports = {
     loadaddProducts,
@@ -197,5 +260,6 @@ module.exports = {
     viewProducts,
     loadeditProducts,
     editProduct,
-    unlistProduct
+    unlistProduct,
+    searchProducts
 }

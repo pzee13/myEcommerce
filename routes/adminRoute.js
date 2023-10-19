@@ -70,6 +70,8 @@ admin_route.post('/edit_category',categoryController.adeditCategory)
 
 admin_route.get('/view_users',auth.isLogin,adminController.loadviewUsers)
 
+admin_route.get('/searchUsers', adminController.searchUsers)
+
 admin_route.get('/block_users',auth.isLogin,adminController.blockUser)
 // admin_route.post('/edit_category',adminController.adeditCategory) 
 
@@ -84,5 +86,7 @@ admin_route.get('/edit_product',auth.isLogin,productController.loadeditProducts)
 admin_route.post('/edit_product',upload.array('images',3),productController.editProduct)
 
 admin_route.get('/unlist_product',auth.isLogin,productController.unlistProduct)
+
+admin_route.get('/search_product',auth.isLogin,productController.searchProducts)
 
 module.exports = admin_route;   

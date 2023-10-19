@@ -14,7 +14,14 @@
                             <% product.images.forEach(function(image) { %>
                                 <div class="item-slick3">
                                     <div class="wrap-pic-w pos-relative">
-                                        <img src="/public/adminAssets/assets/images/products/<%= image %>" alt="<%= product.productName %>" style="width: 100%; height: 100%;">
+                                        <div class="xzoom-container">
+                                            <img src="/public/adminAssets/assets/images/products/<%= image %>" style="width: 100%; height: 100%;" class="xzoom" xoriginal="/public/adminAssets/assets/images/products/<%= image %>"  style="width: 200%; height: 200%;">
+                                        <div class="xzoom-thumbs">
+                                        <a href="/public/adminAssets/assets/images/products/<%= image %>" alt="<%= product.productName %>" style="width: 200%; height: 200%;">
+                                        <img class="xzoom-gallery" src="/public/adminAssets/assets/images/products/<%= image %>" xpreview="/public/adminAssets/assets/images/products/<%= image %>" alt="<%= product.productName %>" style="width: 100%; height: 100%;">
+                                        </a>
+                                        </div>
+                                        </div>
                                     </div>
                                 </div>
                             <% }); %>
@@ -122,5 +129,18 @@
         });
     });
 </script>
+
+<!-- Add this script to your HTML, preferably right before the closing </body> tag -->
+<script>
+    $(function (){
+        $(".xzoom, .xzoom-gallery").xzoom({
+            zoomWidth:400,
+            tint:"#333",
+            Xoffset:15,
+        })
+    })
+</script>
+
+
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

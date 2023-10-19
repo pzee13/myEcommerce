@@ -59,6 +59,8 @@ user_route.get('/logout',auth.isLogin,userController.userLogout)
 
 user_route.get('/product',userController.viewProducts)
 
+user_route.get('/search_product',userController.searchProducts)
+
 user_route.get('/productDetails', userController.getProductDetails)
  
 module.exports = user_route 

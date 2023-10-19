@@ -385,9 +385,20 @@ const loaduserHome = async (req, res) => {
 
 const viewProducts = async (req, res) => {
     try {
-      const products = await Product.find({ status: 1 }).populate('category');
+        const page = req.query.page || 1; // Get the current page from query parameters
+        const pageSize = 10; // Set your desired page size
+    
+        const skip = (page - 1) * pageSize;
+      const products = await Product.find({ status: 1 }).populate('category') .skip(skip)
+      .limit(pageSize);
+
+      const totalProducts = await Product.countDocuments();
+      const totalPages = Math.ceil(totalProducts / pageSize);
+
       const categories = await Category.find()
-      res.render('userProduct', { product: products , category:categories});
+      res.render('userProduct', { product: products , category:categories,
+        currentPage: page,
+        totalPages: totalPages});
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
@@ -435,6 +446,47 @@ const viewProducts = async (req, res) => {
 // };
 
 
+const searchProducts = async (req, res) => {
+    try {
+      const keyword = req.query.keyword; // Get the search keyword from the query string
+      const page = req.query.page || 1; // Get the current page from query parameters
+      const pageSize = 10; // Set your desired page size
+  
+      // Perform a case-insensitive search on product names and descriptions
+      const products = await Product.find({
+        $or: [
+          { productName: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } },
+        ],
+      })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .populate('category'); // Populate the category field
+  
+      const totalProducts = await Product.countDocuments({
+        $or: [
+          { productName: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } },
+        ],
+      });
+      const totalPages = Math.ceil(totalProducts / pageSize);
+  
+      // Fetch categories for the sidebar
+      const categories = await Category.find();
+  
+      res.render('userProduct', {
+        product: products,
+        category: categories,
+        currentPage: page,
+        totalPages: totalPages,
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+
 module.exports = {
     loginLoad,
     loadRegister,
@@ -452,7 +504,8 @@ module.exports = {
     userLogout,
     viewProducts,
     resendOTP,
-    getProductDetails
+    getProductDetails,
+    searchProducts
     // sendVerificationEmail
 }
 

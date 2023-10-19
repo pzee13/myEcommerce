@@ -45,8 +45,19 @@ const addCategory = async (req,res)=>{
 
   const loadviewCategory =  async (req, res) => {
     try {
-      const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
-      res.render('viewCategory', { Category: categories });
+      const page = req.query.page || 1; // Get the current page from query parameters
+        const pageSize = 8; // Set your desired page size
+
+        const skip = (page - 1) * pageSize;
+        const categories = await Category.find()
+            .skip(skip)
+            .limit(pageSize);
+
+        // Calculate the total number of pages
+        const totalCategories = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCategories / pageSize);
+
+      res.render('viewCategory', { Category: categories ,currentPage: page, totalPages });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
@@ -55,7 +66,10 @@ const addCategory = async (req,res)=>{
 
   const unlistCategory = async (req, res) => {
     try {
-      
+      const page = req.query.page || 1; // Get the current page from query parameters
+        const pageSize = 8; // Set your desired page size
+
+
       const id = req.query.id;
       const Category1 = await Category.findById(id);
 
@@ -64,10 +78,13 @@ const addCategory = async (req,res)=>{
         await Category1.save(); 
         
       }
-  
-      const categories = await Category.find();
- 
-      res.render('viewCategory', { Category: categories });
+      const skip = (page - 1) * pageSize;
+      const categories = await Category.find().skip(skip)
+      .limit(pageSize);
+
+      const totalCategories = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCategories / pageSize);
+        res.redirect('/admin/view_category');
 
     } catch (error) {   
       console.log(error);   

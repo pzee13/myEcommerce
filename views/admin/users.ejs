@@ -67,11 +67,11 @@
                                             <!-- Add a data-id attribute with the user's _id -->
                                             <% if (users[i].isBlock == false) { %>
                                                 <a href="/admin/block_users?id=<%= users[i]._id %>">
-                                              <button type="button" class="btn btn-inverse-danger">unBlock</button>
+                                              <button type="button" class="btn btn-inverse-success">unBlock</button>
                                             </a>
                                             <% } else { %>
                                                 <a href="/admin/block_users?id=<%= users[i]._id %>">
-                                              <button type="button" class="btn btn-inverse-success">block</button>
+                                              <button type="button" class="btn btn-inverse-danger">block</button>
                                             </a>
                                             <% } %>
                                       </td>
@@ -87,6 +87,19 @@
                               </tbody>
                             </table>
                         </div>
+                        <div class="pagination" style="display: flex; justify-content: center;">
+                            <% if (page > 1) { %>
+                              <a href="/admin/view_users?page=<%= page - 1 %>" class="page-link">Previous</a>
+                            <% } %>
+                          
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                              <a href="/admin/view_users?page=<%= i %>" class="page-link"><%= i %></a>
+                            <% } %>
+                          
+                            <% if (page < totalPages) { %>
+                              <a href="/admin/view_users?page=<%=paage + 1 %>" class="page-link">Next</a>
+                            <% } %>
+                          </div>
                     </div>
                 </div>
             </div>

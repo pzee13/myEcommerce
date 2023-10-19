@@ -236,7 +236,19 @@
                 </div>
             </div><% }) %>
         </div>
+        <div class="pagination" style="display: flex; justify-content: center;">
+            <% if (currentPage > 1) { %>
+              <a href="/product?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/product?page=<%= i %>" class="page-link"><%= i %></a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+              <a href="/product?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+            <% } %>
+          </div>
     </div>
+    
 </section>
 
 <!-- Product Modal -->
@@ -300,12 +312,38 @@
 
         // Add an event listener for the "All Products" button
         document.querySelector('.filter-button[data-filter=".category-*"]').addEventListener("click", function() {
-            productItems.forEach(function(item) {
-                item.style.display = "block";
-            });
-        });
+    filterButtons.forEach(function(button) {
+        button.classList.remove('filter-link-active');
+    });
+    button.classList.add('filter-link-active');
+
+    productItems.forEach(function(item) {
+        item.style.display = "block";
+    });
+});
     });
 </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('input[name="search-product"]');
+    
+        // Add an event listener for when the user presses Enter in the input field
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                search();
+            }
+        });
+    
+        // Function to perform the search
+        function search() {
+            const keyword = searchInput.value;
+            if (keyword) {
+                // Redirect to the search_product route with the keyword
+                window.location.href = `/search_product?keyword=${keyword}`;
+            }
+        }
+    });
+    </script>
+    
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

@@ -8,17 +8,17 @@
         </div>
             <form action="/signup" method="post" onsubmit="return validRegister()" >
                 <div class="form-group mt-3">
-                <input type="text" class="form-control" name="fname" placeholder="Enter First Name" id="myname" required>
+                <input type="text" class="form-control" name="fname" placeholder="Enter First Name" id="myname" >
                 <br>
-                <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" id="mynamel" required>
+                <input type="text" class="form-control" name="lname" placeholder="Enter Last Name" id="mynamel" >
                 <br>
                 <input type="email" class="form-control" name="email" placeholder="Enter Email" id="email" required>
                 <br>
                 <input type="text" class="form-control" name="mobileno" placeholder="Enter MobileNo" id="mno" required>
                 <br>
-                <input type="password" class="form-control" name="password" placeholder="Enter Password" id="password" required>
+                <input type="password" class="form-control" name="password" placeholder="Enter Password" id="password" >
                 <br>
-                <input type="password" class="form-control" name="cpassword" placeholder="Confirm Password" id="cpassword" pattern="^[^\s]+(\s+[^\s]+)*$" title="Passwords must match" required>
+                <input type="password" class="form-control" name="cpassword" placeholder="Confirm Password" id="cpassword" pattern="^[^\s]+(\s+[^\s]+)*$" title="Passwords must match" >
                 <div id="password-mismatch" class="alert alert-danger mt-2" style="display: none;">
                     Passwords do not match. Please try again.
                   </div>
