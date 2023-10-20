@@ -46,7 +46,7 @@ const addCategory = async (req,res)=>{
   const loadviewCategory =  async (req, res) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
-        const pageSize = 8; // Set your desired page size
+        const pageSize = 5; // Set your desired page size
 
         const skip = (page - 1) * pageSize;
         const categories = await Category.find()
@@ -67,7 +67,7 @@ const addCategory = async (req,res)=>{
   const unlistCategory = async (req, res) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
-        const pageSize = 8; // Set your desired page size
+        const pageSize = 5; // Set your desired page size
 
 
       const id = req.query.id;
