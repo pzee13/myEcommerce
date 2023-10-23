@@ -1,5 +1,8 @@
 const express = require("express")
 const userController = require("../controllers/userController")
+// const cartController = require("../controllers/cartController")
+const cart2Controller = require("../controllers/cart2Controller")
+// const cart3Controller = require("../controllers/cart3Controller") 
 const session = require("express-session")
 
 const config = require("../config/config")
@@ -50,17 +53,36 @@ user_route.post('/forget',userController.forgotVerify)
 
 user_route.get('/forget-password',userController.forgetPasswordLoad)
 
-user_route.get('/forget-password',userController.resetPassword)
+user_route.post('/forget-password',userController.resetPassword)
 
 // user_route.get('/product',userController.userPoductload)
 
 user_route.get('/logout',auth.isLogin,userController.userLogout)
 
 
-user_route.get('/product',userController.viewProducts)
+user_route.get('/product',userController.viewProducts) 
 
 user_route.get('/search_product',userController.searchProducts)
 
 user_route.get('/productDetails', userController.getProductDetails)
+
+user_route.get('/cart',auth.isLogin,cart2Controller.loadCart)
+
+user_route.post('/cart',cart2Controller.addCart)
+
+// user_route.post('/update_cart',auth.isLogin,cartController.updateCart)
  
+// user_route.post('/update_cart',cart2Controller.updateCart)
+
+// user_route.post('/update_cart',cart2Controller.updateCart)
+
+user_route.patch('/update_quantity/:id/:quantity', cart2Controller.updateQuantity);
+
+user_route.patch('/update_cart', cart2Controller.updateCart);
+
+// user_route.get('/cart', auth.isLogin,cart3Controller.addToCart);
+
+// user_route.post('/cart',cart3Controller.addToCart);
+
+
 module.exports = user_route 

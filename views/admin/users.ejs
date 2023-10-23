@@ -67,11 +67,11 @@
                                             <!-- Add a data-id attribute with the user's _id -->
                                             <% if (users[i].isBlock == false) { %>
                                                 <a href="/admin/block_users?id=<%= users[i]._id %>">
-                                              <button type="button" class="btn btn-inverse-success">unBlock</button>
+                                              <button type="button" class="btn btn-inverse-danger">Block</button>
                                             </a>
                                             <% } else { %>
                                                 <a href="/admin/block_users?id=<%= users[i]._id %>">
-                                              <button type="button" class="btn btn-inverse-danger">block</button>
+                                              <button type="button" class="btn btn-inverse-success">unBlock</button>
                                             </a>
                                             <% } %>
                                       </td>

@@ -415,6 +415,17 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 		});
 	  </script>
 
+<script>
+    // Get the cart icon element
+    const cartIcon = document.querySelector('.js-show-cart');
+
+    // Add a click event listener to the cart icon
+    cartIcon.addEventListener('click', () => {
+        // Redirect to the /cart route
+        window.location.href = '/cart';
+    });
+</script>
+
 
 </body>
 </html>

@@ -70,19 +70,30 @@
                         <div class="size-204 flex-w flex-m respon6-next">
                             <div class="wrap-num-product flex-w m-r-20 m-tb-10">
                                 <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-                                    <i class="fs-16 zmdi zmdi-minus"></i>
+                                    <i id="decrease-<%= product._id %>" class="fs-16 zmdi zmdi-minus" data-product-id="<%= product._id %>"></i>
                                 </div>
-
-                                <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1">
-
+                            
+                                <input class="mtext-104 cl3 txt-center num-product"
+                                       type="number"
+                                       name="num-product"
+                                       value="1"
+                                       data-quantity="1"
+                                       data-max-quantity="<%= product.quantity %>" >
+                            
                                 <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-                                    <i class="fs-16 zmdi zmdi-plus"></i>
+                                    <i id="increase-<%= product._id %>" class="fs-16 zmdi zmdi-plus" data-product-id="<%= product._id %>"></i>
                                 </div>
                             </div>
+                            
                             <div class="d-flex">
-                                <button class="flex-c-m stext-101 mx-3 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
-                                    Add to cart
-                                </button>
+                                <button class="flex-c-m stext-101 mx-3 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 add-to-cart-button"
+                                data-product-id="<%= product._id %>">
+                                <% if (product.quantity <= 0) { %>
+                                   disabled
+                                <% } else { %>
+                                   Add to Cart
+                                <% } %>
+                             </button>
                                 <button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
                                     Add to wishlist
                                 </button>
@@ -143,6 +154,73 @@
         })
     })
 </script>
+
+
+
+
+<script>
+    // Function to add a product to the cart
+    const addToCart = async (productId) => {
+        try {
+            // You can include product quantity logic here, if needed
+            const productQuantity = 1;
+            const response = await axios.post('/cart', {
+                product_Id: productId,
+                quantity: productQuantity,
+            });
+
+            if (response.data.count) {
+                console.log('Added To Cart');
+                // You can add a success message or other actions here
+            } else if (response.data.limit) {
+                console.log('Limit Exceeded');
+                // Handle the case where the limit is exceeded
+            } else {
+                // Redirect to the login page or handle as needed
+                window.location = '/login';
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    // Add a click event listener to the "Add to Cart" button
+    document.querySelectorAll('.add-to-cart-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const productId = event.target.getAttribute('data-product-id');
+            addToCart(productId);
+        });
+    });
+</script>
+
+<script>
+    // Add event listeners for quantity increase and decrease
+    document.querySelectorAll('.btn-num-product-up, .btn-num-product-down').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const productId = event.target.getAttribute('data-product-id');
+            const quantityInput = document.querySelector(`input[data-quantity][data-product-id="${productId}"]`);
+            const maxQuantity = quantityInput.getAttribute('data-max-quantity');
+            let currentQuantity = parseInt(quantityInput.value);
+
+            if (event.target.id.startsWith('increase-')) {
+                // Increase quantity
+                if (currentQuantity < maxQuantity) {
+                    currentQuantity++;
+                }
+            } else if (event.target.id.startsWith('decrease-')) {
+                // Decrease quantity
+                if (currentQuantity > 1) {
+                    currentQuantity--;
+                }
+            }
+
+            quantityInput.value = currentQuantity;
+        });
+    });
+</script>
+
+
+
 <script src="/public/userAssets/js/zoom.js"></script>
 
 

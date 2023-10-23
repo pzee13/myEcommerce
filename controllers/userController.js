@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const randomstring = require('randomstring')
 const path = require("path")
 const otpGenerator = require("otp-generator")
+const Cart = require('../models/cartModel')
 
 
 const securePassword = async(password)=>{
@@ -253,7 +254,7 @@ const verifyLogin = async (req, res,next) => {
                     else {
 
 
-                        req.session.userid = userData._id
+                        req.session.user_id = userData._id
 
                         res.redirect('/')
                     }

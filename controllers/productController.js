@@ -9,7 +9,7 @@ const fs = require("fs")
 const loadaddProducts = async (req, res) => {
     try {
       // Fetch categories from the database
-      const categories = await Category.find();
+      const categories = await Category.find({is_listed:true});
   
       // Render the addProducts.ejs template with the Category variable
       res.render('addProduct', { Category: categories });
@@ -67,7 +67,7 @@ const viewProducts = async(req,res) =>{
 
   try {
     const page = req.query.page || 1; // Get the current page from query parameters
-    const pageSize = 10; // Set your desired page size
+    const pageSize = 5; // Set your desired page size
 
     const skip = (page - 1) * pageSize;
         
@@ -79,7 +79,7 @@ const viewProducts = async(req,res) =>{
      
         
  // Populate the category field
-    const categories = await Category.find(); // Assuming you want to retrieve all categories from the database
+    const categories = await Category.find({is_listed:true}); // Assuming you want to retrieve all categories from the database
     res.render('viewProduct', { data:products , category: categories ,
       currentPage: page,
       totalPages: totalPages });
@@ -96,7 +96,7 @@ const loadeditProducts = async (req, res) => {
 
     const dataproduct = await Product.findById(id);
   //   console.log(category);
-     const categories = await Category.find()
+     const categories = await Category.find({is_listed:true})
     if (dataproduct) {
       res.render('editProduct', { data: dataproduct ,Category:categories}); // Pass the category object to the template
     } else {
@@ -186,7 +186,7 @@ const editProduct = async (req, res) => {
 const unlistProduct = async (req, res) => {
   try {
     const page = req.query.page || 1; // Get the current page from query parameters
-    const pageSize = 10; // Set your desired page size
+    const pageSize = 5; // Set your desired page size
 
     const skip = (page - 1) * pageSize;
     
@@ -218,7 +218,7 @@ const searchProducts = async (req, res) => {
   try {
     const keyword = req.query.keyword; // Get the search keyword from the query string
     const page = req.query.page || 1; // Get the current page from query parameters
-    const pageSize = 10; // Set your desired page size
+    const pageSize = 5; // Set your desired page size
 
     // Perform a case-insensitive search on product names and descriptions
     const products = await Product.find({

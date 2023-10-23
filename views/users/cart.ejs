@@ -1,0 +1,165 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+<br><br><br>
+
+<section class="cart_area">
+    <div  class="container">
+        <div class="cart_inner">
+            <div class="table-responsive">
+
+                <table class="table">
+                    <thead>
+                        <% if (products && products.items.length> 0) {%>
+                            <tr>
+                                <th scope="col">Product</th>
+                               
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+
+                        <% products.items.forEach((items,i)=>{ %>
+                            <tr>
+                                <td>
+                                    <div class="media">
+                                        <div class="d-flex  flex-column">
+                                            <img width="100"
+                                                src="/public/adminAssets/assets/images/products/<% items.product_Id.images %>" alt="">
+                                            
+                                                  <span><%= items.product_Id.productName %></span>  
+                                                <span> <%= items.product_Id.price %></span>
+                                        </div>
+                                     
+                                    </div>
+                                </td>
+                               
+                                <td class="quantity__item">
+                                    <div  class="quantity">
+                                        <div class="pro-qty-2">
+                                           
+                                                <button class="qty-btn qty-btn-minus" type="button"
+                                                    onclick="increaseQuantity('<%= items.product_Id._id %>', -1)">-</button>
+                                               
+                                                    <input id="quantity<%=i%>"  type="text" value="<%= items.quantity %>" readonly>
+                                                 
+                                                        <button type="button" class="qty-btn qty-btn-plus"
+                                                            onclick="increaseQuantity('<%= items.product_Id._id %>', 1)">+</button>
+                                                        
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+                                    <h5 id="total<%=i%>">
+                                        <%= items.total %>
+                                    </h5>
+                                    </div>
+                                </td>
+                                <td><a class="btn btn-danger"
+                                        href="/CartRemove?id=<%=items.product_Id._id%>&price= <%= items.total %>">Remove</a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <tr class="bottom_button">
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                        <h5> Total Price</h5>
+                                    </td>
+                                    <td>
+                                        <div >
+                                            <h5 id="grandTotal">
+                                                <%= products.totalPrice %>
+                                            </h5>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="out_button_area">
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                        <div class="checkout_btn_inner d-flex  justify-content-end">
+                                            <a class="primary-btn " href="/Proceed">Proceed to checkout</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% } else { %>
+                                    <h1>Your Cart is Empty</h1>
+                                    <p>Add items to your cart to see them here.</p>
+                                    <% } %>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<script>
+
+
+
+
+    function  increaseQuantity(productId, count) {
+           $.ajax({
+               url: '/changes',
+               method: 'patch',
+               data: {
+                   productId,
+                   count: count
+               },
+               success: (response) => {
+                   if (response.success === true) {
+                      response.value.items.forEach((items,index) => {
+                       const quantity = document.getElementById(`quantity${index}`)
+                       const total= document.getElementById(`total${index}`)
+                       document.getElementById('grandTotal').innerHTML= response.value.grandTotal
+                       if(quantity){
+                        
+                           quantity.value= items.quantity
+                       }
+                       if(total){
+                           total.innerHTML=items.total
+                       }
+                      });
+                    
+                   } else {
+                       Swal.fire({
+                           title: "Error",
+                           icon: 'error',
+                           text: response.message,
+                           timer: 2000
+                       })
+                   }
+               },
+               error: (error) => {
+
+                   Swal.fire({
+                       title: "Error",
+                       icon: 'error',
+                       text: response.message,
+                       timer: 1500
+                   })
+               }
+           })
+       }
+   </script>
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>
+
+    
