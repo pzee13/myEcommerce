@@ -78,7 +78,7 @@
                                        name="num-product"
                                        value="1"
                                        data-quantity="1"
-                                       data-max-quantity="<%= product.quantity %>" >
+                                       data-max-quantity="<%= product.quantity %>" readonly >
                             
                                 <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                                     <i id="increase-<%= product._id %>" class="fs-16 zmdi zmdi-plus" data-product-id="<%= product._id %>"></i>
@@ -163,7 +163,7 @@
     const addToCart = async (productId) => {
         try {
             // You can include product quantity logic here, if needed
-            const productQuantity = 1;
+            const productQuantity = 1
             const response = await axios.post('/cart', {
                 product_Id: productId,
                 quantity: productQuantity,
@@ -187,6 +187,7 @@
     // Add a click event listener to the "Add to Cart" button
     document.querySelectorAll('.add-to-cart-button').forEach(button => {
         button.addEventListener('click', (event) => {
+            
             const productId = event.target.getAttribute('data-product-id');
             addToCart(productId);
         });

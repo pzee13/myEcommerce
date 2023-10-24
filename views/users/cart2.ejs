@@ -39,7 +39,7 @@
                                         </td>
                                         <td class="column-5 text-center">$<span class="product-total" data-productid="<%= item.product_Id._id %>"><%= item.total %></span></td>
                                         <td class="column-6 text-center">
-                                            <a class="btn btn-danger" href="/cart_remove?id=<%= item.product_Id._id %>&price=<%= item.total %>">Remove</a>
+                                            <button class="btn btn-danger remove-from-cart-button" data-product-id="<%= item.product_Id._id %>" data-price="<%= item.total %>">Remove</button>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -157,5 +157,38 @@
         });
     }
 </script>
+
+<script>
+
+document.querySelectorAll('.remove-from-cart-button').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent the default behavior (page navigation)
+
+        const productId = event.target.getAttribute('data-product-id');
+        const price = event.target.getAttribute('data-price');
+        const rowToRemove = event.target.closest('.table_row'); // Find the row to remove
+
+        try {
+            const response = await fetch(`/cart_remove?id=${productId}&price=${price}`, {
+                method: 'GET'
+            });
+
+            if (response.ok) {
+                // Item removed successfully, remove the row from the cart UI
+                rowToRemove.remove(); // Remove the row from the cart table
+                // You can also update the total price in the UI if needed
+            } else {
+                // Handle errors or display a message to the user
+                const data = await response.json();
+                console.log('Error: ' + data.message);
+            }
+        } catch (error) {
+            // Handle fetch errors
+            console.log('Error: ' + error.message);
+        }
+    });
+});
+</script>
+
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>
