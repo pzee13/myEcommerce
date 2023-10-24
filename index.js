@@ -16,7 +16,7 @@ app.use(
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: true,
-  })
+  }) 
 );
 
 app.use("/public", express.static(path.join(__dirname, "../public")));
@@ -30,7 +30,7 @@ const disableBackButton = (req, res, next) => {
 
 const userRoute = require("./routes/userRoute.js");
 app.use("/", disableBackButton, userRoute);
-
+ 
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", disableBackButton, adminRoute);
 
