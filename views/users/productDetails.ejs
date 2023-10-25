@@ -94,7 +94,7 @@
                                    Add to Cart
                                 <% } %>
                              </button>
-                                <button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                <button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 add-to-wishlist-button" data-product-id="<%= product._id %>">
                                     Add to wishlist
                                 </button>
                             </div>
@@ -170,10 +170,12 @@
             });
 
             if (response.data.count) {
-                console.log('Added To Cart');
+               
+                Swal.fire("Product added to Cart")
                 // You can add a success message or other actions here
             } else if (response.data.limit) {
-                console.log('Limit Exceeded');
+                
+                Swal.fire("Limit Exceeded")
                 // Handle the case where the limit is exceeded
             } else {
                 // Redirect to the login page or handle as needed
@@ -220,6 +222,49 @@
     });
 </script>
 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', (event) => {
+            if (event.target.matches('.add-to-wishlist-button')) {
+                const productId = event.target.getAttribute('data-product-id');
+                addToWishlist(productId);
+            }
+        });
+
+        function addToWishlist(productId) {
+            // Send a request to your server to add the product to the wishlist
+            fetch('/wish_list?id=' + productId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: productId }),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok: ' + response.statusText);
+            })
+            .then((data) => {
+                if (data.success) {
+                    // Product added to the wishlist successfully
+                    // You can update your UI or show a success message to the user here
+                    Swal.fire('Product added to your wishlist!');
+                } else {
+                    // Handle errors, e.g., show an error message to the user
+                    Swal.fire('Already added the product to your wishlist.');
+                }
+            })
+            .catch((error) => {
+                console.error('There was a problem with the fetch operation:', error);
+                // Show an error message to the user
+                Swal.fire('An error occurred while adding the product to your wishlist.');
+            });
+        }
+    });
+</script>
 
 
 <script src="/public/userAssets/js/zoom.js"></script>

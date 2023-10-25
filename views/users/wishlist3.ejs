@@ -1,0 +1,75 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+<div class="container" style="padding: 50px 0;">
+    <div class="row">
+        <% if (data.length > 0) { %>
+            <% data.forEach(wishlistItem => { %>
+                <% if (wishlistItem.products.length > 0) { %>
+                    <% wishlistItem.products.forEach(product => { %>
+                        <div class="col-md-4 mb-3">
+                            <div class="card product-image" style="width: 18rem;">
+                                <img src="/public/adminAssets/assets/images/products/<%= product.images[0] %>" class="card-img-top" alt="Product Image">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= product.productName %></h5>
+                                    <p class="card-text"><%= product.description %></p>
+                                    <p class="card-text">Price: $<%= product.price %></p>
+                                    <a href="/product-info?id=<%= product._id %>" class="btn btn-primary">View Product</a>
+                                    <button data-product-id="<%= product._id %>" class="btn btn-danger remove-from-wishlist">Remove from Wishlist</button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-12">
+                        <h1 class="text-center" style="font-family: Poppins-Medium; color: #3333;"><strong>Wishlist is empty</strong></h1>
+                    </div>
+                <% } %>
+            <% }) %>
+        <% } else { %>
+            <div class="col-12">
+                <h3 class="text-center" style="font-family: Poppins-Medium; color: #3333;"><strong>Your wishlist is empty</strong></h3>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.product-image img {
+    object-fit: contain; /* Makes the image cover the container while maintaining its aspect ratio */
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<script>
+// JavaScript for handling the "Remove from Wishlist" button
+document.querySelectorAll('.remove-from-wishlist').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent the default behavior (page navigation)
+
+        const productId = event.target.getAttribute('data-product-id');
+
+        try {
+            const response = await fetch(`/remove_wishlist?id=${productId}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                // Item removed successfully, you can update the UI as needed
+                event.target.closest('.card').remove();
+            } else {
+                // Handle errors or display a message to the user
+                console.log('Error: Something went wrong while removing from the wishlist.');
+            }
+        } catch (error) {
+            // Handle fetch errors
+            console.log('Error: ' + error.message);
+        }
+    });
+});
+</script>
+
+
+ 
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

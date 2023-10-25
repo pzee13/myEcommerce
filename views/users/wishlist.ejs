@@ -1,0 +1,84 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+<br>
+<br>
+<br>
+
+
+
+<section class="bg0 p-t-23 p-b-140">
+    <div class="container">
+        
+        <div class="row mb-5">
+            <div class="col-md-12 order-2">
+    
+              <div class="row">
+                <% if (data.length > 0) {
+                  for (let i = 0; i < data.length; i++) { %>
+                    <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up">
+                      <div class="block-4 text-center border" id="wishlist-item-<%= data[i]._id %>">
+                        <figure class="block-4-image product-image">
+                          <a href="/product-info?id=<%= data[i]._id %>">
+                            <img src="/public/adminAssets/assets/images/products/<%= data[i].product.images[0] %>" alt="Product Image" class="img-fluid">
+                          </a>
+                        </figure>
+                        <div class="block-4-text p-4">
+                          <h3><a href="#" style="color: gray;"><%= data[i].product.productName %></a></h3>
+                      
+                          <p class="text-black font-weight-semibold"><%= data[i].product.description %></p>
+                          <p class="text-black font-weight-semibold">₹<%= data[i].product.price %></p>
+                          <p><a href="/addToCart?id=<%= data._id %>" class="buy-now btn btn-sm" style="background-color: white; color: blue;">Add To Cart</a></p>
+                          
+                          <p>
+                            <a href="javascript:void(0);" onclick="removeFromWishlist('<%= data[i]._id %>')" class="remove-from-wishlist btn btn-sm" style="background-color: white; color: red;">Remove</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                <% }
+                } else { %>
+                  <div class="col-12">
+                    <h1 class="text-center" style="font-family: Poppins-Medium; color: #3333;"><strong>Wishlist is empty</strong></h1>
+                  </div>
+                <% } %>
+              </div>
+    
+            </div>
+          </div>
+    </div>
+</section>
+
+<style>
+  .product-image {
+    height: 200px; /* Adjust the desired height */
+    width: 100%; /* Ensures the image width scales with the container */
+    overflow: hidden; /* Clips the image to fit within the container */
+}
+
+.product-image img {
+    object-fit: contain; /* Makes the image cover the container while maintaining its aspect ratio */
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<script>
+  function removeFromWishlist(productId) {
+      fetch('/remove_wishlist?id=' + productId, {
+          method: 'GET', // Change this to 'POST'
+      })
+      .then(response => {
+          if (response.ok) {
+              const wishlistItem = document.getElementById(`wishlist-item-${productId}`);
+              wishlistItem.remove();
+          } else {
+              console.error('Failed to remove item from the wishlist');
+          }
+      })
+      .catch(error => {
+          console.error('Network error:', error);
+      });
+  }
+</script>
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

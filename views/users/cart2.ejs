@@ -89,7 +89,7 @@
                                 Total:
                             </span>
                         </div>
-                        <div class="size-209 p-t-1">
+                        <div class="size-209 p-t-1" id="cartPrice">
                             <span class="mtext-110 cl2"><%= products.totalPrice %></span>
                         </div>
                     </div>
@@ -125,12 +125,12 @@
                 const totalPriceElement = document.getElementById('totalPrice');
                 totalPriceElement.textContent = `${data.cart.totalPrice}`;
             } else {
-                alert(data.message);
+                Swal.fire(data.message);
             }
         })
         .catch(error => {
             console.error(error);
-            alert('An error occurred while updating the quantity.');
+            Swal.fire('An error occurred while updating the quantity.');
         })
         .finally(() => {
             quantityInput.disabled = false;
@@ -145,15 +145,15 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const totalPriceElement = document.getElementById('totalPrice');
-                totalPriceElement.textContent = `${data.cart.totalPrice}`;
+                const totalPriceElement = document.getElementById('cartPrice');
+                totalPriceElement.textContent = data.cart.totalPrice;
             } else {
-                alert(data.message);
+                Swal.fire(data.message);
             }
         })
         .catch(error => {
             console.error(error);
-            alert('An error occurred while updating the cart.');
+            Swal.fire('An error occurred while updating the cart.');
         });
     }
 </script>
@@ -175,7 +175,8 @@ document.querySelectorAll('.remove-from-cart-button').forEach(button => {
 
             if (response.ok) {
                 // Item removed successfully, remove the row from the cart UI
-                rowToRemove.remove(); // Remove the row from the cart table
+                rowToRemove.remove();
+                Swal.fire("Item removed from cart") // Remove the row from the cart table
                 // You can also update the total price in the UI if needed
             } else {
                 // Handle errors or display a message to the user

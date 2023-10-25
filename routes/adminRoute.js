@@ -89,4 +89,8 @@ admin_route.get('/unlist_product',auth.isLogin,productController.unlistProduct)
 
 admin_route.get('/search_product',auth.isLogin,productController.searchProducts)
 
+admin_route.get('*',(req,res)=>{
+  res.render('404')
+})
+
 module.exports = admin_route;   

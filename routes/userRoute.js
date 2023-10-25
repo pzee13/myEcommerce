@@ -3,6 +3,7 @@ const userController = require("../controllers/userController")
 const cartController = require("../controllers/cartController")
 // const cart2Controller = require("../controllers/cart2Controller")
 // // const cart3Controller = require("../controllers/cart3Controller") 
+const wishlistController = require("../controllers/wishlistController")
 const session = require("express-session")
 
 const config = require("../config/config")
@@ -75,6 +76,14 @@ user_route.patch('/update_quantity/:id/:quantity',cartController.updateQuantity)
 user_route.patch('/update_cart',cartController.updateCart);
 
 user_route.get('/cart_remove',auth.isLogin,cartController.cartRemove)
+
+user_route.get('/wish_list',auth.isLogin,wishlistController.loadWishlist)
+
+user_route.post('/wish_list',auth.isLogin,wishlistController.addToWishlist)
+
+user_route.get('/remove_wishlist',wishlistController.removeFromWishlist)
+
+// user_route.get('/updated_wishlist_data',wishlistController.updatelist)
 
 // user_route.get('/cart', auth.isLogin, cart2Controller.loadCart);
 // user_route.post('/cart',cart2Controller.addCart);
