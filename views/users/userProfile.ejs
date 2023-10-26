@@ -1,1 +1,313 @@
 <%- include('../userMainlayouts/mainheader.ejs') %>
+
+<main class="main p-t-75">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title" style="font-family: Poppins-Medium; color: #00000033;">My Account<span>Shop</span></h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Account</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Add Address</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Address</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Sign Out</a>
+                            </li>
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
+
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>) 
+                                <br>
+                                From your account dashboard you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                            </div><!-- .End .tab-pane -->
+
+                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                <form action="#">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>First Name *</label>
+                                            <input type="text" class="form-control" value="<%= user.firstName %>" required>
+                                        </div><!-- End .col-sm-6 -->
+                            
+                                        <div class="col-sm-6">
+                                            <label>Last Name *</label>
+                                            <input type="text" class="form-control" value="<%= user.lastName %>" required>
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
+                            
+                                    <label>Email address *</label>
+                                    <input type="email" class="form-control" value="<%= user.email %>" required>
+
+                                    <label>Mobile No *</label>
+                                    <input type="text" class="form-control" value="<%= user.mobile %>" required>
+                            
+                                    <label>Current password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control">
+                            
+                                    <label>New password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control">
+                            
+                                    <label>Confirm new password</label>
+                                    <input type="password" class="form-control mb-2">
+                            
+                                    <button type="submit" class="btn btn-outline-primary-2">
+                                        <span>SAVE CHANGES</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div><!-- .End .tab-pane -->
+                            
+                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                <p>No order has been made yet.</p>
+
+                                <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                            </div><!-- .End .tab-pane -->
+
+                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+                                <h3 class="card-title">Add Address</h3><!-- End .card-title -->
+                                <form action="/add_address" method="post">
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="fname">First Name</label>
+                                            <input type="text" class="form-control" id="fname" name="fname" required>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="lname">Last Name</label>
+                                            <input type="text" class="form-control" id="lname" name="lname" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="mobile">Mobile</label>
+                                            <input type="text" class="form-control" id="mobile" name="mobile" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="mobile">Email</label>
+                                            <input type="text" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="housename">House Name</label>
+                                            <input type="text" class="form-control" id="housename" name="housename" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="city">City</label>
+                                            <input type="text" class="form-control" id="city" name="city" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="pin">Pin</label>
+                                            <input type="text" class="form-control" id="pin" name="pin" required>
+                                        </div>  
+                                        <div class="form-group col-12">
+                                            <label for="district">District</label>
+                                            <input type="text" class="form-control" id="district" name="district" required>
+                                        </div>
+                                        <div class="form-group col-12">
+                                            <label for="state">State</label>
+                                            <input type="text" class="form-control" id="state" name ="state" required>
+                                        </div>
+                                        <!-- Add input fields for other address details here -->
+                                        <div class="form-group col-12">
+                                            <button type="submit" class="btn btn-outline-primary-2">
+                                                <span>Add Address</span>
+                                                <i class="icon-long-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+
+                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                <p>The following addresses will be used on the checkout page by default.</p>
+                                
+                                    <div class="row">
+                                        <% if (address) {%>
+                                            <% address.address.forEach((data)=> { %>
+                                        <div class="col-lg-6">
+                                            <div class="card card-dashboard">
+                                                <div class="card-body">
+                                                    <h3 class="card-title">Billing Address</h3>
+
+                                                    <p><%= data.fname %> <%= data.lname %><br>
+                                                    <%= data.housename %><br>
+                                                    <%= data.email %><br>
+                                                    <%= data.pin %><br>
+                                                    <%= data.city %>, <%= data.district %>, <%= data.state %><br>
+                                                    Phone: <%= data.mobile %><br>
+                                                    Email: <%= data.email %><br>
+                                                    <a href="#" class="edit-address-link"
+                                                            data-address-id="<%= data._id %>"
+                                                            data-first-name="<%= data.fname %>"
+                                                            data-last-name="<%= data.lname %>"
+                                                            data-email="<%= data.email %>"
+                                                            data-mobile="<%= data.mobile %>"
+                                                            data-housename="<%= data.housename %>"
+                                                            data-pin="<%= data.pin %>"
+                                                            data-city="<%= data.city %>"
+                                                            data-district="<%= data.district %>"
+                                                            data-state="<%= data.state %>">
+                                                            Edit <i class="icon-edit"></i>
+                                                        </a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% })%>
+                                    <%}else{%>
+                                <%} %>
+                            </div>
+                            </div><!-- .End .tab-pane -->
+                            
+                           
+                        </div>
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+<div class="modal fade" id="editAddressModal" tabindex="0" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/edit_address" method="post">
+                    <!-- Add the input fields for editing the address as described earlier -->
+                    <!-- Make sure to include an input field for capturing the address ID -->
+                    <div class="form-group">
+                        <label for="editFirstName">First Name</label>
+                        <input type="text" class="form-control" id="editFirstName" name="fname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name</label>
+                        <input type="text" class="form-control" id="editLastName" name="lname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMobile">Mobile</label>
+                        <input type="text" class="form-control" id="editMobile" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editHousename">House Name</label>
+                        <input type="text" class="form-control" id="editHousename" name="housename" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCity">City</label>
+                        <input type="text" class="form-control" id="editCity" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editState">State</label>
+                        <input type="text" class="form-control" id="editState" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDistrict">District</label>
+                        <input type="text" class="form-control" id="editDistrict" name="district" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPin">Pin</label>
+                        <input type="text" class="form-control" id="editPin" name="pin" required>
+                    </div>
+
+                    <!-- Include an input field to capture the address ID (hidden input) -->
+                    <input type="hidden" id="editAddressId" name="editAddressId">
+
+                    <button type="submit" class="btn btn-outline-primary-2">
+                        <span>Save Changes</span>
+                        
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Customize the height of the modal content */
+    .modal-content {
+        margin-top: 100px;
+        max-height: 80vh; /* Adjust the value as needed */
+        overflow-y: auto;
+        text-align: center;
+    }
+</style>
+
+<script>
+    // Add an event listener for the "Edit" links
+    document.addEventListener('DOMContentLoaded', function() {
+        const editLinks = document.querySelectorAll('.edit-address-link');
+        const editAddressModal = document.getElementById('editAddressModal');
+
+        editLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                // Extract data attributes from the clicked link
+                const addressId = link.getAttribute('data-address-id');
+                const firstName = link.getAttribute('data-first-name');
+                const lastName = link.getAttribute('data-last-name');
+                const email = link.getAttribute('data-email');
+                const mobile = link.getAttribute('data-mobile');
+                const housename = link.getAttribute('data-housename');
+                const pin = link.getAttribute('data-pin');
+                const city = link.getAttribute('data-city');
+                const district = link.getAttribute('data-district');
+                const state = link.getAttribute('data-state');
+
+                // Populate the "Edit Address" modal fields with existing data
+                document.getElementById('editFirstName').value = firstName;
+                document.getElementById('editLastName').value = lastName;
+                document.getElementById('editEmail').value = email;
+                document.getElementById('editMobile').value = mobile;
+                document.getElementById('editHousename').value = housename;
+                document.getElementById('editCity').value = city;
+                document.getElementById('editState').value = state;
+                document.getElementById('editDistrict').value = district;
+                document.getElementById('editPin').value = pin;
+                document.getElementById('editAddressId').value = addressId;
+
+                // Show the "Edit Address" modal
+                $(editAddressModal).modal('show');
+            });
+        });
+    });
+</script>
+
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

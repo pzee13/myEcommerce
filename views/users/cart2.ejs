@@ -25,7 +25,7 @@
                                             </div>
                                         </td>
                                         <td class="column-2 text-center"><%= item.product_Id.productName %></td>
-                                        <td class="column-3 text-center"><span class="product-price"><%= item.product_Id.price %></span></td>
+                                        <td class="column-3 text-center" style="justify-content: center; align-items: center;"><span class="product-price"><%= item.product_Id.price %></span></td>
                                         <td class="column-4">
                                             <div class="wrap-num-product flex-w m-l-auto m-r-0">
                                                 <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
@@ -93,8 +93,8 @@
                             <span class="mtext-110 cl2"><%= products.totalPrice %></span>
                         </div>
                     </div>
-                    <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-                        Proceed to Checkout
+                    <button  class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"><a href="/checkout">
+                        Proceed to Checkout</a>
                     </button>
                 </div>
             </div>
@@ -190,6 +190,9 @@ document.querySelectorAll('.remove-from-cart-button').forEach(button => {
     });
 });
 </script>
+
+
+
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>
