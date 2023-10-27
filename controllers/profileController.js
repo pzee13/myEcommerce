@@ -33,6 +33,115 @@ const loadProfile = async (req, res) => {
     }
 } 
 
+
+// const updateProfile = async (req, res, next) => {
+//     try {
+//         const firstname = req.body.fname;
+//         const lastname = req.body.lname;
+//         const email = req.body.email;
+//         const mobile = req.body.mobile;
+//         const password = req.body.password; // Assuming you want to change the password
+        
+//         // Ensure you hash the new password if provided (you should validate it first)
+//         if (password) {
+//             const hashedPassword = await bcrypt.hash(password, 10);
+//             await User.findByIdAndUpdate(req.session.user_id, {
+//                 firstName: firstname,
+//                 lastName: lastname,
+//                 email: email,
+//                 mobile: mobile,
+//                 password: hashedPassword, // Update password if provided
+//             });
+//         } else {
+//             await User.findByIdAndUpdate(req.session.user_id, {
+//                 firstName: firstname,
+//                 lastName: lastname,
+//                 email: email,
+//                 mobile: mobile,
+//             });
+//         }
+        
+//         res.redirect('/profile');
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
+// const updateProfile = async (req, res, next) => {
+//     try {
+//         const firstname = req.body.fname;
+//         const lastname = req.body.lname;
+//         const email = req.body.email;
+//         const mobile = req.body.mobile;
+//         const password = req.body.password; // New password if provided
+
+//         // Find the user by their session ID
+//         const user = await User.findById(req.session.user_id);
+
+//         if (!user) {
+//             return res.status(404).send('User not found');
+//         }
+
+//         // Update only the fields that are provided in the request
+//         user.firstName = firstname;
+//         user.lastName = lastname;
+//         user.email = email;
+//         user.mobile = mobile;
+
+//         // Update the password if a new one is provided
+//         if (password) {
+//             const hashedPassword = await bcrypt.hash(password, 10);
+//             user.password = hashedPassword;
+//         }
+
+//         // Save the updated user
+//         await user.save();
+
+//         res.redirect('/profile');
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
+const updateProfile = async (req, res, next) => {
+    try {
+        const userId = req.session.user_id;
+        const firstname = req.body.fname;
+        const lastname = req.body.lname;
+        const email = req.body.email;
+        const mobile = req.body.mobile;
+        const newPassword = req.body.newPassword;
+        const confirmPassword = req.body.confirmPassword;
+
+        const userData = await User.findById(userId);
+
+        if (!userData) {
+            return res.status(404).send('User not found');
+        }
+
+        // Check if a new password is provided and it matches the confirm password
+        if (newPassword && newPassword === confirmPassword) {
+            // Hash and update the new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            userData.password = hashedPassword;
+        }
+
+        // Update other user profile fields
+        userData.firstName = firstname;
+        userData.lastName = lastname;
+        userData.email = email;
+        userData.mobile = mobile;
+
+        await userData.save();
+
+        res.redirect('/profile');
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+
 const addAddress = async (req,res,next) => {
     try {
 
@@ -128,10 +237,81 @@ const EditAddress = async (req, res, next) => {
     }
 };
 
+// const deleteAddress = async(req,res)=>{
+//     try{
+//         const addressId = req.params.addressId;
+
+//         // Check if the address exists
+//         const address = await Address.findById(addressId);
+
+//         if (!address) {
+//             return res.status(404).json({ message: 'Address not found' });
+//         }
+
+//         // Delete the address
+//         await Address.findByIdAndDelete(addressId);
+
+//         res.status(200).json({ message: 'Address deleted successfully' });
+//     }
+//     catch(error)
+//     {
+//         console.log(error.message)
+//     }
+// }
+
+// const deleteAddress = async (req, res) => {
+//     try {
+//         const addressId = req.params.addressId;
+//         console.log(addressId)
+//         // Check if the address exists
+//         const address = await Address.findById(addressId);
+//         console.log(address);
+
+//         if (!address) {
+//             return res.status(404).json({ message: 'Address not found' });
+//         }
+//         else{
+//         // Delete the address
+//         await Address.findByIdAndDelete(addressId);
+
+//         res.status(200).json({ message: 'Address deleted successfully' });
+//         }
+//     } catch (error) {
+//         console.error('An error occurred while deleting the address', error);
+//         res.status(500).json({ message: 'Error deleting the address' });
+//     }
+// };
+
+const deleteAddress = async (req, res) => {
+    try {
+        const addressId = req.params.addressId;
+        console.log(addressId);
+        
+        const userId = req.session.user_id;
+
+        const result = await Address.updateOne(
+            { user_id: userId },
+            { $pull: { address: { _id: addressId } } }
+        );
+            console.log(result)
+        if (result.ok === 1) {
+            return res.status(200).json({ message: 'Address deleted successfully' });
+        } else {
+            return res.status(404).json({ message: 'Address not found' });
+        }
+    } catch (error) {
+        console.error('An error occurred while deleting the address', error);
+        res.status(500).json({ message: 'Error deleting the address' });
+    }
+};
+
+
 
 module.exports = {
     loadProfile,
+    updateProfile,
     addAddress,
     // loadEditAddress,
-    EditAddress
+    EditAddress,
+    deleteAddress
 }

@@ -25,12 +25,15 @@
                 <div class="row">
                     <div class="col-lg-9 cart-item-box">
                         <h5 class="text-dark mb-3">1. &nbsp; Select a delivery address</h5>
+                        <div id="selected-address-container">
+                            <!-- Selected address content will be displayed here -->
+                        </div>
                         <%if(address.address !=0){%>
-                            <form action="/checkout" method="post" id="addressForm">
+                            <form action="/checkout3" method="post" id="addressForm">
                                 <% for(i=address.address.length-1; i>=0; i--) { %>
                                 <label class="p-3 border rounded-4 m-2 custom-label">
                                     <div class="form-check d-flex align-items-center mx-4">
-                                        <input class="form-check-input " type="radio" value="<%= address.address[i].id %>"
+                                        <input class="form-check-input " type="radio" value="<%= address.address[i]._id %>"
                                             name="address" id="Radio<%=address.address[i]._id %>"  <% if(i==address.address.length-1) { %> checked <% } %> 
                                             >
                                             <div class="mx-5">
@@ -54,41 +57,35 @@
                                 </label>
                                 <% } %>
                                 
-                                
+                                <input type="submit" id="submitAddressBtn" style="display: none;">
                             </form>
 
                         <%}else{%>
                             <div class=" text-center w-100 card">
                                 <h6 class="mt-2 ">You have no shipping Address</h6>
                                 <p class="">Kindly add a shipping address to proceed.</p>
-                                <button type="button"
-                                    class="btn btn-outline-primary-2 mx-auto  mt-1 "
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                    style="border-radius: 0px; font-size: 13px; width: 30rem;"> +
-                                    Add a new
-                                    address</button>
+                                <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                    + Add a new address
+                                </button>
                             </div>
 
                        <% }%>
                        <% if(address.address!=0) { %>
 
                                         
-                                        <button id="addressSubmitBtn" class="btn btn-outline-primary-2  btn-block py-3"
-                                        style="background-color: #000; color: #fff; "
-                                        onMouseOver="this.style.background='#575757'"
-                                        onMouseOut="this.style.background='#000'">Use This
-                                        Address</button>
+                        <button id="useAddressButton" class="btn btn-outline-primary-2 btn-block py-3"
+    style="background-color: #000; color: #fff;" onMouseOver="this.style.background='#575757'"
+    onMouseOut="this.style.background='#000'">Use This Address
+</button>
 
-                                        <button type="button" class="btn btn-outline-primary-2 mt-3"
-                                        data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                        style="border-radius: 0px; font-size: 13px;"> + Add a new
-                                        address</button>
+                                        <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                            + Add a new address
+                                        </button>
                         <% }else { %>
                             
-                            <button type="button" class="btn btn-outline-primary-2 mt-3"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal"
-                            style="border-radius: 0px; font-size: 13px;"> + Add a new
-                            address</button>
+                            <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                + Add a new address
+                            </button>
                                 <%}%>
                                             <hr>
 
@@ -159,70 +156,81 @@
 
 
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <!-- Modal: This div represents the modal itself. It has a unique ID and uses Bootstrap's modal classes. -->
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-4">
+        <!-- Modal Dialog: This div defines the dialog box within the modal. It's centered using Bootstrap's utility classes. -->
+        <div class="modal-content">
+            <!-- Modal Content: This div contains the content of the modal. It will include the modal's header, body, and footer. -->
+
             <div class="modal-header">
-                <h5 class="" id="exampleModalLabel">Add New Address</h5>
-                <button type="button" class=" btn-dark " data-bs-dismiss="modal" aria-label="Close">x</button>
+                <!-- Modal Header: This is the header section of the modal. It typically contains a title and a close button. -->
+                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                <!-- Title for the modal. -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <!-- Close button that dismisses the modal. -->
             </div>
-            <form action="/shippingaddress" method="post">
-                <div class="modal-body p-4">
-                    <div class="mb-1">
-                        <label for="exampleFormControlInput1" class="form-label m-0">Country/Region
-                        </label>
-                        <input type="text" class="form-control address-input" id="exampleFormControlInput1"
-                            name="country" required>
-                    </div>
-                    <div class="mb-1">
-                        <label for="exampleFormControlInput1" class="form-label m-0">Full name (First and Last
-                            name)
-                        </label>
-                        <input type="text" class="form-control address-input" id="exampleFormControlInput1"
-                            name="fullName" required>
-                    </div>
-                    <div class="mb-1">
-                        <label for="exampleFormControlInput1" class="form-label m-0">Mobile number
-                        </label>
-                        <input type="number" class="form-control address-input" id="exampleFormControlInput1"
-                            name="mobileNumber" required>
-                    </div>
-                    <div class="mb-1">
-                        <label for="exampleFormControlInput1" class="form-label m-0">Area, Street, Sector,
-                            Village
-                        </label>
-                        <input type="text" class="form-control address-input" id="exampleFormControlInput1"
-                            name="city" required>
-                    </div>
 
-                    <div class=" row ">
-                        <div class=" col-6">
-                            <label for="exampleFormControlInput1" class="form-label m-0">State
-                            </label>
-                            <input type="text" class="form-control address-input" id="exampleFormControlInput1"
-                                name="state" required>
+            <div class="modal-body">
+                <!-- Modal Body: This is the main content area of the modal. It contains the form for adding a new address. -->
+                <form action="/add_address" method="post">
+                    <!-- Address input fields go here. You can add more fields as needed. -->
+            
+                    <form action="/add_address" method="post" id="newAddressForm">
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label for="fname">First Name</label>
+                                <input type="text" class="form-control" id="fname" name="fname" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="lname">Last Name</label>
+                                <input type="text" class="form-control" id="lname" name="lname" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" class="form-control" id="mobile" name="mobile" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="mobile">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="housename">House Name</label>
+                                <input type="text" class="form-control" id="housename" name="housename" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="pin">Pin</label>
+                                <input type="text" class="form-control" id="pin" name="pin" required>
+                            </div>  
+                            <div class="form-group col-12">
+                                <label for="district">District</label>
+                                <input type="text" class="form-control" id="district" name="district" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name ="state" required>
+                            </div>
+                            <!-- Add input fields for other address details here -->
+                            <div class="form-group col-12">
+                                <button type="submit" class="btn btn-outline-primary-2">
+                                    <span>Add Address</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class=" col-6">
-                            <label for="exampleFormControlInput1" class="form-label m-0">Pincode
-                            </label>
-                            <input type="number" class="form-control address-input"
-                                id="exampleFormControlInput1" name="pincode" required>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <a class="btn btn-outline-primary-2" style="border-radius: 7px;"
-                        data-bs-dismiss="modal">Close</a>
-                    <button type="submit" class="btn btn-outline-primary-2"
-                        style="border-radius: 7px; background: #000; color: #fff;">Add
-                        now</button>
-                </div>
-            </form>
+                    </form>
+            </div>
+            
         </div>
     </div>
 </div>
-<!-- model end -->
+
 
 
 
@@ -236,11 +244,20 @@
         $(this).addClass("checked");
     });
 
-    // form submit handil
-    document.getElementById("addressSubmitBtn").addEventListener("click",function(){
-        document.getElementById("addressForm").submit();
-    })
+   
 </script>
+
+
+<script>
+    // Add a click event listener to the "Use This Address" button
+    document.getElementById("useAddressButton").addEventListener("click", function () {
+        // Submit the form with id "addressForm"
+        document.getElementById("addressForm").submit();
+    });
+
+</script>
+
+
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

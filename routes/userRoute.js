@@ -87,13 +87,25 @@ user_route.get('/remove_wishlist',wishlistController.removeFromWishlist)
 
 user_route.get('/profile',auth.isLogin,profileController.loadProfile)
 
+user_route.post('/update_profile',auth.isLogin,profileController.updateProfile)
+
 user_route.post('/add_address',profileController.addAddress)
 
 // user_route.get('/edit_address',profileController.loadEditAddress)
 
 user_route.post('/edit_address',profileController.EditAddress)
 
-user_route.get('/checkout',checkoutController.loadCheckout)
+user_route.get('/delete_address/:addressId',auth.isLogin,profileController.deleteAddress)
+
+user_route.get('/checkout',auth.isLogin,checkoutController.loadCheckout)
+
+// user_route.post('/select_address',auth.isLogin,checkoutController.useThisAddress)
+
+user_route.post('/checkout3',auth.isLogin,checkoutController.useThisAddress)
+
+user_route.post('/checkout3/select_payment',auth.isLogin,checkoutController.selectPayment)
+
+// user_route.post('/add_addressc',checkoutController.addAddressForCheckout)
 
 // user_route.get('/updated_wishlist_data',wishlistController.updatelist)
 

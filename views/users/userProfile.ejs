@@ -55,34 +55,33 @@
                             </div><!-- .End .tab-pane -->
 
                             <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                <form action="#">
+                                <form action="/update_profile" method="post">
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <label>First Name *</label>
-                                            <input type="text" class="form-control" value="<%= user.firstName %>" required>
-                                        </div><!-- End .col-sm-6 -->
-                            
+                                            <label for="fname">First Name *</label>
+                                            <input type="text" class="form-control" id="fname" name="fname" value="<%= user.firstName %>" required>
+                                        </div>
                                         <div class="col-sm-6">
-                                            <label>Last Name *</label>
-                                            <input type="text" class="form-control" value="<%= user.lastName %>" required>
-                                        </div><!-- End .col-sm-6 -->
-                                    </div><!-- End .row -->
-                            
-                                    <label>Email address *</label>
-                                    <input type="email" class="form-control" value="<%= user.email %>" required>
-
-                                    <label>Mobile No *</label>
-                                    <input type="text" class="form-control" value="<%= user.mobile %>" required>
-                            
-                                    <label>Current password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control">
-                            
-                                    <label>New password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control">
-                            
-                                    <label>Confirm new password</label>
-                                    <input type="password" class="form-control mb-2">
-                            
+                                            <label for="lname">Last Name *</label>
+                                            <input type="text" class="form-control" id="lname" name="lname" value="<%= user.lastName %>" required>
+                                        </div>
+                                    </div>
+                                
+                                    <label for="email">Email address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                                
+                                    <label for="mobile">Mobile No *</label>
+                                    <input type="text" class="form-control" id="mobile" name="mobile" value="<%= user.mobile %>" required>
+                                
+                                    <label for="password">Current password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control" id="password" name="password">
+                                
+                                    <label for="newPassword">New password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword">
+                                
+                                    <label for="confirmPassword">Confirm new password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" >
+                                
                                     <button type="submit" class="btn btn-outline-primary-2">
                                         <span>SAVE CHANGES</span>
                                         <i class="icon-long-arrow-right"></i>
@@ -151,12 +150,12 @@
                             <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
                                 <p>The following addresses will be used on the checkout page by default.</p>
                                 
-                                    <div class="row">
+                                    <div class="row" id="addressList">
                                         <% if (address) {%>
                                             <% address.address.forEach((data)=> { %>
                                         <div class="col-lg-6">
                                             <div class="card card-dashboard">
-                                                <div class="card-body">
+                                                <div class="card-body" id="address<%= data._id %>">
                                                     <h3 class="card-title">Billing Address</h3>
 
                                                     <p><%= data.fname %> <%= data.lname %><br>
@@ -179,6 +178,12 @@
                                                             data-state="<%= data.state %>">
                                                             Edit <i class="icon-edit"></i>
                                                         </a></p>
+                                                        <button
+                                                            class="btn btn-danger delete-address"
+                                                            data-address-id="<%= data._id %>"
+                                                        >
+                                                            Delete Address
+                                                        </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -308,6 +313,63 @@
         });
     });
 </script>
+
+<script>
+    // Add an event listener to the form to handle the validation
+    const form = document.querySelector('form');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    form.addEventListener('submit', function (event) {
+        if (newPasswordInput.value !== '') {
+            if (confirmPasswordInput.value === '') {
+                alert('Please confirm the new password.');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
+    });
+</script>
+
+<!-- Inside your HTML file -->
+<script>
+    // Add an event listener to handle deleting addresses
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-address');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                event.preventDefault();
+                const addressId = event.target.getAttribute('data-address-id');
+                const addressDiv = document.getElementById(`address${addressId}`);
+
+                // Send an AJAX request to the server to delete the address
+                fetch(`/delete_address/${addressId}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Address deleted successfully, hide the addressDiv
+                        if (addressDiv) {
+                            addressDiv.style.display = 'none'; // Hide the div
+                            // Close the modal
+                            $('#editAddressModal').modal('hide');
+                           
+                        } else {
+                            console.error('Address card not found in the DOM');
+                        }
+                    } else {
+                        console.error('Failed to delete the address');
+                    }
+                })
+                .catch(error => {
+                    console.error('An error occurred while deleting the address', error);
+                });
+            });
+        });
+    });
+</script>
+
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>
