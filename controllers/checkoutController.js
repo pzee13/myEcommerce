@@ -21,7 +21,7 @@ const loadCheckout = async (req, res,next) => {
         const address = await Address.findOne({ user_id:id })
 
 
-        res.render('checkout', { products, address,UserData })
+        res.render('checkout1', { products, address,UserData })
 
     } catch (err) {
        next(err)
