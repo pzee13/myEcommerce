@@ -1,0 +1,274 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+<main class="main" style="font-family: Poppins-medium;">
+    <div class="page-header text-center" style="background-image: url('/user/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title text-dark">Checkout</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item " aria-current="page">Shopping Cart</li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Left side (Shipping Address and Order Notes) -->
+                <div class="checkout">
+                    <div class="checkout-discount">
+                        <form action="#">
+                            <input type="text" class="form-control" required id="checkout-discount-input">
+                            <label for="checkout-discount-input" class="text-truncate">
+                                Have a coupon? <span>Click here to enter your code</span>
+                            </label>
+                        </form>
+                    </div><!-- End .checkout-discount -->
+
+                    <% if (address.address.length !== 0) { %>
+                    <form action="/checkout_address" method="post" id="addressForm" class="col-sm-9">
+                        <% for (let i = address.address.length - 1; i >= 0; i--) { %>
+                        <label class="p-3 border rounded-4 m-2 custom-label">
+                            <div class="form-check d-flex align-items-center mx-4">
+                                <input class="form-check-input" type="radio" value="<%= address.address[i]._id %>"
+                                    name="address" id="Radio<%= address.address[i]._id %>" <% if (i === address.address.length - 1) { %> checked <% } %>
+                                >
+                                <div class="mx-5">
+                                    <p class="text-dark">
+                                        <b><%= address.address[i].fname %></b>,
+                                        <%= address.address[i].state %>, <%= address.address[i].city %>,
+                                        Contact Number:
+                                        <b style="color: #043a6c;">
+                                            <span class="material-symbols-outlined" style="font-size: 13px;"></span><%= address.address[i].mobile %>
+                                        </b>
+                                    </p>
+                                    Email:
+                                    <b style="color: #043a6c;">
+                                        <span class="material-symbols-outlined" style="font-size: 13px;"></span><%= address.address[i].email %>
+                                    </b>
+                                    <p>Pincode: <%= address.address[i].pin %></p>
+                                </div>
+                            </div>
+                        </label>
+                        <% } %>
+                  
+                        <%}else{%>
+                            <div class=" text-center w-100 card">
+                                <h6 class="mt-2 ">You have no shipping Address</h6>
+                                <p class="">Kindly add a shipping address to proceed.</p>
+                                <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                    + Add a new address
+                                </button>
+                            </div>
+
+                       <% }%>
+                       <% if(address.address!=0) { %>
+                                            <div>
+                                        <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                            + Add a new address
+                                        </button>
+                                    </div>
+                        <% }else { %>
+                            
+                            <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                + Add a new address
+                            </button>
+                                <%}%>
+                    <hr>
+                    <!-- Add new address button -->
+                    <label>Order notes (optional)</label>
+                    <textarea class="form-control" cols="20" rows="3" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Right side (Order Summary and Payment Options) -->
+                <aside class="col-sm-12">
+                    <div class="summary">
+                       
+                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                        <table class="table table-summary">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (products && products.items.length > 0) { %>
+                                    <% products.items.forEach((item, index) => { %>
+                                <tr>
+                                    <td><a href="#"><%=item.product_Id.productName %></a></td>
+                                    <td><%= item.total %></td>
+                                </tr>
+                                <% }); %>
+                        <% } else { %>
+                            <% } %>
+                                <tr class="summary-subtotal">
+                                    <td>Subtotal:</td>
+                                    <td><%=products.totalPrice%></td>
+                                </tr><!-- End .summary-subtotal -->
+                                <tr>
+                                    <td>Shipping:</td>
+                                    <td>Free shipping</td>
+                                </tr>
+                                <tr class="summary-total">
+                                    <td>Total:</td>
+                                    <td>$160.00</td>
+                                </tr><!-- End .summary-total -->
+                            </tbody>
+                        </table><!-- End .table table-summary -->
+                       
+                        <div class="accordion-summary" id="accordion-payment">
+                            <!-- Payment options here -->
+                        </div><!-- End .accordion-summary -->
+                        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                            <span class="btn-text">Place Order</span>
+                            <span class="btn-hover-text">Proceed to Checkout</span>
+                        </button>
+                    </div><!-- End .summary -->
+                </aside><!-- End .col-lg-3 -->
+            </div>
+        </div>
+    </div>
+</main><!-- End .main -->
+
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <!-- Modal: This div represents the modal itself. It has a unique ID and uses Bootstrap's modal classes. -->
+    <div class="modal-dialog modal-dialog-centered">
+        <!-- Modal Dialog: This div defines the dialog box within the modal. It's centered using Bootstrap's utility classes. -->
+        <div class="modal-content">
+            <!-- Modal Content: This div contains the content of the modal. It will include the modal's header, body, and footer. -->
+
+            <div class="modal-header">
+                <!-- Modal Header: This is the header section of the modal. It typically contains a title and a close button. -->
+                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                <!-- Title for the modal. -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <!-- Close button that dismisses the modal. -->
+            </div>
+
+            <div class="modal-body">
+                <!-- Modal Body: This is the main content area of the modal. It contains the form for adding a new address. -->
+             
+                    <!-- Address input fields go here. You can add more fields as needed. -->
+            
+                    <form action="/checkout_address" method="post" id="newAddressForm">
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label for="fname">First Name</label>
+                                <input type="text" class="form-control" id="fname" name="fname" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="lname">Last Name</label>
+                                <input type="text" class="form-control" id="lname" name="lname" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" class="form-control" id="mobile" name="mobile" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="mobile">Email</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="housename">House Name</label>
+                                <input type="text" class="form-control" id="housename" name="housename" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="pin">Pin</label>
+                                <input type="text" class="form-control" id="pin" name="pin" required>
+                            </div>  
+                            <div class="form-group col-12">
+                                <label for="district">District</label>
+                                <input type="text" class="form-control" id="district" name="district" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name ="state" required>
+                            </div>
+                            <!-- Add input fields for other address details here -->
+                            <div class="form-group col-12">
+                                <button type="submit" class="btn btn-outline-primary-2">
+                                    <span>Add Address</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle the click on the "Add Address" button
+            document.getElementById('addNewAddressBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                addNewAddress();
+            });
+
+            function addNewAddress() {
+                const newAddressForm = document.getElementById('newAddressForm');
+                const formData = new FormData(newAddressForm);
+
+                fetch('/checkout_address', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json()) // Assuming the server responds with JSON
+                    .then(data => {
+                        if (data.success) {
+                            // Update the address list dynamically
+                            updateAddressList(data.addresses);
+                            // Close the modal
+                            $('#addAddressModal').modal('hide');
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            function updateAddressList(addresses) {
+                // Implement this function to update the HTML for displaying addresses
+                // You may need to clear the previous addresses and append new ones
+                const addressList = document.getElementById('addressList');
+
+                // Clear the previous addresses
+                addressList.innerHTML = '';
+
+                // Append new addresses
+                addresses.forEach(address => {
+                    const addressItem = document.createElement('div');
+                    addressItem.className = 'address-item';
+                    addressItem.innerHTML = `
+                        <p><b>${address.fname}</b>, ${address.state}, ${address.city}, Contact Number: <b style="color: #043a6c;"><span class="material-symbols-outlined" style="font-size: 13px;"></span>${address.mobile}</b></p>
+                        <p>Email: <b style="color: #043a6c;"><span class="material-symbols-outlined" style="font-size: 13px;"></span>${address.email}</b></p>
+                        <p>Pincode: ${address.pin}</p>
+                    `;
+                    addressList.appendChild(addressItem);
+                });
+            }
+        });
+    </script>
+
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

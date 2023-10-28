@@ -10,89 +10,132 @@ const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
 
+const loadCheckout0 = async (req, res,next) => {
+  try {
+      const id = req.session.user_id;
+      const UserData=await User.findById(id)
+      const products = await Cart.findOne({ user_id:id }).populate(
+          "items.product_Id"
+      );
+      const address = await Address.findOne({ user_id:id },{address:1})
+      if(products)
+      {
+      if(address)
+      {
+      res.render('checkout', { products, address,UserData })
+      }else{
+          res.render('checkout',{
+              UserData,
+              products,
+              address:0
 
-const loadCheckout = async (req, res,next) => {
-    try {
-        const id = req.session.user_id;
-        const UserData=await User.findById(id)
-        const products = await Cart.findOne({ user_id:id }).populate(
-            "items.product_Id"
-        );
-        const address = await Address.findOne({ user_id:id },{address:1})
-        if(products)
-        {
-        if(address)
-        {
-        res.render('checkout1', { products, address,UserData })
-        }else{
-            res.render('checkout1',{
-                UserData,
-                products,
-                address:0
+          })
+      }
+  }else{
+      res.redirect('/cart')
+  }
 
-            })
-        }
-    }else{
-        res.redirect('/cart')
-    }
-
-    } catch (err) {
-       next(err)
-    }
+  } catch (err) {
+     next(err)
+  }
 }
 
-
-
-// const addAddressForCheckout = async (req, res, next) => {
+// const loadCheckout = async (req, res,next) => {
 //     try {
-//         const userId = req.session.user_id;
-//         const address = await Address.find({ user_id: userId });
+//         const id = req.session.user_id;
+//         const UserData=await User.findById(id)
+//         const products = await Cart.findOne({ user_id:id }).populate(
+//             "items.product_Id"
+//         );
+//         const address = await Address.findOne({ user_id:id },{address:1})
+//         if(products)
+//         {
+//         if(address)
+//         {
+//         res.render('checkout1', { products, address,UserData })
+//         }else{
+//             res.render('checkout1',{
+//                 UserData,
+//                 products,
+//                 address:0
 
-//         if (address) {
-//             await Address.updateOne(
-//                 { user_id: userId },
-//                 {
-//                     $push: {
-//                         address: {
-//                             fname: req.body.fname,
-//                             lname: req.body.lname,
-//                             mobile: req.body.mobile,
-//                             email: req.body.email,
-//                             housename: req.body.housename,
-//                             pin: req.body.pin,
-//                             city: req.body.city,
-//                             district: req.body.district,
-//                             state: req.body.state,
-//                         },
-//                     },
-//                 }
-//             );
-//         } else {
-//             const newAddress = new Address({
-//                 user_id: userId,
-//                 address: [
-//                     {
-//                         fname: req.body.fname,
-//                         lname: req.body.lname,
-//                         mobile: req.body.mobile,
-//                         email: req.body.email,
-//                         housename: req.body.housename,
-//                         pin: req.body.pin,
-//                         city: req.body.city,
-//                         district: req.body.district,
-//                         state: req.body.state,
-//                     },
-//                 ],
-//             });
-//             await newAddress.save();
+//             })
 //         }
-
-//         // Redirect to the checkout page
-//         res.redirect('/checkout');
-//     } catch (err) {
-//         next(err);
+//     }else{
+//         res.redirect('/cart')
 //     }
-// };
+
+//     } catch (err) {
+//        next(err)
+//     }
+// }
+
+
+
+const addAddressForCheckout = async (req, res, next) => {
+  try {
+    const userId = req.session.user_id;
+    let newAddress; // Define newAddress variable here
+
+    const address = await Address.findOne({ user_id: userId });
+
+    if (address) {
+      await Address.updateOne(
+        { user_id: userId },
+        {
+          $push: {
+            address: {
+              fname: req.body.fname,
+              lname: req.body.lname,
+              mobile: req.body.mobile,
+              email: req.body.email,
+              housename: req.body.housename,
+              pin: req.body.pin,
+              city: req.body.city,
+              district: req.body.district,
+              state: req.body.state,
+            },
+          },
+        }
+      );
+    } else {
+      newAddress = new Address({
+        user_id: userId,
+        address: [
+          {
+            fname: req.body.fname,
+            lname: req.body.lname,
+            mobile: req.body.mobile,
+            email: req.body.email,
+            housename: req.body.housename,
+            pin: req.body.pin,
+            city: req.body.city,
+            district: req.body.district,
+            state: req.body.state,
+          },
+        ],
+      });
+      await newAddress.save();
+    }
+
+    // Respond with a JSON success message and the updated address list
+    res.json({
+      success: true,
+      message: 'Address added successfully',
+      addresses: newAddress ? newAddress.address : address.address,
+    });
+  } catch (err) {
+    // Handle errors and respond with an error message
+    console.error(err); // Log the error for debugging
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while adding the address.',
+    });
+  }
+};
+
+
+
 
 const useThisAddress = async (req, res) => {
     try{
@@ -198,9 +241,9 @@ const selectPayment = async (req, res) => {
 
 
 module.exports = {
-    loadCheckout,
+    // loadCheckout,
     useThisAddress,
-    selectPayment
-    
-    // addAddressForCheckout
+    selectPayment,
+    loadCheckout0,
+    addAddressForCheckout
 }
