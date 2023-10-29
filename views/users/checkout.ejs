@@ -148,73 +148,83 @@
                             </tbody>
                         </table><!-- End .table table-summary -->
                        
-                        <div class="accordion-summary" id="accordion-payment">
+                        <div class="accordion-summary" id="accordion-payment" style="border: #333;">
                             <!-- Payment options here -->
-                            <div class="card">
-                                <div class="card-header" id="heading-1">
-                                    <h2 class="card-title">
-                                        <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                            <h5 class="text-center">Select Payment Method</h5>
+                          <div class="card">
+                            <div class="card-header" id="heading-1">
+                                <h2 class="card-title">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label>
+                                                <input type="radio" name="paymentOption" value="directbanktransfer" id="directbanktransfer">
+                                            </label>
+                                        </div>
+                                        <div class="col-11">
                                             Direct bank transfer
-                                        </a>
-                                    </h2>
-                                </div><!-- End .card-header -->
-                                <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
-                                    <div class="card-body">
-                                        Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
-                                    </div><!-- End .card-body -->
-                                </div><!-- End .collapse -->
-                            </div><!-- End .card -->
-
-                            <div class="card">
-                                <div class="card-header" id="heading-2">
-                                    <h2 class="card-title">
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+                                        </div>
+                                    </div>
+                                </h2>
+                            </div>
+                        </div><!-- End .card -->
+                        
+                        <div class="card">
+                            <div class="card-header" id="heading-2">
+                                <h2 class="card-title">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label>
+                                                <input type="radio" name="paymentOption" value="check" id="checkpayments">
+                                            </label>
+                                        </div>
+                                        <div class="col-11">
                                             Check payments
-                                        </a>
-                                    </h2>
-                                </div><!-- End .card-header -->
-                                <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
-                                    <div class="card-body">
-                                        Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. 
-                                    </div><!-- End .card-body -->
-                                </div><!-- End .collapse -->
-                            </div><!-- End .card -->
-
-                            <div class="card">
-                                <div class="card-header" id="heading-3">
-                                    <h2 class="card-title">
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
+                                        </div>
+                                    </div>
+                                </h2>
+                            </div>
+                        </div><!-- End .card -->
+                        
+                        <div class="card">
+                            <div class="card-header" id="heading-3">
+                                <h2 class="card-title">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label>
+                                                <input type="radio" name="paymentOption" value="COD" id="COD">
+                                            </label>
+                                        </div>
+                                        <div class="col-11">
                                             Cash on delivery
-                                        </a>
-                                    </h2>
-                                </div><!-- End .card-header -->
-                                <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
-                                    <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. 
-                                    </div><!-- End .card-body -->
-                                </div><!-- End .collapse -->
-                            </div><!-- End .card -->
-
-                            <div class="card">
-                                <div class="card-header" id="heading-4">
-                                    <h2 class="card-title">
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
-                                            PayPal <small class="float-right paypal-link">What is PayPal?</small>
-                                        </a>
-                                    </h2>
-                                </div><!-- End .card-header -->
-                                <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
-                                    <div class="card-body">
-                                        Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.
-                                    </div><!-- End .card-body -->
-                                </div><!-- End .collapse -->
-                            </div><!-- End .card -->
-
-                          
+                                        </div>
+                                    </div>
+                                </h2>
+                            </div>
+                        </div><!-- End .card -->
+                        
+                        <div class="card">
+                            <div class="card-header" id="heading-4">
+                                <h2 class="card-title">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label>
+                                                <input type="radio" name="paymentOption" value="Online" id="paypal">
+                                            </label>
+                                        </div>
+                                        <div class="col-11">
+                                            PayPal
+                                        </div>
+                                    </div>
+                                </h2>
+                            </div>
+                        </div><!-- End .card -->
+                        
                         </div><!-- End .accordion-summary -->
-                        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-                            <span class="btn-text">Place Order</span>
-                            <span class="btn-hover-text">Proceed to Checkout</span>
-                        </button>
+                        
+                            <button type="button" class="btn btn-outline-primary-2 btn-order btn-block" onclick="placeOrder()">
+                                <span class="btn-text">Place Order</span>
+                                <span class="btn-hover-text">Proceed to Checkout</span>
+                            </button>
                     </div><!-- End .summary -->
                 </aside><!-- End .col-lg-3 -->
             </div>
@@ -284,6 +294,44 @@
     
 </main><!-- End .main -->
 
+
+<style>
+    /* Style for the accordion container */
+    #accordion-payment {
+      border: 2px solid #000000; /* Border color */
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #dee2e6; /* Background color */
+    }
+  
+    /* Style for the title */
+    h5.text-center {
+      font-size: 24px;
+      color: #000000; /* Title color */
+    }
+  
+    /* Style for each card */
+    .card {
+      margin-bottom: 10px;
+      border: 1px solid #000000; /* Card border color */
+      border-radius: 5px;
+      background-color:#dee2e6; /* Card background color */
+    }
+  
+    /* Style for the radio button and label */
+    input[type="radio"] {
+      margin-top: 5px;
+      background-color: #0700c5; /* Radio button color */
+    }
+  
+    /* Style for the label text */
+    .col-11 {
+      font-size: 18px;
+      color: #000000; /* Label text color */
+    }
+  </style>
+  
+
 <script>
      function updateCart() {
         fetch('/update_cart', {
@@ -304,6 +352,64 @@
         });
     }
 </script>
+
+<script>
+// Add an event listener to the "Place Order" button
+const placeOrderButton = document.getElementById('placeOrderButton');
+placeOrderButton.addEventListener('click', function () {
+    
+    
+    // Pass the selected payment option to the placeOrder function
+    placeOrder();
+});
+
+function placeOrder() {
+    const selectedAddressInput = document.querySelector('input[name="address"]:checked');
+    const cartPriceElement = document.getElementById('cartPrice');
+    const selectedPaymentOption = document.querySelector('input[name="paymentOption"]:checked').value;
+    console.log(selectedPaymentOption)
+    console.log(selectedPaymentOption)
+
+    if (selectedAddressInput && cartPriceElement && selectedPaymentOption) {
+        const selectedAddress = selectedAddressInput.value;
+        const totalAmount = cartPriceElement.textContent;
+
+        // Create an object with the order details
+        const orderData = {
+            addressId: selectedAddress,
+            paymentOption: selectedPaymentOption, // Use the selected payment option here
+            totalAmount: totalAmount,
+        };
+
+        // Send an HTTP POST request to place the order
+        fetch('/place_order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    // Order placed successfully
+                    // You can display a success message or redirect the user to a confirmation page
+                    Swal.fire('Order placed successfully');
+                } else {
+                    // Handle errors, display an error message, or take appropriate action
+                    Swal.fire('Order placement failed:', data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('An error occurred while placing the order:', error);
+            });
+    } else {
+        // Handle the case where no address is selected or cart price element is missing.
+        console.error('No address selected or missing cartPrice element');
+    }
+}
+
+
 </script>
 
 

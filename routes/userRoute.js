@@ -6,6 +6,8 @@ const cartController = require("../controllers/cartController")
 const wishlistController = require("../controllers/wishlistController")
 const profileController  = require("../controllers/profileController")
 const checkoutController = require("../controllers/checkoutController")
+const orderController = require("../controllers/orderController")
+
 const session = require("express-session")
 
 const config = require("../config/config")
@@ -109,6 +111,8 @@ user_route.get('/checkout0',auth.isLogin,checkoutController.loadCheckout0)
 
 
 user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
+
+user_route.post('/place_order',orderController.placeOrder)
 
 // user_route.get('/updated_wishlist_data',wishlistController.updatelist)
 
