@@ -1,5 +1,5 @@
 <%- include('../userMainlayouts/mainheader.ejs') %>
-<main class="main" style="font-family: Poppins-medium;">
+<main class="main" style="font-family: Poppins-Medium;">
     <div class="page-header text-center" style="background-image: url('/user/images/page-header-bg.jpg')">
         <div class="container">
             <h1 class="page-title text-dark">Checkout</h1>
@@ -19,18 +19,18 @@
         <div class="row">
             <div class="col-lg-8">
                 <!-- Left side (Shipping Address and Order Notes) -->
-                <div class="checkout">
+                <div class="checkout"  style="background-color: #f8f8f8; padding: 20px; border-radius: 8px;">
                     <div class="checkout-discount">
                         <form action="#">
                             <input type="text" class="form-control" required id="checkout-discount-input">
-                            <label for="checkout-discount-input" class="text-truncate">
-                                Have a coupon? <span>Click here to enter your code</span>
+                            <label for="checkout-discount-input" class="text-truncate" style="display: flex; justify-content: space-between; align-items: center; color: #333;">
+                                Select Address for shipping <span>Or</span> <span><a href="/checkout_address" data-toggle="modal" data-target="#addAddressModal" id="addNewAddressButton">add new one</a> </span>
                             </label>
                         </form>
                     </div><!-- End .checkout-discount -->
 
                     <% if (address.address.length !== 0) { %>
-                    <form action="/checkout_address" method="post" id="addressForm" class="col-sm-9">
+                    <form action="/checkout0" method="post" id="newAddressForm" class="col-sm-9">
                         <% for (let i = address.address.length - 1; i >= 0; i--) { %>
                         <label class="p-3 border rounded-4 m-2 custom-label">
                             <div class="form-check d-flex align-items-center mx-4">
@@ -54,29 +54,34 @@
                                 </div>
                             </div>
                         </label>
+                        <div id="addressList">
+                            <!-- Address list will be displayed here -->
+                        </div>
                         <% } %>
                   
                         <%}else{%>
                             <div class=" text-center w-100 card">
                                 <h6 class="mt-2 ">You have no shipping Address</h6>
                                 <p class="">Kindly add a shipping address to proceed.</p>
-                                <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal" id="addNewAddressButton">
                                     + Add a new address
                                 </button>
+                                
                             </div>
 
                        <% }%>
                        <% if(address.address!=0) { %>
                                             <div>
-                                        <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                                        <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal" id="addNewAddressButton">
                                             + Add a new address
                                         </button>
                                     </div>
                         <% }else { %>
                             
-                            <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal">
+                            <button type="button" class="btn btn-outline-primary-2 mt-3" data-toggle="modal" data-target="#addAddressModal" id="addNewAddressButton">
                                 + Add a new address
                             </button>
+                            
                                 <%}%>
                     <hr>
                     <!-- Add new address button -->
@@ -89,9 +94,9 @@
             <div class="col-lg-4">
                 <!-- Right side (Order Summary and Payment Options) -->
                 <aside class="col-sm-12">
-                    <div class="summary">
+                    <div class="summary" style="background-color: #f8f8f8; padding: 20px; border-radius: 8px;">
                        
-                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                        <h3 class="summary-title" style="color: #043a6c; font-size: 24px;">Your Order</h3><!-- End .summary-title -->
                         <table class="table table-summary">
                             <thead>
                                 <tr>
@@ -117,15 +122,94 @@
                                     <td>Shipping:</td>
                                     <td>Free shipping</td>
                                 </tr>
+                               
+                                <div class="text-center">
+                                    <label for="checkout-discount-input" class="text-truncate text-center">
+                                        Have a coupon? enter coupon code
+                                    </label>
+                                    <div class="d-flex justify-content-center">
+                                        <input class="text-center stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5 align-items-center" type="text" name="coupon" placeholder="Coupon Code">
+                                    </div>
+                                    <div>
+                                        <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+                                            Apply coupon
+                                        </div>
+                                    </div>
+                                    <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10 " onclick="updateCart()">
+                                        Update Cart
+                                    </div>
+                                </div>
+                                
                                 <tr class="summary-total">
                                     <td>Total:</td>
-                                    <td>$160.00</td>
+                                    <td><div id="cartPrice"></div></td>
                                 </tr><!-- End .summary-total -->
+                                
                             </tbody>
                         </table><!-- End .table table-summary -->
                        
                         <div class="accordion-summary" id="accordion-payment">
                             <!-- Payment options here -->
+                            <div class="card">
+                                <div class="card-header" id="heading-1">
+                                    <h2 class="card-title">
+                                        <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                                            Direct bank transfer
+                                        </a>
+                                    </h2>
+                                </div><!-- End .card-header -->
+                                <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
+                                    <div class="card-body">
+                                        Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
+                                    </div><!-- End .card-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .card -->
+
+                            <div class="card">
+                                <div class="card-header" id="heading-2">
+                                    <h2 class="card-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+                                            Check payments
+                                        </a>
+                                    </h2>
+                                </div><!-- End .card-header -->
+                                <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
+                                    <div class="card-body">
+                                        Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. 
+                                    </div><!-- End .card-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .card -->
+
+                            <div class="card">
+                                <div class="card-header" id="heading-3">
+                                    <h2 class="card-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
+                                            Cash on delivery
+                                        </a>
+                                    </h2>
+                                </div><!-- End .card-header -->
+                                <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                                    <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. 
+                                    </div><!-- End .card-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .card -->
+
+                            <div class="card">
+                                <div class="card-header" id="heading-4">
+                                    <h2 class="card-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-4">
+                                            PayPal <small class="float-right paypal-link">What is PayPal?</small>
+                                        </a>
+                                    </h2>
+                                </div><!-- End .card-header -->
+                                <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
+                                    <div class="card-body">
+                                        Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.
+                                    </div><!-- End .card-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .card -->
+
+                          
                         </div><!-- End .accordion-summary -->
                         <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
                             <span class="btn-text">Place Order</span>
@@ -136,139 +220,92 @@
             </div>
         </div>
     </div>
-</main><!-- End .main -->
-
-<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <!-- Modal: This div represents the modal itself. It has a unique ID and uses Bootstrap's modal classes. -->
-    <div class="modal-dialog modal-dialog-centered">
-        <!-- Modal Dialog: This div defines the dialog box within the modal. It's centered using Bootstrap's utility classes. -->
-        <div class="modal-content">
-            <!-- Modal Content: This div contains the content of the modal. It will include the modal's header, body, and footer. -->
-
-            <div class="modal-header">
-                <!-- Modal Header: This is the header section of the modal. It typically contains a title and a close button. -->
-                <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
-                <!-- Title for the modal. -->
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <!-- Close button that dismisses the modal. -->
-            </div>
-
-            <div class="modal-body">
-                <!-- Modal Body: This is the main content area of the modal. It contains the form for adding a new address. -->
-             
-                    <!-- Address input fields go here. You can add more fields as needed. -->
-            
+    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white ">
+                    <h5 class="modal-title" id="addAddressModalLabel" style="margin: 0 auto;">Add New Address</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" id="closeAddAddressModal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"  style="max-height: 60vh; overflow-y: auto; overflow-x: hidden;">
+ 
                     <form action="/checkout_address" method="post" id="newAddressForm">
-                        <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="fname">First Name</label>
+                        <div class="container mt-4">
+                            <div class="form-group col-6">
+                                <label for="fname" class="text-primary">First Name</label>
                                 <input type="text" class="form-control" id="fname" name="fname" required>
                             </div>
-                            <div class="form-group col-sm-6">
-                                <label for="lname">Last Name</label>
+                            <div class="form-group col-6">
+                                <label for="lname" class="text-primary">Last Name</label>
                                 <input type="text" class="form-control" id="lname" name="lname" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="mobile">Mobile</label>
+                            <div class="form-group col-6">
+                                <label for="mobile" class="text-primary">Mobile</label>
                                 <input type="text" class="form-control" id="mobile" name="mobile" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="mobile">Email</label>
+                            <div class="form-group col-6">
+                                <label for="email" class="text-primary">Email</label>
                                 <input type="text" class="form-control" id="email" name="email" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="housename">House Name</label>
+                            <div class="form-group col-6">
+                                <label for="housename" class="text-primary">House Name</label>
                                 <input type="text" class="form-control" id="housename" name="housename" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="city">City</label>
+                            <div class="form-group col-6">
+                                <label for="city" class="text-primary">City</label>
                                 <input type="text" class="form-control" id="city" name="city" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="pin">Pin</label>
+                            <div class="form-group col-6">
+                                <label for="pin" class="text-primary">Pin</label>
                                 <input type="text" class="form-control" id="pin" name="pin" required>
-                            </div>  
-                            <div class="form-group col-12">
-                                <label for="district">District</label>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="district" class="text-primary">District</label>
                                 <input type="text" class="form-control" id="district" name="district" required>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="state">State</label>
-                                <input type="text" class="form-control" id="state" name ="state" required>
+                            <div class="form-group col-6">
+                                <label for="state" class="text-primary">State</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
                             </div>
-                            <!-- Add input fields for other address details here -->
-                            <div class="form-group col-12">
-                                <button type="submit" class="btn btn-outline-primary-2">
+                            <div class="form-group col-6">
+                                <button type="submit" class="btn btn-primary btn-block">
                                     <span>Add Address</span>
                                     <i class="icon-long-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
                     </form>
+                </div>
             </div>
-            
         </div>
     </div>
-</div>
+    
+</main><!-- End .main -->
 
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Handle the click on the "Add Address" button
-            document.getElementById('addNewAddressBtn').addEventListener('click', function (e) {
-                e.preventDefault();
-                addNewAddress();
-            });
-
-            function addNewAddress() {
-                const newAddressForm = document.getElementById('newAddressForm');
-                const formData = new FormData(newAddressForm);
-
-                fetch('/checkout_address', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then(response => response.json()) // Assuming the server responds with JSON
-                    .then(data => {
-                        if (data.success) {
-                            // Update the address list dynamically
-                            updateAddressList(data.addresses);
-                            // Close the modal
-                            $('#addAddressModal').modal('hide');
-                        } else {
-                            alert(data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+<script>
+     function updateCart() {
+        fetch('/update_cart', {
+            method: 'PATCH',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const totalPriceElement = document.getElementById('cartPrice');
+                totalPriceElement.textContent = data.cart.totalPrice;
+            } else {
+                Swal.fire(data.message);
             }
-
-            function updateAddressList(addresses) {
-                // Implement this function to update the HTML for displaying addresses
-                // You may need to clear the previous addresses and append new ones
-                const addressList = document.getElementById('addressList');
-
-                // Clear the previous addresses
-                addressList.innerHTML = '';
-
-                // Append new addresses
-                addresses.forEach(address => {
-                    const addressItem = document.createElement('div');
-                    addressItem.className = 'address-item';
-                    addressItem.innerHTML = `
-                        <p><b>${address.fname}</b>, ${address.state}, ${address.city}, Contact Number: <b style="color: #043a6c;"><span class="material-symbols-outlined" style="font-size: 13px;"></span>${address.mobile}</b></p>
-                        <p>Email: <b style="color: #043a6c;"><span class="material-symbols-outlined" style="font-size: 13px;"></span>${address.email}</b></p>
-                        <p>Pincode: ${address.pin}</p>
-                    `;
-                    addressList.appendChild(addressItem);
-                });
-            }
+        })
+        .catch(error => {
+            console.error(error);
+            Swal.fire('An error occurred while updating the cart.');
         });
-    </script>
+    }
+</script>
+</script>
+
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

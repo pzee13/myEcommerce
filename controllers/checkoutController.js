@@ -77,7 +77,7 @@ const addAddressForCheckout = async (req, res, next) => {
     const userId = req.session.user_id;
     let newAddress; // Define newAddress variable here
 
-    const address = await Address.findOne({ user_id: userId });
+    const address = await Address.find({ user_id: userId });
 
     if (address) {
       await Address.updateOne(
@@ -118,51 +118,94 @@ const addAddressForCheckout = async (req, res, next) => {
       await newAddress.save();
     }
 
-    // Respond with a JSON success message and the updated address list
-    res.json({
-      success: true,
-      message: 'Address added successfully',
-      addresses: newAddress ? newAddress.address : address.address,
-    });
+    // Redirect back to the checkout page after adding the address
+    // You can also include a success message if needed
+    res.redirect('/checkout0');
+
   } catch (err) {
     // Handle errors and respond with an error message
     console.error(err); // Log the error for debugging
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while adding the address.',
-    });
   }
 };
 
 
 
+// const addAddressForCheckout = async (req, res, next) => {
+//   try {
+//     const userId = req.session.user_id;
 
-const useThisAddress = async (req, res) => {
-    try{
-    const userId = req.session.user_id
-    let userAddress = await Address.findOne({ user_id: userId});
-    const products = await Cart.findOne({ user_id:userId }).populate(
-        "items.product_Id"
-    );
+//     // Create a new address object from the form data
+//     const newAddressData = {
+//       fname: req.body.fname,
+//       lname: req.body.lname,
+//       mobile: req.body.mobile,
+//       email: req.body.email,
+//       housename: req.body.housename,
+//       pin: req.body.pin,
+//       city: req.body.city,
+//       district: req.body.district,
+//       state: req.body.state,
+//     };
+
+//     // Find the user's address or create a new one if it doesn't exist
+//     const userAddress = await Address.findOne({ user_id: userId });
+//     if (userAddress) {
+//       // Update the existing address
+//       userAddress.address.push(newAddressData);
+//       await userAddress.save();
+//     } else {
+//       // Create a new address
+//       const newAddress = new Address({
+//         user_id: userId,
+//         address: [newAddressData],
+//       });
+//       await newAddress.save();
+//     }
+
+//     // Fetch the updated address and user data
+//     const updatedAddress = await Address.findOne({ user_id: userId }, { address: 1 });
+//     const UserData = await User.findById(userId);
+//     const products = await Cart.findOne({ user_id:id }).populate(
+//       "items.product_Id"
+//   );
+
+//     // Render the 'checkout' page with the updated data
+//     res.render('checkout', { products, address: updatedAddress, UserData });
+//   } catch (err) {
+//     // Handle errors and respond with an error message
+//     console.error(err); // Log the error for debugging
+//   }
+// };
+
+
+
+
+// const useThisAddress = async (req, res) => {
+//     try{
+//     const userId = req.session.user_id
+//     let userAddress = await Address.findOne({ user_id: userId});
+//     const products = await Cart.findOne({ user_id:userId }).populate(
+//         "items.product_Id"
+//     );
     
     
 
-        if (userAddress) {
-            const selectedAddress = userAddress.address.find(
-                (address) => address._id.toString() === req.body.address.toString()
-            );
-            if(selectedAddress)
-            {
-            res.render('checkout3', {user:userId,address:selectedAddress,products:products});
-            }
-        } else {
-            res.redirect('/checkout')
-        }
-    } catch (error) {
-        console.error('Error fetching selected address:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
+//         if (userAddress) {
+//             const selectedAddress = userAddress.address.find(
+//                 (address) => address._id.toString() === req.body.address.toString()
+//             );
+//             if(selectedAddress)
+//             {
+//             res.render('checkout3', {user:userId,address:selectedAddress,products:products});
+//             }
+//         } else {
+//             res.redirect('/checkout') 
+//         }
+//     } catch (error) {
+//         console.error('Error fetching selected address:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// };
 
 
 //  const selectPayment = async(req,res)=>{
@@ -200,50 +243,47 @@ const useThisAddress = async (req, res) => {
 //     }
 //  }
 
-const selectPayment = async (req, res) => {
-    try {
-      const user_id = req.session.user_id;
-      const payment = req.body.paymentMethod === 'COD';
-        const product1 =  await Cart.findOne({ user_id:user_id }).populate(
-            "items.product_Id"
-        );
-      // Fetch the selected address
-      const userAddress = await Address.findOne({ user_id: req.session.user_id });
-      const selectedAddress = userAddress.address.find((address) => {
-        return address._id.toString() === req.body.address.toString();
-      });
+// const selectPayment = async (req, res) => {
+//     try {
+//       const user_id = req.session.user_id;
+//       const payment = req.body.paymentMethod === 'COD';
+//         const product1 =  await Cart.findOne({ user_id:user_id }).populate(
+//             "items.product_Id"
+//         );
+//       // Fetch the selected address
+//       const userAddress = await Address.findOne({ user_id: req.session.user_id });
+//       const selectedAddress = userAddress.address.find((address) => {
+//         return address._id.toString() === req.body.address.toString();
+//       });
   
-      // Fetch the user's cart details and populate the product information
-      const cartDetails = await Cart.findOne({ user_id: user_id }).populate({
-        path: 'items.product_Id',
-        model: 'product', // Assuming the model name for products is 'product'
-      });
+//       // Fetch the user's cart details and populate the product information
+//       const cartDetails = await Cart.findOne({ user_id: user_id }).populate({
+//         path: 'items.product_Id',
+//         model: 'product', // Assuming the model name for products is 'product'
+//       });
   
-      if (cartDetails) {
-        // Render the "checkout4" template with the fetched data
-        res.render("checkout4", {
-          address: selectedAddress,
-          user: req.session.user_id,
-          payment,
-          cartItems: cartDetails.items,
-          prod:product1 // Use cartDetails.items as it contains the populated product information
-          // deliveryDate,
-        });
-      } else {
-        res.redirect('/checkout3');
-      }
-    } catch (error) {
-      console.error(error);
-      // Handle the error appropriately, e.g., send an error response to the client
-    }
-  };
+//       if (cartDetails) {
+//         // Render the "checkout4" template with the fetched data
+//         res.render("checkout4", {
+//           address: selectedAddress,
+//           user: req.session.user_id,
+//           payment,
+//           cartItems: cartDetails.items,
+//           prod:product1 // Use cartDetails.items as it contains the populated product information
+//           // deliveryDate,
+//         });
+//       } else {
+//         res.redirect('/checkout3');
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       // Handle the error appropriately, e.g., send an error response to the client
+//     }
+//   };
   
 
 
 module.exports = {
-    // loadCheckout,
-    useThisAddress,
-    selectPayment,
     loadCheckout0,
     addAddressForCheckout
 }

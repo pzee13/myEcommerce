@@ -103,9 +103,10 @@ user_route.get('/checkout0',auth.isLogin,checkoutController.loadCheckout0)
 
 // user_route.post('/select_address',auth.isLogin,checkoutController.useThisAddress)
 
-user_route.post('/checkout3',auth.isLogin,checkoutController.useThisAddress)
+// user_route.post('/checkout3',auth.isLogin,checkoutController.useThisAddress)
 
-user_route.post('/checkout3/select_payment',auth.isLogin,checkoutController.selectPayment)
+// user_route.post('/checkout3/select_payment',auth.isLogin,checkoutController.selectPayment)
+
 
 user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
 
