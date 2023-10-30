@@ -87,6 +87,7 @@ const resetPasswordMail = async(firstName,lastName,email, token)=>{
 const loginLoad = async(req,res)=>{
 
     try{
+        
         res.render('login')
     }
     catch(error){
@@ -281,11 +282,14 @@ const verifyLogin = async (req, res,next) => {
 
 const loaduserHome = async (req, res) => {
     try {
+      
       res.render('userHome');
+        
     } catch (error) {
       console.log(error.message);
     }
   }
+
 
 // const userPoductload = async (req, res) => {
 //     try {
@@ -506,7 +510,7 @@ module.exports = {
     viewProducts,
     resendOTP,
     getProductDetails,
-    searchProducts
+    searchProducts,
     // sendVerificationEmail
 }
 

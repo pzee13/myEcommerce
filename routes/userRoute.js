@@ -65,6 +65,7 @@ user_route.post('/forget-password',userController.resetPassword)
 user_route.get('/logout',auth.isLogin,userController.userLogout)
 
 
+
 user_route.get('/product',userController.viewProducts) 
 
 user_route.get('/search_product',userController.searchProducts)
@@ -113,6 +114,8 @@ user_route.get('/checkout0',auth.isLogin,checkoutController.loadCheckout0)
 user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
 
 user_route.post('/place_order',orderController.placeOrder)
+
+user_route.get('/order_placed',orderController.loadOrderPlaced)
 
 // user_route.get('/updated_wishlist_data',wishlistController.updatelist)
 

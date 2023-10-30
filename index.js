@@ -26,7 +26,7 @@ const disableBackButton = (req, res, next) => {
   res.setHeader("Pragma", "no-cache");
   res.setHeader("Expires", "0");
   next();
-};
+}; 
 
 const userRoute = require("./routes/userRoute.js");
 app.use("/", disableBackButton, userRoute);

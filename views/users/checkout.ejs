@@ -394,7 +394,7 @@ function placeOrder() {
                 if (data.success) {
                     // Order placed successfully
                     // You can display a success message or redirect the user to a confirmation page
-                    Swal.fire('Order placed successfully');
+                    Swal.fire('Order placed successfully <br> <a href="/order_placed">View</a>');
                 } else {
                     // Handle errors, display an error message, or take appropriate action
                     Swal.fire('Order placement failed:', data.message);

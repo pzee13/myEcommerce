@@ -346,7 +346,13 @@
                 fetch(`/delete_address/${addressId}`, {
                     method: 'GET',
                 })
-                .then(response => response.json())
+                .then(response => {response.json()
+                console.log(response.json())
+                if (addressDiv) {
+                            addressDiv.style.display = 'none'; // Hide the div
+                            // Close the modal
+                            $('#editAddressModal').modal('hide');}
+            })
                 .then(data => {
                     if (data.success) {
                         // Address deleted successfully, hide the addressDiv

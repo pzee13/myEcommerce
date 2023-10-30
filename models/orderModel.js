@@ -9,7 +9,7 @@ const orderSchema = new mongoose.Schema({
   },
   deliveryAddress: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Address', // Reference to the Address model
+    ref: 'address', // Reference to the Address model
     required: true,
   },
   paymentOption: {
@@ -25,6 +25,45 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  expectedDelivery:{
+    type:Date
+  },
+  products: [{
+    product_Id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'product',
+        required: true
+    },
+
+    quantity: {
+        type: Number,
+        required: true
+    },
+
+    total: {
+        type: Number,
+        required: true
+    },
+
+    price: {
+        type: Number,
+
+    },expectedDelivery: {
+        type: Date,
+       
+    },
+
+    status: {
+        type: String,
+        default: 'On the way'
+    },
+
+    cancelReason: {
+        type: String
+    }
+
+}]
+
   // You can add more fields as needed, such as order items, order status, etc.
 });
 
