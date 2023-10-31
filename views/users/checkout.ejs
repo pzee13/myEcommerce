@@ -109,14 +109,14 @@
                                     <% products.items.forEach((item, index) => { %>
                                 <tr>
                                     <td><a href="#"><%=item.product_Id.productName %></a></td>
-                                    <td><%= item.total %></td>
+                                    <td>₹<%= item.total %></td>
                                 </tr>
                                 <% }); %>
                         <% } else { %>
                             <% } %>
                                 <tr class="summary-subtotal">
                                     <td>Subtotal:</td>
-                                    <td><%=products.totalPrice%></td>
+                                    <td>₹<%=products.totalPrice%></td>
                                 </tr><!-- End .summary-subtotal -->
                                 <tr>
                                     <td>Shipping:</td>
@@ -141,7 +141,7 @@
                                 </div>
                                 
                                 <tr class="summary-total">
-                                    <td>Total:</td>
+                                    <td>Total (in ₹):</td>
                                     <td><div id="cartPrice"></div></td>
                                 </tr><!-- End .summary-total -->
                                 

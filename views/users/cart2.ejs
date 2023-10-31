@@ -25,19 +25,19 @@
                                             </div>
                                         </td>
                                         <td class="column-2 text-center"><%= item.product_Id.productName %></td>
-                                        <td class="column-3 text-center" style="justify-content: center; align-items: center;"><span class="product-price"><%= item.product_Id.price %></span></td>
+                                        <td class="column-3 text-center" style="justify-content: center; align-items: center;"><span class="product-price">₹<%= item.product_Id.price %></span></td>
                                         <td class="column-4">
                                             <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                                                <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                                <div class="btn-num-product-down fs-16.zmdi.zmdi-plus cl8 hov-btn3 trans-04 flex-c-m">
                                                     <i class="fs-16 zmdi zmdi-minus" onclick="updateQuantity('<%= item.product_Id._id %>', -1, '<%= index %>')"></i>
                                                 </div>
                                                 <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product<%= item.product_Id._id %>" value="<%= item.quantity %>" readonly data-productid="<%= item.product_Id._id %>">
-                                                <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                                <div class="btn-num-product-up fs-16.zmdi.zmdi-plus cl8 hov-btn3 trans-04 flex-c-m">
                                                     <i class="fs-16 zmdi zmdi-plus" onclick="updateQuantity('<%= item.product_Id._id %>', 1, '<%= index %>')"></i>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="column-5 text-center">$<span class="product-total" data-productid="<%= item.product_Id._id %>"><%= item.total %></span></td>
+                                        <td class="column-5 text-center">₹<span class="product-total" data-productid="<%= item.product_Id._id %>"><%= item.total %></span></td>
                                         <td class="column-6 text-center">
                                             <button class="btn btn-danger remove-from-cart-button" data-product-id="<%= item.product_Id._id %>" data-price="<%= item.total %>">Remove</button>
                                         </td>
@@ -80,7 +80,7 @@
                             </span>
                         </div>
                         <div class="size-209" id="totalPrice">
-                            <span class="mtext-110 cl2"><%= products.totalPrice %></span>
+                            <span class="mtext-110 cl2">₹<%= products.totalPrice %></span>
                         </div>
                     </div>
                     <div class="flex-w flex-t p-t-27 p-b-33">
@@ -90,7 +90,7 @@
                             </span>
                         </div>
                         <div class="size-209 p-t-1" id="cartPrice">
-                            <span class="mtext-110 cl2"><%= products.totalPrice %></span>
+                            <span class="mtext-110 cl2">₹<%= products.totalPrice %></span>
                         </div>
                     </div>
                     <button  class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer"><a href="/checkout0" style="color: aliceblue;">

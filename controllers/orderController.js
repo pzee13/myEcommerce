@@ -106,6 +106,7 @@ const loadOrderPlaced = async (req, res, next) => {
   try {
     const userId = req.session.user_id;
     
+    const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
     // Find the user's latest order and populate the necessary fields
     const order = await Order.findOne({ user: userId })
       .populate({
@@ -121,7 +122,7 @@ const loadOrderPlaced = async (req, res, next) => {
       });
     }
 
-    res.render('orderSuccess', { order });
+    res.render('orderSuccess', { order ,products});
   } catch (err) {
     next(err);
   }

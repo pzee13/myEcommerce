@@ -282,8 +282,9 @@ const verifyLogin = async (req, res,next) => {
 
 const loaduserHome = async (req, res) => {
     try {
-      
-      res.render('userHome');
+        const userId = req.session.user_id 
+      const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+      res.render('userHome',{products});
         
     } catch (error) {
       console.log(error.message);
@@ -392,6 +393,8 @@ const viewProducts = async (req, res) => {
     try {
         const page = req.query.page || 1; // Get the current page from query parameters
         const pageSize = 10; // Set your desired page size
+        const userId = req.session.user_id 
+        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
     
         const skip = (page - 1) * pageSize;
       const products = await Product.find({ status: 1 }).populate('category') .skip(skip)
@@ -403,7 +406,7 @@ const viewProducts = async (req, res) => {
       const categories = await Category.find()
       res.render('userProduct', { product: products , category:categories,
         currentPage: page,
-        totalPages: totalPages});
+        totalPages: totalPages,products:products1});
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
@@ -416,12 +419,14 @@ const viewProducts = async (req, res) => {
     try {
         const id = req.query.id; // You should adjust this based on your route structure
         const product = await Product.findById({_id:id}).populate('category');
+        const userId = req.session.user_id 
+        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
 
         if (!product) {
             return res.status(404).render('error', { message: 'Product not found' });
         }
 
-        res.render('productDetails', { product:product});
+        res.render('productDetails', { product:product,products:products1});
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { message: 'Internal Server Error' });

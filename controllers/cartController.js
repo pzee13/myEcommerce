@@ -212,11 +212,20 @@ const updateQuantity = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Product not found in the cart' });
         }
 
+        const productData = await Product.findOne({_id:product_Id})
+        console.log(productData)
+        const productQuantity = productData.quantity
+        console.log(productQuantity)
+
         // Calculate new quantity and total
         const newQuantity = cartItem.quantity + quantityChange;
         console.log(newQuantity)
-        if (newQuantity < 1 || newQuantity >= 10) {
-            return res.status(400).json({ success: false, message: 'Quantity cannot be less than 1 or greater than 10' });
+        if (newQuantity < 1) {
+            return res.status(400).json({ success: false, message: 'Quantity cannot be less than 1' });
+        }else if(newQuantity >= productQuantity){
+            return res.status(400).json({ success: false, message: 'Product stock exceeded' });
+        } else if( newQuantity > 10){
+            return res.status(400).json({ success: false, message: 'Only 10 items can be purchased'});
         }
         const newTotal = newQuantity * cartItem.price;
 

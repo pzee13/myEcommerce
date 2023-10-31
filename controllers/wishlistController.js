@@ -1,10 +1,20 @@
 const mongoose = require('mongoose');
-const Wishlist = require('../models/wishlistModel')
+const Admin = require("../models/adminModels/adminModel")
+const User = require("../models/userModels/userModel")
+const Cart = require("../models/cartModel")
+const Category = require("../models/categoryModel")
+const Address = require("../models/addressModel")
+const Wishlist = require("../models/wishlistModel")
 const Product = require("../models/productModel")
+const bcrypt = require('bcrypt')
+const path = require("path")
+const fs = require("fs")
 
 const loadWishlist = async (req, res) => {
     try {
         const user_id = req.session.user_id;
+        const userId = req.session.user_id 
+        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
 
         // Find the user's wishlist and populate the products
         const wishlist = await Wishlist.find({ user_id }).populate('products');
@@ -14,7 +24,7 @@ const loadWishlist = async (req, res) => {
             res.render('wishlist3', { data: [] });
             console.log(wishlist)
         } else {
-            res.render('wishlist3', { data: wishlist });
+            res.render('wishlist3', { data: wishlist ,products:products1});
         }
     } catch (error) {
         console.error(error.message);

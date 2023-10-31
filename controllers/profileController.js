@@ -17,12 +17,13 @@ const loadProfile = async (req, res) => {
         }
         else{
         const id = req.session.user_id;
+        const products = await Cart.findOne({user_id:id}).populate('items.product_Id')
         const user = await User.findById(id);
 
         if (user) {
             const address = await Address.findOne({ user_id: id })
            
-            res.render('userProfile', { user, address:address });
+            res.render('userProfile', { user, address:address,products:products });
         } else {
             res.redirect('/login');
         }
