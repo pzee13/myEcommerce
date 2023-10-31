@@ -17,9 +17,9 @@ const loadCart = async(req,res)=>{
         const products = await Cart.findOne({user_id:user_id}).populate('items.product_Id')
 
         if (!products) {
-        res.render('cart2',{ products: { totalPrice: 0, items: [] } });
+        res.render('cart2',{ products: { totalPrice: 0, items: [] },userIsLoggedIn: req.session.user_id ? true : false });
     } else {
-        res.render('cart2', { products });
+        res.render('cart2', { products,userIsLoggedIn: req.session.user_id ? true : false });
     }
 }
     catch(error)
@@ -213,9 +213,9 @@ const updateQuantity = async (req, res) => {
         }
 
         const productData = await Product.findOne({_id:product_Id})
-        console.log(productData)
+       
         const productQuantity = productData.quantity
-        console.log(productQuantity)
+       
 
         // Calculate new quantity and total
         const newQuantity = cartItem.quantity + quantityChange;

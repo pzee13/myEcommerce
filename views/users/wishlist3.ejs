@@ -54,22 +54,34 @@ document.querySelectorAll('.remove-from-wishlist').forEach(button => {
 
         const productId = event.target.getAttribute('data-product-id');
 
-        try {
-            const response = await fetch(`/remove_wishlist?id=${productId}`, {
-                method: 'GET',
-            });
+        // Show a confirmation dialog using SweetAlert
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to remove this item from your wishlist.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, cancel',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/remove_wishlist?id=${productId}`, {
+                        method: 'GET',
+                    });
 
-            if (response.ok) {
-                // Item removed successfully, you can update the UI as needed
-                event.target.closest('.custom-card').remove();
-            } else {
-                // Handle errors or display a message to the user
-                console.log('Error: Something went wrong while removing from the wishlist.');
+                    if (response.ok) {
+                        // Item removed successfully, you can update the UI as needed
+                        event.target.closest('.custom-card').remove();
+                    } else {
+                        // Handle errors or display a message to the user
+                        console.log('Error: Something went wrong while removing from the wishlist.');
+                    }
+                } catch (error) {
+                    // Handle fetch errors
+                    console.log('Error: ' + error.message);
+                }
             }
-        } catch (error) {
-            // Handle fetch errors
-            console.log('Error: ' + error.message);
-        }
+        });
     });
 });
 </script>

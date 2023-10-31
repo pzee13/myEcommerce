@@ -24,7 +24,7 @@ const loadWishlist = async (req, res) => {
             res.render('wishlist3', { data: [] });
             console.log(wishlist)
         } else {
-            res.render('wishlist3', { data: wishlist ,products:products1});
+            res.render('wishlist3', { data: wishlist ,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
         }
     } catch (error) {
         console.error(error.message);

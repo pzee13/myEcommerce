@@ -23,7 +23,7 @@ const loadProfile = async (req, res) => {
         if (user) {
             const address = await Address.findOne({ user_id: id })
            
-            res.render('userProfile', { user, address:address,products:products });
+            res.render('userProfile', { user, address:address,products:products ,userIsLoggedIn: req.session.user_id ? true : false});
         } else {
             res.redirect('/login');
         }

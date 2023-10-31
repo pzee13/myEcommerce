@@ -1,3 +1,5 @@
+
+const Swal = require('sweetalert2');
 const User = require('../models/userModels/userModel') 
 const Category = require('../models/categoryModel')
 const Product = require('../models/productModel')
@@ -7,6 +9,7 @@ const randomstring = require('randomstring')
 const path = require("path")
 const otpGenerator = require("otp-generator")
 const Cart = require('../models/cartModel')
+
 
 
 const securePassword = async(password)=>{
@@ -284,7 +287,7 @@ const loaduserHome = async (req, res) => {
     try {
         const userId = req.session.user_id 
       const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-      res.render('userHome',{products});
+      res.render('userHome',{products,userIsLoggedIn: req.session.user_id ? true : false});
         
     } catch (error) {
       console.log(error.message);
@@ -389,6 +392,7 @@ const loaduserHome = async (req, res) => {
     }
 }
 
+
 const viewProducts = async (req, res) => {
     try {
         const page = req.query.page || 1; // Get the current page from query parameters
@@ -406,7 +410,7 @@ const viewProducts = async (req, res) => {
       const categories = await Category.find()
       res.render('userProduct', { product: products , category:categories,
         currentPage: page,
-        totalPages: totalPages,products:products1});
+        totalPages: totalPages,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
@@ -426,7 +430,7 @@ const viewProducts = async (req, res) => {
             return res.status(404).render('error', { message: 'Product not found' });
         }
 
-        res.render('productDetails', { product:product,products:products1});
+        res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { message: 'Internal Server Error' });
@@ -483,12 +487,17 @@ const searchProducts = async (req, res) => {
   
       // Fetch categories for the sidebar
       const categories = await Category.find();
+
+      const userId = req.session.user_id 
+        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
   
       res.render('userProduct', {
         product: products,
         category: categories,
         currentPage: page,
         totalPages: totalPages,
+        products:products1,
+        userIsLoggedIn: req.session.user_id ? true : false
       });
   
     } catch (error) {

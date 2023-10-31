@@ -122,7 +122,7 @@ const loadOrderPlaced = async (req, res, next) => {
       });
     }
 
-    res.render('orderSuccess', { order ,products});
+    res.render('orderSuccess', { order ,products,userIsLoggedIn: req.session.user_id ? true : false});
   } catch (err) {
     next(err);
   }

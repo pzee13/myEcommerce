@@ -334,46 +334,39 @@
 <script>
     // Add an event listener to handle deleting addresses
     document.addEventListener('DOMContentLoaded', function () {
-        const deleteButtons = document.querySelectorAll('.delete-address');
+    const deleteButtons = document.querySelectorAll('.delete-address');
 
-        deleteButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                event.preventDefault();
-                const addressId = event.target.getAttribute('data-address-id');
-                const addressDiv = document.getElementById(`address${addressId}`);
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            const addressId = event.target.getAttribute('data-address-id');
+            const addressDiv = document.getElementById(`address${addressId}`);
 
-                // Send an AJAX request to the server to delete the address
-                fetch(`/delete_address/${addressId}`, {
-                    method: 'GET',
-                })
-                .then(response => {response.json()
-                console.log(response.json())
-                if (addressDiv) {
-                            addressDiv.style.display = 'none'; // Hide the div
-                            // Close the modal
-                            $('#editAddressModal').modal('hide');}
+            // Send an AJAX request to the server to delete the address
+            fetch(`/delete_address/${addressId}`, {
+                method: 'GET',
             })
-                .then(data => {
-                    if (data.success) {
-                        // Address deleted successfully, hide the addressDiv
-                        if (addressDiv) {
-                            addressDiv.style.display = 'none'; // Hide the div
-                            // Close the modal
-                            $('#editAddressModal').modal('hide');
-                           
-                        } else {
-                            console.error('Address card not found in the DOM');
-                        }
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (addressDiv) {
+                        addressDiv.remove(); // Remove the div from the DOM
+                        // Close the modal
+                      
                     } else {
-                        console.error('Failed to delete the address');
+                        console.error('Address card not found in the DOM');
                     }
-                })
-                .catch(error => {
-                    console.error('An error occurred while deleting the address', error);
-                });
+                } else {
+                    console.error('Failed to delete the address');
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred while deleting the address', error);
             });
         });
     });
+});
+
 </script>
 
 
