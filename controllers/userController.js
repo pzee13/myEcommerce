@@ -9,6 +9,8 @@ const randomstring = require('randomstring')
 const path = require("path")
 const otpGenerator = require("otp-generator")
 const Cart = require('../models/cartModel')
+const dotenv = require("dotenv").config()
+
 
 
 
@@ -32,13 +34,13 @@ const sendVerificationEmail = async (email, otp) => {
             secure: false,
             requireTLS: true,
             auth: {
-                user: 'aswinpc9@gmail.com',
-                pass: 'monq qcbh bhdy elod',
+                user: process.env.SMTP_MAIL,
+                pass: process.env.SMTP_PASS,
             },
         });
 
         const mailOptions = {
-            from: 'aswinpc9@gmail.com',
+            from: process.env.SMTP_MAIL,
             to: email,
             subject: 'Verify Your Email',
             html: `<p>Your OTP is: <strong>${otp}</strong></p>`,
@@ -59,8 +61,8 @@ const resetPasswordMail = async(firstName,lastName,email, token)=>{
                 secure:false,
                 requireTLS:true,
                 auth:{
-                    user:'aswinpc9@gmail.com',
-                    pass:'monq qcbh bhdy elod',
+                    user:process.env.SMTP_MAIL,
+                    pass:process.env.SMTP_PASS,
                 },
             })
             const mailOptions = {

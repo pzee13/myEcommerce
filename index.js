@@ -4,12 +4,19 @@ const path = require("path");
 const session = require("express-session");
 const config = require("./config/config");
 const multer = require("multer");
+const dotenv = require("dotenv")
 
-mongoose.connect("mongodb://127.0.0.1:27017/ecommercemg");
+
 
 const app = express();
 
-const PORT = process.env.PORT || 4000;
+dotenv.config()
+
+const PORT =  process.env.PORT
+
+mongoose.connect(process.env.MONGO_DB).then(()=>{
+  console.log("Mongodb Connected...");
+})
 
 app.use(
   session({
@@ -35,6 +42,6 @@ const adminRoute = require("./routes/adminRoute");
 app.use("/admin", disableBackButton, adminRoute);
 
 app.listen(PORT, function () {
-  console.log("Server is running on Port http://localhost:4000");  
+  console.log(`Server is running on Port http://localhost:${PORT}`);  
 });
  
