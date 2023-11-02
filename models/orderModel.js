@@ -7,13 +7,17 @@ const orderSchema = new mongoose.Schema({
     ref: 'User', // Reference to the User model
     required: true,
   },
+  orderID: {
+    type: Number,
+    required: true,
+  },
   deliveryAddress: {
     type: String,
     required: true,
   },
   paymentOption: {
     type: String,
-    enum: ['COD', 'PayPal', 'Other'], 
+    enum: ['COD', 'Online','PayPal', 'Other'], 
     required: true,
   },
   totalAmount: {
@@ -27,6 +31,10 @@ const orderSchema = new mongoose.Schema({
   expectedDelivery:{
     type:Date
   },
+  status: {
+    type: String,
+    default: 'On the way'
+},
   products: [{
     product_Id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,12 +59,6 @@ const orderSchema = new mongoose.Schema({
         type: Date,
        
     },
-
-    status: {
-        type: String,
-        default: 'On the way'
-    },
-
     cancelReason: {
         type: String
     }

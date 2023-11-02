@@ -12,6 +12,9 @@ const app = express();
 
 dotenv.config()
 
+const adminRoute = require("./routes/adminRoute");
+
+const userRoute = require("./routes/userRoute.js");
 const PORT =  process.env.PORT
 
 mongoose.connect(process.env.MONGO_DB).then(()=>{
@@ -35,11 +38,18 @@ const disableBackButton = (req, res, next) => {
   next();
 }; 
 
-const userRoute = require("./routes/userRoute.js");
+app.set('view engine','ejs')
+app.set('views','./views/users')
+
+
 app.use("/", disableBackButton, userRoute);
  
-const adminRoute = require("./routes/adminRoute");
+
 app.use("/admin", disableBackButton, adminRoute);
+
+app.use('*',(req,res)=>{
+  res.render('404-error')
+})
 
 app.listen(PORT, function () {
   console.log(`Server is running on Port http://localhost:${PORT}`);  

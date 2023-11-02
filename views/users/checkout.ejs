@@ -395,9 +395,15 @@ function placeOrder() {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    // Order placed successfully
-                    // You can display a success message or redirect the user to a confirmation page
-                    Swal.fire('Order placed successfully <br> <a href="/order_placed">View</a>');
+                    Swal.fire({
+                        title: 'Order Placed Successfully',
+                        icon: 'success',
+                        timer: 3000, // 3 seconds timeout
+                        showConfirmButton: false,
+                    }).then(() => {
+                        // Redirect to '/order_placed' after the timeout
+                        window.location.href = '/order_placed';
+                    });
                 } else {
                     // Handle errors, display an error message, or take appropriate action
                     Swal.fire('Order placement failed:', data.message);

@@ -112,7 +112,6 @@ const addCart = async (req, res, next) => {
     }
 }
 
-
 // const addCart = async (req, res, next) => {
 //     try {
 //         const userid = req.session.user_id;

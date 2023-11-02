@@ -90,9 +90,8 @@
                             </div><!-- .End .tab-pane -->
                             
                             <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                                <p>No order has been made yet.</p>
-
-                                <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                                    
+                                <a href="/orders" class="btn btn-outline-primary-2"><span>Orders</span><i class="icon-long-arrow-right"></i></a>
                             </div><!-- .End .tab-pane -->
 
                             <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
@@ -437,13 +436,14 @@
 
             // Send an AJAX request to the server to delete the address
             fetch(`/delete_address/${addressId}`, {
-                method: 'GET',
+                method: 'DELETE',
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     if (addressDiv) {
-                        addressDiv.remove(); // Remove the div from the DOM
+                        addressDiv.remove();// Remove the div from the DOM
+                        location.reload() 
                         // Close the modal
                       
                     } else {

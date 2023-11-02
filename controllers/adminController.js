@@ -4,6 +4,7 @@ const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
+const Order = require("../models/orderModel")
 const fs = require("fs")
 
 const securePassword = async(password)=>{
@@ -198,6 +199,19 @@ const loadadHome = async(req,res)=>{
   };
 
 
+  const loadorders = async(req,res)=>{
+    try{
+      
+      const orders = await Order.find().populate('user')
+      res.render("addorder",{order:orders})
+    }
+    catch(error)
+    {
+      console.log(error.message)
+    }
+  }
+
+
 const adLogout = async(req,res)=>{
 
   try{
@@ -218,6 +232,6 @@ module.exports = {
     loadviewUsers,
     blockUser,
     adLogout,
-    searchUsers
-    
+    searchUsers,
+    loadorders
 }   

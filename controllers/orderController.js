@@ -21,8 +21,6 @@ const placeOrder = async (req, res) => {
       const totalAmount = parseFloat(req.body.totalAmount);
   
       // Check if paymentOption is valid
-    
-      
   
       // Fetch the cart items from the database based on the user's ID
       const cartItems = await Cart.findOne({ user_id: userId })
@@ -38,6 +36,24 @@ const placeOrder = async (req, res) => {
         });
       }
 
+      const orderDataUser = await Order.find({ user: userId });
+
+
+      function generateOrderID() {
+        return Math.floor(Math.random() * 900000) + 100000;
+      }
+  
+      let orderIdSample;
+  
+      if (!orderDataUser[0]) {
+        orderIdSample = generateOrderID();
+        console.log(orderIdSample)
+      } else {
+        const lastOrder = orderDataUser[orderDataUser.length - 1];
+        orderIdSample = lastOrder.orderID + 1;
+      }
+      console.log(orderIdSample)
+
       const products = cartItems.items.map((item) => ({
         product_Id: item.product_Id,
         total: item.total,
@@ -50,12 +66,13 @@ const placeOrder = async (req, res) => {
       // Create a new order
       const newOrder = new Order({
         user: userId,
+        orderID:orderIdSample,
         deliveryAddress: addressId,
         paymentOption,
         totalAmount,
         orderDate: new Date(),
         expectedDelivery: deliveryDate,
-        products:products
+        products:products,
         // You can add more details to the order as needed
       });
   
@@ -88,47 +105,61 @@ const placeOrder = async (req, res) => {
   };
 
 
-//   const loadOrderPlaced=async(req,res,next)=>{
-//     try {
-//           const id=req.session.user_id
-//          const order=await Order.findOne({user:id}).populate(
-//            "products.product_Id"
-//          ).sort({date:-1})
-   
-//         res.render('orderSuccess',{order})
-        
-//     } catch (err) {
-//       next(err)
-//     }
-// }
-
 const loadOrderPlaced = async (req, res, next) => {
-  try {
-    const userId = req.session.user_id;
-    
-    const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-    // Find the user's latest order and populate the necessary fields
-    const order = await Order.findOne({ user: userId })
-      .populate({
-        path: 'products.product_Id', // Replace with the correct model name
-      })
-      .populate('deliveryAddress') // Populate the delivery address if needed
-      .sort({ orderDate: -1 }); // Sort to get the latest order
+  try{
+  const userId = req.session.user_id;
+  const orderId = req.query.id;
 
-    if (!order) {
+  let order; // Declare order variable outside the if-else block
+
+  if (orderId) {
+      order = await Order.findOne({ _id: orderId })
+          .populate({
+              path: 'products.product_Id',
+          })
+          .sort({ orderDate: -1 });
+  } else {
+      order = await Order.findOne({ user: userId })
+          .populate({
+              path: 'products.product_Id',
+          })
+          .sort({ orderDate: -1 });
+  }
+
+  const products = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+
+  if (!order) {
       return res.status(404).json({
-        success: false,
-        message: 'No orders found for the user.',
+          success: false,
+          message: 'No orders found for the user.',
       });
-    }
+  }
 
-    res.render('orderSuccess', { order ,products,userIsLoggedIn: req.session.user_id ? true : false});
+    res.render("orderSuccess", { order ,products,userIsLoggedIn: req.session.user_id ? true : false});
   } catch (err) {
     next(err);
   }
 };
 
+
+const loadOrder = async(req,res)=>{
+  try{
+    const userId = req.session.user_id;
+    const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+    const orders = await Order.find().populate('user')
+      res.render("orders",{orders:orders,userIsLoggedIn: req.session.user_id ? true : false,products})
+  }
+  catch(error)
+  {
+    console.log(error.message)
+  }
+}
+
+
+
 module.exports ={
     placeOrder,
-    loadOrderPlaced
+    loadOrderPlaced,
+    loadOrder
+    
 }

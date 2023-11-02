@@ -94,34 +94,20 @@ user_route.post('/update_profile',auth.isLogin,profileController.updateProfile)
 
 user_route.post('/add_address',profileController.addAddress)
 
-// user_route.get('/edit_address',profileController.loadEditAddress)
-
 user_route.post('/edit_address',profileController.EditAddress)
 
-user_route.get('/delete_address/:addressId',auth.isLogin,profileController.deleteAddress)
+user_route.delete('/delete_address/:addressId',auth.isLogin,profileController.deleteAddress)
 
 user_route.get('/checkout0',auth.isLogin,checkoutController.loadCheckout0)
-
-// user_route.get('/checkout',auth.isLogin,checkoutController.loadCheckout)
-
-// user_route.post('/select_address',auth.isLogin,checkoutController.useThisAddress)
-
-// user_route.post('/checkout3',auth.isLogin,checkoutController.useThisAddress)
-
-// user_route.post('/checkout3/select_payment',auth.isLogin,checkoutController.selectPayment)
-
 
 user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
 
 user_route.post('/place_order',orderController.placeOrder)
 
-user_route.get('/order_placed',orderController.loadOrderPlaced)
+user_route.get('/order_placed',auth.isLogin,orderController.loadOrderPlaced)
 
-// user_route.get('/updated_wishlist_data',wishlistController.updatelist)
+user_route.get('/orders',auth.isLogin,orderController.loadOrder)
 
-// user_route.get('/cart', auth.isLogin, cart2Controller.loadCart);
-// user_route.post('/cart',cart2Controller.addCart);
-// user_route.patch('/update_quantity/:id/:quantity',cart2Controller.updateQuantity);
-// user_route.patch('/update_cart',cart2Controller.updateCart);
+
 
 module.exports = user_route 

@@ -6,6 +6,7 @@ const Category = require("../models/categoryModel")
 const Address = require("../models/addressModel")
 const Wishlist = require("../models/wishlistModel")
 const Product = require("../models/productModel")
+const Order = require("../models/orderModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
@@ -19,11 +20,15 @@ const loadProfile = async (req, res) => {
         const id = req.session.user_id;
         const products = await Cart.findOne({user_id:id}).populate('items.product_Id')
         const user = await User.findById(id);
+        const orders = await Order.find({ user: id}).populate(
+            "products.product_Id"
+        ).sort({orderDate:-1})
+        console.log(orders)
 
         if (user) {
             const address = await Address.findOne({ user_id: id })
            
-            res.render('userProfile', { user, address:address,products:products ,userIsLoggedIn: req.session.user_id ? true : false});
+            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false});
         } else {
             res.redirect('/login');
         }
