@@ -53,6 +53,11 @@
 <link rel="stylesheet" href="/public/userAssets/userAccount/assets/css/style.css">
 
 
+
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -87,8 +92,8 @@
 						<a id="loginLink" href="/login" class="flex-c-m trans-04 p-lr-25">Login</a>
 						<% } else { %>
 							<button id="logoutButton" class="flex-c-m trans-04 p-lr-25 text-white">Logout</button>
-							<div id="confirmationModal" class="modal" >
-								<div class="modal-content" style="border-radius: 30px; opacity:calc(2.5)">
+							<div id="confirmationModal" class="modal modalp" >
+								<div class="modal-content modalpc" style="border-radius: 30px; opacity:calc(2.5)">
 									<p style="font-size: 20px; color: #ffffff; margin-bottom: 20px;">Are you sure you want to log out?</p>
 									<a id="logoutLink" href="/logout" class="flex-c-m trans-04 p-lr-25" id="confirmButton" style="color: #ffffff; font-size: 18px; background-color: #6c7ae0; border: none; border-radius: 30px; cursor: pointer; transition: background-color 0.3s ease; text-decoration: none;">Yes, log out</a>
 									<button id="cancelButton" class="cancelButton" style="background-color: #ffffff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; color: #000000; font-size: 18px;">Cancel</button>
@@ -365,7 +370,7 @@
 
 
 	<style>
-		.modal {
+		.modalp {
     display: none;
     position: fixed;
     top: 0;
@@ -376,7 +381,7 @@
     z-index: 1;
 }
 
-.modal-content {
+.modalpc {
     background: rgba(0, 0, 0, 0.9);
     width: 300px;
     margin: 15% auto;

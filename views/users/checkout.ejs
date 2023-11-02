@@ -34,8 +34,8 @@
                         <% for (let i = address.address.length - 1; i >= 0; i--) { %>
                         <label class="p-3 border rounded-4 m-2 custom-label">
                             <div class="form-check d-flex align-items-center mx-4">
-                                <input class="form-check-input" type="radio" value="<%= address.address[i]._id %>"
-                                    name="address" id="Radio<%= address.address[i]._id %>" <% if (i === address.address.length - 1) { %> checked <% } %>
+                                <input class="form-check-input" type="radio" value=" <%= address.address[i].fname %>,<%= address.address[i].mobile %>,<%= address.address[i].email %>, <%=address.address[i].housename %>, <%=address.address[i].city %>, <%=address.address[i].state %>, <%=address.address[i].district %>, <%=address.address[i].pin %>"
+                                    name="address" id="Radio<%= address.address[i]._id %>" <% if (i === address.address.length - 1) { %> checked <% } %> 
                                 >
                                 <div class="mx-5">
                                     <p class="text-dark">
@@ -371,8 +371,11 @@ function placeOrder() {
     console.log(selectedPaymentOption)
 
     if (selectedAddressInput && cartPriceElement && selectedPaymentOption) {
-        const selectedAddress = selectedAddressInput.value;
+        const selectedAddressJSON = selectedAddressInput.value; 
+        console.log(selectedAddressJSON)// Get the JSON string
+        const selectedAddress = selectedAddressJSON; // Parse it back into an object
         const totalAmount = cartPriceElement.textContent;
+
 
         // Create an object with the order details
         const orderData = {

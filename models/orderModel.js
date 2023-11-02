@@ -8,8 +8,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   deliveryAddress: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'address', // Reference to the Address model
+    type: String,
     required: true,
   },
   paymentOption: {

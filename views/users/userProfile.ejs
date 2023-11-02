@@ -1,6 +1,6 @@
 <%- include('../userMainlayouts/mainheader.ejs') %>
 
-<main class="main p-t-75">
+<main class="main p-t-75" style="background-color: rgb(255, 255, 255); font-family: Poppins-Medium;" >
     <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         <div class="container">
             <h1 class="page-title" style="font-family: Poppins-Medium; color: #00000033;">My Account<span>Shop</span></h1>
@@ -84,7 +84,7 @@
                                 
                                     <button type="submit" class="btn btn-outline-primary-2">
                                         <span>SAVE CHANGES</span>
-                                        <i class="icon-long-arrow-right"></i>
+                                        
                                     </button>
                                 </form>
                             </div><!-- .End .tab-pane -->
@@ -97,49 +97,58 @@
 
                             <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
                                 <h3 class="card-title">Add Address</h3><!-- End .card-title -->
-                                <form action="/add_address" method="post">
+                                <form action="/add_address" method="post" onsubmit="return validAddress()">
                                     <div class="row">
                                         <div class="form-group col-sm-6">
                                             <label for="fname">First Name</label>
-                                            <input type="text" class="form-control" id="fname" name="fname" required>
+                                            <input type="text" class="form-control" id="fname1" name="fname">
+                                            <p id="fname-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-sm-6">
                                             <label for="lname">Last Name</label>
-                                            <input type="text" class="form-control" id="lname" name="lname" required>
+                                            <input type="text" class="form-control" id="lname1" name="lname">
+                                            <p id="lname-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="mobile">Mobile</label>
-                                            <input type="text" class="form-control" id="mobile" name="mobile" required>
+                                            <input type="text" class="form-control" id="mobile1" name="mobile">
+                                            <p id="mobile-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="mobile">Email</label>
-                                            <input type="text" class="form-control" id="email" name="email" required>
+                                            <input type="text" class="form-control" id="email1" name="email">
+                                            <p id="email-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="housename">House Name</label>
-                                            <input type="text" class="form-control" id="housename" name="housename" required>
+                                            <input type="text" class="form-control" id="housename" name="housename">
+                                            <p id="housename-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="city">City</label>
-                                            <input type="text" class="form-control" id="city" name="city" required>
+                                            <input type="text" class="form-control" id="city" name="city">
+                                            <p id="city-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="pin">Pin</label>
-                                            <input type="text" class="form-control" id="pin" name="pin" required>
+                                            <input type="text" class="form-control" id="pin" name="pin">
+                                            <p id="pin-error" style="color: red;"></p>
                                         </div>  
                                         <div class="form-group col-12">
                                             <label for="district">District</label>
-                                            <input type="text" class="form-control" id="district" name="district" required>
+                                            <input type="text" class="form-control" id="district" name="district">
+                                            <p id="district-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="state">State</label>
-                                            <input type="text" class="form-control" id="state" name ="state" required>
+                                            <input type="text" class="form-control" id="state" name ="state">
+                                            <p id="state-error" style="color: red;"></p>
                                         </div>
                                         <!-- Add input fields for other address details here -->
                                         <div class="form-group col-12">
                                             <button type="submit" class="btn btn-outline-primary-2">
                                                 <span>Add Address</span>
-                                                <i class="icon-long-arrow-right"></i>
+                                                
                                             </button>
                                         </div>
                                     </div>
@@ -204,6 +213,7 @@
 
 <div class="modal fade" id="editAddressModal" tabindex="0" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
+        <div class="modal-container">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
@@ -217,39 +227,48 @@
                     <!-- Make sure to include an input field for capturing the address ID -->
                     <div class="form-group">
                         <label for="editFirstName">First Name</label>
-                        <input type="text" class="form-control" id="editFirstName" name="fname" required>
+                        <input type="text" class="form-control" id="editFirstName" name="fname">
+                        
                     </div>
                     <div class="form-group">
                         <label for="editLastName">Last Name</label>
-                        <input type="text" class="form-control" id="editLastName" name="lname" required>
+                        <input type="text" class="form-control" id="editLastName" name="lname">
+                        
                     </div>
                     <div class="form-group">
                         <label for="editEmail">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                        <input type="email" class="form-control" id="editEmail" name="email">
+                       
                     </div>
                     <div class="form-group">
                         <label for="editMobile">Mobile</label>
-                        <input type="text" class="form-control" id="editMobile" name="mobile" required>
+                        <input type="text" class="form-control" id="editMobile" name="mobile">
+                      
                     </div>
                     <div class="form-group">
                         <label for="editHousename">House Name</label>
-                        <input type="text" class="form-control" id="editHousename" name="housename" required>
+                        <input type="text" class="form-control" id="editHousename" name="housename">
+                      
                     </div>
                     <div class="form-group">
                         <label for="editCity">City</label>
-                        <input type="text" class="form-control" id="editCity" name="city" required>
+                        <input type="text" class="form-control" id="editCity" name="city">
+                        
                     </div>
                     <div class="form-group">
                         <label for="editState">State</label>
-                        <input type="text" class="form-control" id="editState" name="state" required>
+                        <input type="text" class="form-control" id="editState" name="state">
+                        
                     </div>
                     <div class="form-group">
                         <label for="editDistrict">District</label>
-                        <input type="text" class="form-control" id="editDistrict" name="district" required>
+                        <input type="text" class="form-control" id="editDistrict" name="district">
+                        
                     </div>
                     <div class="form-group">
                         <label for="editPin">Pin</label>
-                        <input type="text" class="form-control" id="editPin" name="pin" required>
+                        <input type="text" class="form-control" id="editPin" name="pin">
+                        
                     </div>
 
                     <!-- Include an input field to capture the address ID (hidden input) -->
@@ -263,17 +282,91 @@
             </div>
         </div>
     </div>
+    </div>
 </div>
 
 <style>
-    /* Customize the height of the modal content */
-    .modal-content {
-        margin-top: 100px;
-        max-height: 80vh; /* Adjust the value as needed */
-        overflow-y: auto;
-        text-align: center;
-    }
+    /* Style the modal header */
+    .modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background overlay */
+    z-index: 999; /* Ensure it's above other content */
+}
+
+/* Style the modal content */
+.modal-content {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    max-height: 60vh; /* Reduce the maximum height to your desired value */
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+    padding: 20px;
+    text-align: center;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 10px; /* Adjust the width as needed */
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #3498db; /* Color of the scroll thumb */
+    border-radius: 5px; /* Rounded thumb */
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Style the form input fields */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    background-color: #f4f4f4;
+    border: 1px solid #d0d0d0;
+    border-radius: 3px;
+    padding: 10px;
+    width: 100%;
+    transition: border 0.3s;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Style the submit button */
+.btn-outline-primary-2 {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-outline-primary-2:hover {
+    background-color: #2679b5;
+}
 </style>
+
 
 <script>
     // Add an event listener for the "Edit" links
@@ -369,6 +462,133 @@
 
 </script>
 
+<script>
+    function validAddress() {
+    const firstname = document.getElementById('fname1').value;
+    const lastname =  document.getElementById('lname1').value;
+    const mobile = document.getElementById('mobile1').value;
+    const email = document.getElementById('email1').value;
+    const housename = document.getElementById('housename').value;
+    const district = document.getElementById('district').value;
+    const city = document.getElementById('city').value;
+    const pincode = document.getElementById('pin').value;
+    const state = document.getElementById('state').value;
+
+    document.getElementById('fname-error').textContent = '';
+    document.getElementById('lname-error').textContent = '';
+    document.getElementById('mobile-error').textContent = '';
+    document.getElementById('email-error').textContent = '';
+    document.getElementById('housename-error').textContent = '';
+    document.getElementById('district-error').textContent = '';
+    document.getElementById('city-error').textContent = '';
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('state-error').textContent = '';
+    
+
+    if (!firstname) {
+        document.getElementById('fname-error').textContent = 'First Name field should not be empty!';
+        return false;
+    }
+
+    if (!lastname) {
+        document.getElementById('lname-error').textContent = 'Last Name field should not be empty!';
+        return false;
+    }
+
+    const mobileRegex = /^[6-9]\d{9}$/;
+
+    if (!mobile || !mobileRegex.test(mobile)) {
+        document.getElementById('mobile-error').textContent = 'Mobile number should be a 10-digit valid number';
+        return false;
+    }
+
+    if (new Set(mobile).size === 1) {
+        document.getElementById('mobile-error').textContent = 'Mobile number should not consist of the same digit.';
+        return false;
+    }
+
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+    if (!email || !emailRegex.test(email)) {
+    document.getElementById('email-error').textContent = 'Please enter a valid email address. (eg: example@gmail.com)';
+    return false;
+    }
+
+
+
+    if (!housename) {
+        document.getElementById('housename-error').textContent = 'housename field should not be empty!';
+        return false;
+    }
+
+   
+    const pincodeRegex = /^\d{6}$/;
+
+    if (!pincode || !pincode.match(pincodeRegex)) {
+        document.getElementById('pin-error').textContent = 'Pincode should be a 6-digit numeric value.';
+        return false;
+    }
+
+    if (!city) {
+        document.getElementById('city-error').textContent = 'City field should not be empty!';
+        return false;
+    }
+
+
+    if (!district) {
+        document.getElementById('district-error').textContent = 'District field should not be empty!';
+        return false;
+    }
+
+    if (!state) {
+        document.getElementById('state-error').textContent = 'State field should not be empty!';
+        return false;
+    }
+
+    return true;
+}
+
+
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabLinks = document.querySelectorAll('.nav-link');
+        
+        tabLinks.forEach(function(link) {
+            link.addEventListener('click', function(event) {
+                event.preventDefault()
+                const tabId = link.getAttribute('href').replace('#', ''); // Get the tab ID
+                window.location.hash = tabId; // Update the URL hash
+                console.log(tabId)
+            });
+        });
+    });
+</script>
+
+<!-- JavaScript code to activate the correct tab based on the URL hash -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Read the URL hash
+        const activateTabFromHash = () => {
+        const hash = window.location.hash;
+        
+        if (hash) {
+            // Find the corresponding tab link and activate it
+            const tabLink = document.querySelector(`[href="${hash}"]`);
+            
+            if (tabLink) {
+                tabLink.click(); // Simulate a click event to activate the tab
+            }
+        }
+    }
+    activateTabFromHash();
+
+// Listen for changes to the URL hash and activate the corresponding tab
+window.addEventListener('hashchange', activateTabFromHash);
+    });
+</script>
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>
