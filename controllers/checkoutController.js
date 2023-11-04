@@ -22,7 +22,7 @@ const loadCheckout0 = async (req, res,next) => {
       {
       if(address)
       {
-      res.render('checkout', { products, address,UserData,userIsLoggedIn: req.session.user_id ? true : false })
+      res.render('checkout', { products,address,UserData,userIsLoggedIn: req.session.user_id ? true : false })
       }else{
           res.render('checkout',{
               UserData,

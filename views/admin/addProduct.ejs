@@ -1,129 +1,206 @@
-<%-include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
 
-<%-include('../admin/layouts/sidebar.ejs') %>
-
-<%-include('../admin/layouts/navbar.ejs') %>
-
-
-
-        <!--============================ Adding categories table=============== -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-            <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h2 class="card-title">PRODUCTS</h2>
-                  <form class="forms-sample" action="" method="post" enctype="multipart/form-data">
-                    <div class="form-row">
-                      <label for="exampleInputName1">Product Name</label>
-                      <input type="text" class="form-control" id="exampleInputName1" name="productname" placeholder="Product Name">
+<!-- Adding categories table -->
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">PRODUCTS</h2>
+          <form class="forms-sample" action="" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="exampleInputName1">Product Name</label>
+              <input type="text" class="form-control" id="productName" name="productname" placeholder="Product Name">
+              <div class="error"></div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4 form-group">
+                <label for="category">Category</label>
+                <select class="form-control" id="category" name="category" required>
+                  <% Category.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.categoryName %></option>
+                  <% }); %>
+                </select>
+                <div class="error"></div>
+              </div>
+              <div class="col-md-4 form-group">
+                <label for="price">Price</label>
+                <input type="text" class="form-control" id="price" name="price" placeholder="Price">
+                <div class="error"></div>
+              </div>
+              <div class="col-md-4 form-group">
+                <label for="quantity">Quantity</label>
+                <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity">
+                <div class="error"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea class="form-control" id="description" rows="4" name="description"></textarea>
+              <div class="error"></div>
+            </div>
+            <div class="form-row">
+              <label for="">File upload (Multiple Images)</label>
+            </div>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-6 mb-0">
+                  <div class="dynamic-image-inputs">
+                    <div class="input-group">
+                      <input type="file" name="images" class="form-control" required>
+                      <div class="input-group-append">
+                        <button class="btn btn-primary add-image-input" type="button">Add Image</button>
+                      </div>
                     </div>
-                    <br>
-                    <div class="form-row align-items-center">
-                      <div class="col-sm-4 my-1">
-                        <label for="exampleInputName1">Category</label>
-                        <select class="form-control" id="category" name="category" required>
-                          <% Category.forEach(category => { %>
-                            <option value="<%= category._id %>"><%= category.categoryName %></option>
-                          <% }); %>
-                        </select>
-                      </div>
-                      <div class="col-sm-4 my-1">
-                        <label for="exampleInputName1">Price</label>
-                        <input type="text" class="form-control" id="inlineFormInputName1" name="price" placeholder="Price">
-                      </div>
-                      <div class="col-sm-4 my-1">
-                        <label for="exampleInputName1">Quantity</label>
-                        <div class="input-group">
-                          <input type="text" class="form-control" id="inlineFormInputGroupUsername2" name="quantity" placeholder="Quantity">
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <div class="col-md-12 grid-margin">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="form-group">
+                          <label for="size">Size</label>
+                          <select class="form-control" name="size" id="size">
+                            <option>28</option>
+                            <option>30</option>
+                            <option>32</option>
+                            <option>34</option>
+                            <option>36</option>
+                            <option>38</option>
+                          </select>
                         </div>
                       </div>
                     </div>
-                    <br>
-                    <div class="form-row">
-                      <label for="exampleInputName1">Description</label>
-                      <textarea class="form-control" id="exampleTextarea1" rows="4" name="description"></textarea>
-                    </div>
-                    <br>
-                    <div class="form-row">
-                      <label for="">File upload (Multiple Images)</label>
-                    </div>
-                    <div class="container">
-                      <div class="row">
-                        <div class="col-md-6 mb-0">
-                          <div class="dynamic-image-inputs">
-                            <div class="input-group">
-                              <input type="file" name="images" class="form-control" required>
-                              <div class="input-group-append">
-                                <button class="btn btn-primary add-image-input" type="button">Add Image</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                          <div class="col-md-12 grid-margin">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="form-row">
-                                  <label for="file">Size</label>
-                                </div>
-                                <div class="form-group">
-                                  <select class="form-control" name="size" id="exampleFormControlSelect2">
-                                    <option>28</option>
-                                    <option>30</option>
-                                    <option>32</option>
-                                    <option>34</option>
-                                    <option>36</option>
-                                    <option>38</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-        
-                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                    <button class="btn btn-dark">Cancel</button>
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- content-wrapper ends -->
-          </div>
-          <!-- main-panel ends -->
+            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            <button class="btn btn-dark">Cancel</button>
+          </form>
         </div>
-        <!-- page-body-wrapper ends -->
-        
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-            const addImageButton = document.querySelector(".add-image-input");
-            const dynamicImageInputs = document.querySelector(".dynamic-image-inputs");
-        
-            addImageButton.addEventListener("click", function () {
-              const inputGroup = document.createElement("div");
-              inputGroup.className = "input-group";
-              const inputFile = document.createElement("input");
-              inputFile.type = "file";
-              inputFile.name = "images";
-              inputFile.className = "form-control";
-              inputFile.required = true;
-              const inputGroupAppend = document.createElement("div");
-              inputGroupAppend.className = "input-group-append";
-              const removeButton = document.createElement("button");
-              removeButton.className = "btn btn-danger remove-image-input";
-              removeButton.type = "button";
-              removeButton.textContent = "Remove";
-              removeButton.addEventListener("click", function () {
-                inputGroup.remove();
-              });
-              inputGroupAppend.appendChild(removeButton);
-              inputGroup.appendChild(inputFile);
-              inputGroup.appendChild(inputGroupAppend);
-              dynamicImageInputs.appendChild(inputGroup);
-            });
-          });
-        </script>
-        
-<%-include('../admin/layouts/footer.ejs') %>
+      </div>
+    </div>
+  </div>
+  <!-- content-wrapper ends -->
+</div>
+<!-- main-panel ends -->
+</div>
+<!-- page-body-wrapper ends -->
+
+<!-- Include the JavaScript code for form validation -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.forms-sample');
+    form.addEventListener('submit', function (event) {
+      let isValid = true;
+
+      // Reset error messages
+      const errorElements = document.querySelectorAll('.error');
+      errorElements.forEach(function (errorElement) {
+        errorElement.textContent = '';
+      });
+
+      // Product Name Validation
+      const productName = document.getElementById('productName');
+      if (productName.value.trim() === '') {
+        isValid = false;
+        productName.nextElementSibling.textContent = 'Product Name is required';
+      }
+
+      productName.addEventListener('input', function () {
+        productName.nextElementSibling.textContent = '';
+      });
+
+      // Category Validation
+      const category = document.getElementById('category');
+      if (category.value === '') {
+        isValid = false;
+        category.nextElementSibling.textContent = 'Category is required';
+      }
+
+      category.addEventListener('change', function () {
+        category.nextElementSibling.textContent = '';
+      });
+
+      // Price Validation
+      const price = document.getElementById('price');
+      const priceValue = parseFloat(price.value);
+      if (price.value.trim() === '') {
+        isValid = false;
+        price.nextElementSibling.textContent = 'Price is required';
+      } else if (isNaN(priceValue) || priceValue <= 0) {
+        isValid = false;
+        price.nextElementSibling.textContent = 'Price must be a number greater than zero';
+      }
+
+      price.addEventListener('input', function () {
+        price.nextElementSibling.textContent = '';
+      });
+
+      // Quantity Validation
+      const quantity = document.getElementById('quantity');
+      const quantityValue = parseFloat(quantity.value);
+      if (quantity.value.trim() === '') {
+        isValid = false;
+        quantity.nextElementSibling.textContent = 'Quantity is required';
+      } else if (isNaN(quantityValue) || quantityValue <= 0) {
+        isValid = false;
+        quantity.nextElementSibling.textContent = 'Quantity must be a positive number';
+      }
+
+      quantity.addEventListener('input', function () {
+        quantity.nextElementSibling.textContent = '';
+      });
+
+      // Description Validation
+      const description = document.getElementById('description');
+      if (description.value.trim() === '') {
+        isValid = false;
+        description.nextElementSibling.textContent = 'Description is required';
+      }
+
+      description.addEventListener('input', function () {
+        description.nextElementSibling.textContent = '';
+      });
+
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+
+<!-- Include the JavaScript code for dynamic image input -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const addImageButton = document.querySelector(".add-image-input");
+    const dynamicImageInputs = document.querySelector(".dynamic-image-inputs");
+
+    addImageButton.addEventListener("click", function () {
+      const inputGroup = document.createElement("div");
+      inputGroup.className = "input-group";
+      const inputFile = document.createElement("input");
+      inputFile.type = "file";
+      inputFile.name = "images";
+      inputFile.className = "form-control";
+      inputFile.required = true;
+      const inputGroupAppend = document.createElement("div");
+      inputGroupAppend.className = "input-group-append";
+      const removeButton = document.createElement("button");
+      removeButton.className = "btn btn-danger remove-image-input";
+      removeButton.type = "button";
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", function () {
+        inputGroup.remove();
+      });
+      inputGroupAppend.appendChild(removeButton);
+      inputGroup.appendChild(inputFile);
+      inputGroup.appendChild(inputGroupAppend);
+      dynamicImageInputs.appendChild(inputGroup);
+    });
+  });
+</script>
+<%- include('../admin/layouts/footer.ejs') %>

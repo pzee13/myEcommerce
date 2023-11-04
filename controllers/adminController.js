@@ -4,6 +4,7 @@ const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
+const Cart = require("../models/cartModel")
 const Order = require("../models/orderModel")
 const fs = require("fs")
 
@@ -202,14 +203,126 @@ const loadadHome = async(req,res)=>{
   const loadorders = async(req,res)=>{
     try{
       
-      const orders = await Order.find().populate('user')
-      res.render("addorder",{order:orders})
+      const orders = await Order.find().populate('user').populate({
+        path: 'products.product_Id',
+    })
+      const products = await Cart.find().populate('items.product_Id')
+      res.render("addorder",{orders:orders,products})
     }
     catch(error)
     {
       console.log(error.message)
     }
   }
+
+
+  const adorderDetails = async (req, res, next) => {
+    try{
+    
+    const orderId = req.query.id;
+  
+     // Declare order variable outside the if-else block
+  let orders
+    if (orderId) {
+       orders = await Order.findOne({ _id: orderId })
+            .populate({
+                path: 'products.product_Id',
+            })
+            .sort({ orderDate: -1 });
+    } 
+    
+  
+    if (!orders) {
+        return res.status(404).json({
+            success: false,
+            message: 'No orders found for the user.',
+        });
+    }
+  
+      res.render("adorderDetails", { order:orders });
+    } catch (err) {
+      next(err);
+    }
+  };
+  
+
+
+  // const loadorders = async (req, res) => {
+  //   try {
+  //     const orders = await Order.find().populate('user');
+  
+  //     const productWiseOrdersArray = [];
+  
+  //     for (const order of orders) {
+  //       for (const productInfo of order.products) {
+  //         const productId = productInfo.product_Id; // Assuming product_Id is the correct field
+  
+  //         const product = await Product.findById(productId).select('productName images price');
+  //         const userDetails = order.user; // 'user' field is already populated
+  
+  //         if (product) {
+  //           // Push the order details with product details into the array
+  //           productWiseOrdersArray.push({
+  //             user: userDetails,
+  //             product: product,
+  //             orderDetails: {
+  //               _id: order._id,
+  //               userId: order.user._id, // Assuming user._id is the correct field
+  //               shippingAddress: order.deliveryAddress, // Assuming deliveryAddress is the correct field
+  //               orderDate: order.orderDate,
+  //               totalAmount: productInfo.total, // Assuming 'total' is the correct field
+  //               OrderStatus: productInfo.status,
+  //               paymentStatus: order.paymentOption, // Assuming paymentOption is the correct field
+  //               paymentMethod: '', // You may add the actual payment method here
+  //               quantity: productInfo.quantity,
+  //             },
+  //           });
+  //         }
+  //       }
+  //     }
+  
+  //     res.render('addorder', { orders: productWiseOrdersArray });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+  const updateOrderStatus = async (req, res) => {
+    try {
+        const { productId, orderId, value } = req.body;
+        console.log(value);
+        console.log(orderId);
+        console.log(productId);
+
+        // Find the order by ID
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Find the product within the order's products array
+        const product = order.products.find((prod) => prod.product_Id.toString() === productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found in the order' });
+        }
+
+        // Check if the product is already canceled
+        if (product.status === 'Canceled') {
+            return res.status(400).json({ success: false, message: 'Product is already canceled' });
+        }
+
+        // Update the status of the product in the order
+        product.status = value; // Assuming 'status' is a field in your database
+        await order.save();
+
+        res.json({ success: true, message: 'Order status updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to update order status' });
+    }
+};
 
 
 const adLogout = async(req,res)=>{
@@ -224,6 +337,19 @@ const adLogout = async(req,res)=>{
       }
 }
 
+const  load404 = async(req,res)=>{
+
+  try{
+      
+      res.render('404error')
+  }
+  catch (error)
+      {
+          console.log(error.message)
+     }
+}
+
+
 module.exports = {
     loadadlogin,
     verifyadlogin,
@@ -233,5 +359,8 @@ module.exports = {
     blockUser,
     adLogout,
     searchUsers,
-    loadorders
+    loadorders,
+    load404,
+    updateOrderStatus,
+    adorderDetails
 }   

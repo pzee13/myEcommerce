@@ -116,6 +116,7 @@ const updateProfile = async (req, res, next) => {
         const lastname = req.body.lname;
         const email = req.body.email;
         const mobile = req.body.mobile;
+        const currentPassword = req.body.password
         const newPassword = req.body.newPassword;
         const confirmPassword = req.body.confirmPassword;
 
@@ -124,7 +125,7 @@ const updateProfile = async (req, res, next) => {
         if (!userData) {
             return res.status(404).send('User not found');
         }
-
+        
         // Check if a new password is provided and it matches the confirm password
         if (newPassword && newPassword === confirmPassword) {
             // Hash and update the new password
@@ -150,52 +151,39 @@ const updateProfile = async (req, res, next) => {
 
 const addAddress = async (req,res,next) => {
     try {
+        const userId = req.session.user_id; // Assuming you use sessions to identify users
 
-        const userId = req.session.user_id;
+        const newAddress = {
+            fname: req.body.fname,
+            lname: req.body.lname,
+            mobile: req.body.mobile,
+            email: req.body.email,
+            housename: req.body.housename,
+            pin: req.body.pin,
+            city: req.body.city,
+            district: req.body.district,
+            state: req.body.state
+        };
 
-        const address = await Address.find({ user_id: userId });
+        const existingUserAddress = await Address.findOne({ user_id: userId });
 
-        if (address) {
-            await Address.updateOne(
-                { user_id: userId },
-                {
-                    $push: {
-                        address: {
-                            fname: req.body.fname,
-                            lname: req.body.lname,
-                            mobile: req.body.mobile,
-                            email: req.body.email,
-                            housename: req.body.housename,
-                            pin: req.body.pin,
-                            city: req.body.city,
-                            district: req.body.district,
-                            state: req.body.state
-                            
-                        }
-                    }
-                }
-            );
+        if (existingUserAddress) {
+            // Update the existing address
+            existingUserAddress.address.push(newAddress);
+            await existingUserAddress.save();
         } else {
-            const newAddress = new Address({
+            // Create a new Address document if it doesn't exist
+            const newAddressDocument = new Address({
                 user_id: userId,
-                address: [{
-                            fname: req.body.fname,
-                            lname: req.body.lname,
-                            mobile: req.body.mobile,
-                            email: req.body.email,
-                            housename: req.body.housename,
-                            pin: req.body.pin,
-                            city: req.body.city,
-                            district: req.body.district,
-                            state: req.body.state
-                }]
+                address: [newAddress]
             });
-            await newAddress.save();
+            await newAddressDocument.save();
         }
 
+        // Redirect to the profile page or any other suitable page
         res.redirect('/profile');
     } catch (err) {
-       next(err);
+        next(err);
     }
 }
 

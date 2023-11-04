@@ -9,92 +9,79 @@
         <div class="card-body">
           <h2 class="card-title">EDIT PRODUCTS</h2>
           <form class="forms-sample" action="edit_product" method="post" enctype="multipart/form-data">
-            <div class="form-row">
+            <div class="form-group">
               <label for="exampleInputName1">Product Name</label>
               <input type="text" class="form-control" id="exampleInputName1" name="productname" placeholder="Product Name" value="<%= data.productName %>">
             </div>
-            <br>
-            <div class="form-row align-items-center">
-              <div class="col-sm-4 my-1">
-                <label for="category">Category</label>
-                <select class="form-control" id="category" name="category" required>
-                  <% Category.forEach(cat => { %>
-                    <option value="<%= cat._id %>" <%= data.category == cat._id ? 'selected' : '' %>><%= cat.categoryName %></option>
-                  <% }); %>
-                </select>
-              </div>
+
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select class="form-control" id="category" name="category" required>
+                <% Category.forEach(cat => { %>
+                  <option value="<%= cat._id %>" <%= data.category == cat._id ? 'selected' : '' %>><%= cat.categoryName %></option>
+                <% }); %>
+              </select>
             </div>
-    
-            <div class="form-row align-items-center">
-              <div class="col-sm-4 my-1">
-                <label for="exampleInputName1">Price</label>
+
+            <div class="form-row">
+              <div class="col-md-6">
+                <label for="price">Price</label>
                 <input type="text" class="form-control" id="inlineFormInputName1" name="price" placeholder="Price" value="<%= data.price %>">
               </div>
-              <div class="col-sm-4 my-1">
-                <label for="exampleInputName1">Quantity</label>
+
+              <div class="col-md-6">
+                <label for="quantity">Quantity</label>
                 <div class="input-group">
                   <input type="text" class="form-control" id="inlineFormInputGroupUsername2" name="quantity" placeholder="Quantity" value="<%= data.quantity %>">
                 </div>
               </div>
             </div>
-            <br>
-            <div class="form-row">
-              <label for="exampleInputName1">Description</label>
+
+            <div class="form-group mt-3">
+              <label for="exampleTextarea1">Description</label>
               <textarea class="form-control" id="exampleTextarea1" rows="4" name="description"><%= data.description %></textarea>
             </div>
-            <br>
+
             <div class="form-row">
-              <label for="">File upload (Multiple Images)</label>
-            </div>
-            <div class="container">
-              <div class="row">
-                <div class="col-md-6 mb-0">
-                  <div class="dynamic-image-inputs">
-                    <div class="input-group">
-                      <input type="file" name="images" class="form-control" >
-                      <div class="input-group-append">
-                        <button class="btn btn-primary add-image-input" type="button">Add Image</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                  <div class="col-md-12 grid-margin">
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="form-row">
-                          <label for="file">Size</label>
-                        </div>
-                        <div class="form-group">
-                          <select class="form-control" name="size" id="exampleFormControlSelect2">
-                            <option>28</option>
-                            <option>30</option>
-                            <option>32</option>
-                            <option>34</option>
-                            <option>36</option>
-                            <option>38</option>
-                          </select>
-                        </div>
-                      </div>
+              <div class="col-md-6">
+                <label for="size">Size</label>
+                <select class="form-control" name="size" id="exampleFormControlSelect2">
+                  <option>28</option>
+                  <option>30</option>
+                  <option>32</option>
+                  <option>34</option>
+                  <option>36</option>
+                  <option>38</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="file">File upload (Multiple Images)</label>
+                <div class="dynamic-image-inputs">
+                  <div class="input-group">
+                    <input type="file" name="images" class="form-control">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary add-image-input" type="button">Add Image</button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="input-container">
-              <input type="hidden" name="id" value="<%= data._id %>">
-            </div>
-
-            <!-- Hidden input for marking images for deletion -->
             <div class="form-row">
               <label for="deleteImages">Delete Existing Images</label>
+            </div>
+            <div class="row">
               <% for (let i = 0; i < data.images.length; i++) { %>
-                <div class="existing-image">
+                <div class="col-md-3 existing-image">
                   <img src="/public/adminAssets/assets/images/products/<%= data.images[i] %>" alt="Existing Image" class="product-image">
                   <input type="checkbox" name="deleteImages" value="<%= data.images[i] %>"> Delete
                 </div>
               <% } %>
+            </div>
+
+            <div class="form-group">
+              <input type="hidden" name="id" value="<%= data._id %>">
             </div>
 
             <button type="submit" class="btn btn-primary mr-2">Submit</button>
@@ -109,9 +96,12 @@
 <style>
   /* CSS for image size and overflow */
   .product-image {
-    max-width: 10%; /* Limit image width */
+    max-width: 100%; /* Limit image width to fit the column */
     height: auto; /* Maintain aspect ratio */
     display: block; /* Remove extra space below image */
+    width: 100px; /* Set a fixed width for all images */
+    height: 100px; /* Set a fixed height for all images */
+    object-fit: cover; /* Ensure uniform sizing and crop if necessary */
   }
 
   .existing-image {
@@ -148,4 +138,6 @@
     });
   });
 </script>
+
 <%- include('../admin/layouts/footer.ejs') %>
+``

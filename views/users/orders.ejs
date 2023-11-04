@@ -46,11 +46,11 @@
                                     <td><%= orders[i].orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
                                     <td>₹ <%= orders[i].totalAmount %></td>
                                     <td> <%= orders[i].paymentOption %></td>
-                                    <td><%= orders[i].status %></td>
+                                    <td><%= orders[i].products.status %></td>
                                     <td><%= orders[i].expectedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
                                     <td><%= orders[i].orderID %></td>
                                     <td>
-                                        <a href="/order_placed?id=<%= orders[i]._id %>" class="btn-outline-dark btn-round view-details" >View Details</a>
+                                        <a href="/order_details?id=<%= orders[i]._id %>" class="btn-outline-dark btn-round view-details" >View Details</a>
                                     </td>
                                 </td>
                                 

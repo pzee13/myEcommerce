@@ -4,95 +4,119 @@
 
 <div class="main-panel">
     <div class="content-wrapper">
-        <div id="reloadDiv" class="container mt-5">
-            <h2 class="mb-4">Order List</h2>
-            <% if (order && order.length > 0) { %>
-                <% for (let i = 0; i < order.length; i++) { %>
-                    <div class="mb-4">
-                        <p><strong>User Name:</strong> <%= order[i].user.firstName %> | <strong>Date:</strong><%= order[i].orderDate.toLocaleString() %></p>
-                        <% if (order[i] && order[i].products && order[i].products.length > 0) { %>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="thead-dark">
+        <div class="row">
+            <div class="col-12 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-5">
+                            <ul class="navbar-nav w-100">
+                                <li class="nav-item w-100">
+                                    <div class="nav-link mt-2 mt-md-0 col-12 d-lg-flex search">
+                                        <input type="text" id="searchInput" class="form-control mb-1 text-light" placeholder="Search Orders">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <h4 class="card-title">All Orders</h4>
+                        <div class="table-responsive">
+                            <table class="table" id="user-table">
+                                <thead>
+                                    <tr>
+                                        <th> Product </th>
+                                        <th> User </th>
+                                        <th> Order Date</th>
+                                        <th> Total Items</th>
+                                        <th> Total Price</th>
+                                        <th> Order Status</th>
+                                        <th> Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (let i = 0; i < orders.length; i++) { %>
                                         <tr>
-                                            <th>num</th>
-                                            <th>Product Name</th>
-                                            <th>Status</th>
-                                            <th>Quantity</th>
-                                            <th>Price per Unit</th>
-                                            <th>Total Price</th>
-                                            <th>Payment Method</th>
-                                            <th>Delivery Date</th>
-                                            <th>Order ID</th>
-                                            <th>Address</th>
+                                            <td>
+                                                <!-- Product image and name -->
+                                                
+                                                    <% if (orders[i].products && orders[i].products.length > 0) { %>
+                                                        <!-- Assuming you want to display the first product in the order -->
+                                                        <img class="align-items-center" alt="image" src="/public/adminAssets/assets/images/products/<%= orders[i].products[0].product_Id.images[0] %>" />
+                                                    <% } else { %>
+                                                        <span>Image Not Available</span>
+                                                    <% } %>
+                                                   
+                                               
+                                                
+                                            </td>
+                                            <td>
+                                                <%= orders[i].user.firstName %> &nbsp; <%= orders[i].user.lastName %>
+                                            </td>
+                                            <td>
+                                                <!-- Format order date as needed -->
+                                                <span style="font-weight: 100;" class="pl-2">
+                                                    <%= orders[i].orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <!-- Assuming you want the quantity of the first product in the order -->
+                                                <%= orders[i].products.length %>
+                                            </td>
+                                            <td>
+                                                <!-- Assuming you want the total price of the first product in the order -->
+                                                ₹<%= orders[i].totalAmount %>
+                                            </td>
+                                            <td>
+                                                <%= orders[i].orderID %>
+                                              
+                                            </td>
+                                            <td>
+                                                <a href="/admin/adorder_details?id=<%= orders[i]._id %>"
+                                                    class="btn btn-inverse-info">Manage</a>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% for (let index = 0; index < order[i].products.length; index++) { %>
-                                            <tr>
-                                                <td><%= index + 1 %></td>
-                                                <td><%= order[i].products[index].product_Id.name %></td>
-                                                <td>
-                                                    <select onchange="updateStatus('<%= order[i].products[index].product_Id._id%>','<%=order[i]._id%>', this.value)">
-                                                        <option value="On the way" <% if (order[i].products[index].status == 'On the way') { %> selected <% } %>>On the way</option>
-                                                        <option value="Pending" <% if (order[i].products[index].status == 'Pending') { %> selected <% } %>>Pending</option>
-                                                        <option value="Processing" <% if (order[i].products[index].status == 'Processing') { %> selected <% } %>>Processing</option>
-                                                        <option value="delivered" <% if (order[i].products[index].status == 'delivered') { %> selected <% } %>>delivered</option>
-                                                        <option value="cancelled" <% if (order[i].products[index].status == 'cancelled') { %> selected <% } %>>cancelled</option>
-                                                    </select>
-                                                </td>
-                                                <td><%= order[i].products[index].quantity %></td>
-                                                <td>$<%= order[i].products[index].product_Id.price %></td>
-                                                <td>$<%= order[i].products[index].total %></td>
-                                                <td><%= order[i].payment %></td>
-                                                <td><%= order[i].expectedDelivery.toLocaleString() %></td>
-                                                <td><%= order[i].orderID %></td>
-                                                <td><%= order[i].deliveryAddress %></td>
-                                            </tr>
-                                        <% } %>
-                                        <tr>
-                                            <td colspan="9" class="text-right">Grand Total:</td>
-                                            <td>$<%= order[i].totalAmount %></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } else { %>
-                            <p>No order</p>
-                        <% } %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                <% } %>
-            <% } else { %>
-                <p>No order</p>
-            <% } %>
-            <a href="/admin/order" class="btn btn-success mb-4">Save</a>
-            <a href="/admin/dashboard" class="btn btn-success mb-4 ml-3">Dashboard</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Your existing script tags... -->
-<script>
-    function updateStatus(productID, orderid, value) {
-        $.ajax({
-            url: '/admin/OrderUpdate',
-            method: 'patch',
-            data: {
-                productID, orderid, value
-            },
-            success: (response) => {
-                if (response.success) {
-                    $('#reloadDiv').load('/admin/Order #reloadDiv')
-                } else {
-                    Swal.fire({
-                        title: "Error",
-                        icon: 'error',
-                        text: response.message,
-                        timer: 2000
-                    })
-                }
-            }
-        });
+<style>
+    .product-image-container {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
     }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // Listen for input changes in the search bar
+        $('#searchInput').on('input', function () {
+            const searchText = $(this).val().toLowerCase();
+
+            // Loop through each row in the table and hide/show based on search text
+            $('#user-table tbody tr').each(function () {
+                const row = $(this);
+
+                // Check if any cell in the row contains the search text
+                const found = row.find('td').toArray().some(function (cell) {
+                    const cellText = $(cell).text().toLowerCase();
+                    return cellText.includes(searchText);
+                });
+
+                // Show or hide the row accordingly
+                if (found) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+        });
+    });
 </script>
+
 <%- include('../admin/layouts/footer.ejs') %>

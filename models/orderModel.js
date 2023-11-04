@@ -31,10 +31,7 @@ const orderSchema = new mongoose.Schema({
   expectedDelivery:{
     type:Date
   },
-  status: {
-    type: String,
-    default: 'On the way'
-},
+
   products: [{
     product_Id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,16 +48,25 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
     price: {
         type: Number,
+        
+    },
+    status: {
+        type: String,
+        default: 'Pending'
+    },
 
-    },expectedDelivery: {
+    expectedDelivery: {
         type: Date,
        
     },
     cancelReason: {
         type: String
+    },
+    StatusLevel:{
+      type:Number,
+      default: 1
     }
 
 }]

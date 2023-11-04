@@ -28,7 +28,7 @@
                             </label>
                         </form>
                     </div><!-- End .checkout-discount -->
-
+                       <% if(address){%>
                     <% if (address.address.length !== 0) { %>
                     <form action="/checkout0" method="post" id="newAddressForm" class="col-sm-9">
                         <% for (let i = address.address.length - 1; i >= 0; i--) { %>
@@ -58,7 +58,7 @@
                             <!-- Address list will be displayed here -->
                         </div>
                         <% } %>
-                  
+                        <%}%>
                         <%}else{%>
                             <div class=" text-center w-100 card">
                                 <h6 class="mt-2 ">You have no shipping Address</h6>

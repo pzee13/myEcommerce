@@ -91,8 +91,10 @@ admin_route.get('/search_product',auth.isLogin,productController.searchProducts)
 
 admin_route.get('/add_order',auth.isLogin,adminController.loadorders)
 
-admin_route.get('*',(req,res)=>{
-  res.render('404')
-})
+admin_route.get('/adorder_details',auth.isLogin,adminController.adorderDetails)
+
+admin_route.patch('/OrderUpdate',adminController.updateOrderStatus)
+
+admin_route.get('/*',adminController.load404)
 
 module.exports = admin_route;   

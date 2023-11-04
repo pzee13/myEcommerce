@@ -1,0 +1,172 @@
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-5">
+                            <ul class="navbar-nav w-100">
+                                <li class="nav-item w-100">
+                                    <!-- Your search input here -->
+                                </li>
+                            </ul>
+                        </div>
+                        <h3 class="card-title text-center">Order Management</h3>
+                        <div class="table-responsive">
+                            <div class="card mt-4 border-0 shadow">
+                                <div class="card-body">
+                                    <h2 class="mb-4">Order Details</h2>
+                                    <% if (order && order.products && order.products.length > 0) { %>
+                                        <% order.products.forEach((product) => { %>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Image</th>
+                                                            <th scope="col">Product Name</th>
+                                                            <th scope="col">Price</th>
+                                                            <th scope="col">Quantity</th>
+                                                            <th scope="col">Total Price</th>
+                                                            <th scope="col">Status</th>
+                                                            <th scope="col">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <img src="/public/adminAssets/assets/images/products/<%= product.product_Id.images[0] %>"
+                                                                    alt="Product Image">
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <%= product.product_Id.productName %>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <%= product.product_Id.price %>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <%= product.quantity %>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                $<%= order.totalAmount %>
+                                                            </td>
+                                                            <td class="align-middle status-cell">
+                                                                <span class="product-status"><%= product.status %></span>
+                                                            </td>
+                                                            <td>
+                                                                <select onchange="updateStatus('<%= product.product_Id._id %>', '<%= order._id %>', this.value)">
+                                                                <option value="" disabled selected>Select Status</option>
+                                                                <option value="Shipped" <% if (product.status === 'Shipped') { %> selected <% } %>> Shipped </option>
+                                                                <option value="Out for Delivery" <% if (product.status === 'Out for delivery') { %> selected <% } %>> Out For Delivery </option>
+                                                                <option value="Delivered" <% if (product.status === 'Delivered') { %> selected <% } %>> Delivered </option>
+                                                                </select>
+                                                            </td>
+                                                            <td class="align-middle">
+                                                                <button class="btn btn-danger cancel-product"
+                                                                    data-product-id="<%= product.product_Id._id %>"
+                                                                    data-order-id="<%= order._id %>">
+                                                                    <% if (product.status === 'Canceled') { %> Canceled <% } else { %> Cancel <% } %>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <% }) %>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="card mt-4 border-0 shadow">
+                                <div class="card-body">
+                                    <h2 class="mb-4">Delivery Information</h2>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Delivery By:</h5>
+                                            <p>
+                                                <%= order.expectedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Delivery Date:</h5>
+                                            <p>
+                                                <%= order.orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-4 border-0 shadow">
+                                <div class="card-body">
+                                    <h2 class="mb-4">Shipping Address</h2>
+                                    <p>
+                                        <%= order.userName %>
+                                    </p>
+                                    <p>
+                                        <%= order.deliveryAddress %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function cancelOrder(orderId, productId) {
+        $.ajax({
+            url: '/admin/orders/manage/cancel',
+            method: "post",
+            data: { orderId, productId },
+            success: function (response) {
+                console.log(response);
+                if (response.cancel === 1) {
+                    location.reload()
+                }
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            }
+        });
+    }
+
+</script>
+<script>
+
+    function updateStatus(productId, orderId, value) {
+        $.ajax({
+            url: '/admin/OrderUpdate',
+            method: 'PATCH',
+            data: {
+                productId,
+                orderId,
+                value,
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        icon: 'success',
+                        text: 'Order status updated successfully',
+                        timer: 2000,
+                    });
+                    $('#reloadDiv').load('/admin/add_order #reloadDiv');
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        icon: 'error',
+                        text: response.message,
+                        timer: 2000,
+                    });
+                }
+            },
+        });
+    }
+</script>
+
+<%- include('../admin/layouts/footer.ejs') %>

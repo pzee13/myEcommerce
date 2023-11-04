@@ -108,6 +108,8 @@ user_route.get('/order_placed',auth.isLogin,orderController.loadOrderPlaced)
 
 user_route.get('/orders',auth.isLogin,orderController.loadOrder)
 
+user_route.get('/order_details',auth.isLogin,orderController.orderDetails)
 
+user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder);
 
 module.exports = user_route 
