@@ -118,24 +118,40 @@
 </div>
 
 <script>
-    function cancelOrder(orderId, productId) {
+    $(document).ready(function () {
+      $('.cancel-product').on('click', function () {
+        const button = $(this);
+        const productId = button.data('product-id');
+        const orderId = '<%= order._id %>'; // Retrieve the order ID
+    
         $.ajax({
-            url: '/admin/orders/manage/cancel',
-            method: "post",
-            data: { orderId, productId },
-            success: function (response) {
-                console.log(response);
-                if (response.cancel === 1) {
-                    location.reload()
-                }
-            },
-            error: function (error) {
-                console.error("Error:", error);
+          type: 'POST',
+          url: `/admin/cancel_order/${orderId}/${productId}`, // Replace with your actual route
+          success: function (data) {
+            if (data.success) {
+              // Product canceled successfully, update the UI
+              button.prop('disabled', true); // Disable the button
+              const statusCell = button.closest('tr').find('.status-cell');
+              statusCell.find('.product-status').text('Canceled'); // Update the status in the UI
+              statusCell.find('.product-status').removeClass('text-success'); // Optional: Remove success text color
+              statusCell.find('.product-status').addClass('text-danger'); // Optional: Add a different color for canceled status
+              button.text('Canceled'); // Update the button text
+              // Update other UI elements as needed
+            } else {
+              // Handle error
+              console.log(data.error);
             }
+          },
+          error: function (err) {
+            // Handle AJAX error
+            console.error(err);
+          },
         });
-    }
-
-</script>
+      });
+    });
+    
+      </script>
+      
 <script>
 
     function updateStatus(productId, orderId, value) {

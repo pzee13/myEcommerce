@@ -186,7 +186,12 @@ const loadadHome = async(req,res)=>{
         user1.isBlock = !user1.isBlock 
         await user1.save(); 
         
+      
+
+      if(req.session.user_id===id){
+        req.session.user_id=null;
       }
+    }
   
       const users2 = await User.find().skip(skip).limit(pageSize);
       const totalUsers = await User.countDocuments();
@@ -325,6 +330,59 @@ const loadadHome = async(req,res)=>{
 };
 
 
+const cancelOrder = async (req, res) => {
+  try {
+  
+    const orderId = req.params.orderId;
+    const productId = req.params.productId;
+
+    // Find the order by orderId and user ID
+    const order = await Order.findOne({ _id: orderId});
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    let canCancel = true;
+
+    for (const product of order.products) {
+    
+      if(product.product_Id._id.toString() === productId)
+      {
+        console.log(product.status)
+      if (product.status === 'Delivered' || product.status === 'Canceled') {
+        canCancel = false;
+        break; // Exit the loop if any product cannot be canceled
+      }
+    }
+    }
+
+    if (!canCancel) {
+      return res.status(400).json({ success: false, message: 'Order cannot be canceled' });
+    }
+
+    // Set the status of the product with the specified productId to 'Canceled' within the order
+    for (const product of order.products) {
+      if (product.product_Id._id.toString() === productId) {
+        product.status = 'Canceled';
+         // Save the product status
+        await Product.findByIdAndUpdate(product.product_Id._id, {
+          $inc: { quantity: product.quantity },
+        });
+      }
+    }
+
+    await order.save();
+
+    res.json({ success: true, message: 'Order has been canceled' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to cancel the order' });
+  }
+};
+
+
+
 const adLogout = async(req,res)=>{
 
   try{
@@ -362,5 +420,6 @@ module.exports = {
     loadorders,
     load404,
     updateOrderStatus,
-    adorderDetails
+    adorderDetails,
+    cancelOrder
 }   

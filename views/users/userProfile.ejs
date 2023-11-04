@@ -55,36 +55,40 @@
                             </div><!-- .End .tab-pane -->
 
                             <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                <form action="/update_profile" method="post">
+                                <form id="profile-form" action="/update_profile" method="post" onsubmit="return validUser()">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <label for="fname">First Name *</label>
-                                            <input type="text" class="form-control" id="fname" name="fname" value="<%= user.firstName %>" required>
+                                            <input type="text" class="form-control" id="fname" name="fname" value="<%= user.firstName %>">
+                                            <span class="error" id="fname-error"></span>
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="lname">Last Name *</label>
-                                            <input type="text" class="form-control" id="lname" name="lname" value="<%= user.lastName %>" required>
+                                            <input type="text" class="form-control" id="lname" name="lname" value="<%= user.lastName %>" >
+                                            <span class="error" id="lname-error"></span>
                                         </div>
                                     </div>
                                 
                                     <label for="email">Email address *</label>
                                     <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                                    <span class="error" id="email-error"></span>
                                 
                                     <label for="mobile">Mobile No *</label>
-                                    <input type="text" class="form-control" id="mobile" name="mobile" value="<%= user.mobile %>" required>
+                                    <input type="text" class= "form-control" id="mobile" name="mobile" value="<%= user.mobile %>" required>
+                                    <span class="error" id="mobile-error"></span>
                                 
                                     <label for="password">Current password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control" id="password" name="password">
+                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword">
                                 
                                     <label for="newPassword">New password (leave blank to leave unchanged)</label>
                                     <input type="password" class="form-control" id="newPassword" name="newPassword">
                                 
                                     <label for="confirmPassword">Confirm new password</label>
-                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" >
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                                    <span class="error" id="confirmPassword-error"></span>
                                 
                                     <button type="submit" class="btn btn-outline-primary-2">
                                         <span>SAVE CHANGES</span>
-                                        
                                     </button>
                                 </form>
                             </div><!-- .End .tab-pane -->
@@ -104,7 +108,7 @@
                                             <p id="fname-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-sm-6">
-                                            <label for="lname">Last Name</label>
+                                            <label for ="lname">Last Name</label>
                                             <input type="text" class="form-control" id="lname1" name="lname">
                                             <p id="lname-error" style="color: red;"></p>
                                         </div>
@@ -114,7 +118,7 @@
                                             <p id="mobile-error" style="color: red;"></p>
                                         </div>
                                         <div class="form-group col-12">
-                                            <label for="mobile">Email</label>
+                                            <label for="email">Email</label>
                                             <input type="text" class="form-control" id="email1" name="email">
                                             <p id="email-error" style="color: red;"></p>
                                         </div>
@@ -132,7 +136,7 @@
                                             <label for="pin">Pin</label>
                                             <input type="text" class="form-control" id="pin" name="pin">
                                             <p id="pin-error" style="color: red;"></p>
-                                        </div>  
+                                        </div>
                                         <div class="form-group col-12">
                                             <label for="district">District</label>
                                             <input type="text" class="form-control" id="district" name="district">
@@ -140,19 +144,20 @@
                                         </div>
                                         <div class="form-group col-12">
                                             <label for="state">State</label>
-                                            <input type="text" class="form-control" id="state" name ="state">
+                                            <input type="text" class="form-control" id="state" name="state">
                                             <p id="state-error" style="color: red;"></p>
                                         </div>
                                         <!-- Add input fields for other address details here -->
                                         <div class="form-group col-12">
+                                            <p id="all-error" style="color: red;"></p>
                                             <button type="submit" class="btn btn-outline-primary-2">
                                                 <span>Add Address</span>
-                                                
                                             </button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
+                            
                             
 
                             <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
@@ -221,61 +226,60 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/edit_address" method="post">
+                <form action="/edit_address" method="post" onsubmit="return validateEdit()">
                     <!-- Add the input fields for editing the address as described earlier -->
                     <!-- Make sure to include an input field for capturing the address ID -->
                     <div class="form-group">
                         <label for="editFirstName">First Name</label>
                         <input type="text" class="form-control" id="editFirstName" name="fname">
-                        
+                        <span id="fname1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editLastName">Last Name</label>
-                        <input type="text" class="form-control" id="editLastName" name="lname">
-                        
+                        <input type="text" class ="form-control" id="editLastName" name="lname">
+                        <span id="lname1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editEmail">Email</label>
                         <input type="email" class="form-control" id="editEmail" name="email">
-                       
+                        <span id="email1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editMobile">Mobile</label>
                         <input type="text" class="form-control" id="editMobile" name="mobile">
-                      
+                        <span id="mobile1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editHousename">House Name</label>
                         <input type="text" class="form-control" id="editHousename" name="housename">
-                      
+                        <span id="housename1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editCity">City</label>
                         <input type="text" class="form-control" id="editCity" name="city">
-                        
+                        <span id="city1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editState">State</label>
                         <input type="text" class="form-control" id="editState" name="state">
-                        
+                        <span id="state1-error" class="error"></span>
                     </div>
                     <div class="form-group">
                         <label for="editDistrict">District</label>
                         <input type="text" class="form-control" id="editDistrict" name="district">
-                        
+                        <span id="district1-error" class="error"></span>
                     </div>
                     <div class="form-group">
-                        <label for="editPin">Pin</label>
+                        <label for ="editPin">Pin</label>
                         <input type="text" class="form-control" id="editPin" name="pin">
-                        
+                        <span id="pin1-error" class="error"></span>
                     </div>
-
+                
                     <!-- Include an input field to capture the address ID (hidden input) -->
                     <input type="hidden" id="editAddressId" name="editAddressId">
-
+                
                     <button type="submit" class="btn btn-outline-primary-2">
                         <span>Save Changes</span>
-                        
                     </button>
                 </form>
             </div>
@@ -364,8 +368,15 @@
 .btn-outline-primary-2:hover {
     background-color: #2679b5;
 }
+
+
 </style>
 
+<style>
+    .error {
+        color: red; 
+    }
+</style>
 
 <script>
     // Add an event listener for the "Edit" links
@@ -408,7 +419,7 @@
 
 <script>
     // Add an event listener to the form to handle the validation
-    const form = document.querySelector('form');
+    const form = document.querySelector('profile-form');
     const newPasswordInput = document.getElementById('newPassword');
     const confirmPasswordInput = document.getElementById('confirmPassword');
 
@@ -421,6 +432,7 @@
         }
     });
 </script>
+
 
 <!-- Inside your HTML file -->
 <script>
@@ -502,5 +514,234 @@ window.addEventListener('hashchange', activateTabFromHash);
     });
 </script>
 
+
+<script>
+    function validAddress() {
+    const firstname = document.getElementById('fname1').value;
+    const lastname =  document.getElementById('lname1').value;
+    const mobile = document.getElementById('mobile1').value;
+    const email = document.getElementById('email1').value;
+    const housename = document.getElementById('housename').value;
+    const state = document.getElementById('state').value;
+    const district = document.getElementById('district').value;
+    const city = document.getElementById('city').value;
+    const pincode = document.getElementById('pin').value;
+
+    document.getElementById('fname-error').textContent = '';
+    document.getElementById('lname-error').textContent = '';
+    document.getElementById('email-error').textContent = '';
+    document.getElementById('housename-error').textContent = '';
+    document.getElementById('state-error').textContent = '';
+    document.getElementById('mobile-error').textContent = '';
+    document.getElementById('district-error').textContent = '';
+    document.getElementById('city-error').textContent = '';
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('all-error').textContent= '';
+
+
+
+    if (!firstname) {
+        document.getElementById('fname-error').textContent = 'First Name field should not be empty!';
+        return false;
+    }
+
+    if (!lastname) {
+        document.getElementById('lname-error').textContent = 'Last Name field should not be empty!';
+        return false;
+    }
+
+    if (!state) {
+        document.getElementById('state-error').textContent = 'State field should not be empty!';
+        return false;
+    }
+
+    if (!housename) {
+        document.getElementById('housename-error').textContent = 'housename field should not be empty!';
+        return false;
+    }
+
+    const mobileRegex = /^[6-9]\d{9}$/;
+
+if (!mobile || !mobileRegex.test(mobile)) {
+    document.getElementById('mobile-error').textContent = 'Mobile number should be a 10-digit valid number';
+    return false;
+}
+
+if (new Set(mobile).size === 1) {
+    document.getElementById('mobile-error').textContent = 'Mobile number should not consist of the same digit.';
+    return false;
+}
+
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+if (!email || !emailRegex.test(email)) {
+  document.getElementById('email-error').textContent = 'Please enter a valid email address. (eg: example@gmail.com)';
+  return false;
+}
+
+    if (!district) {
+        document.getElementById('district-error').textContent = 'District field should not be empty!';
+        return false;
+    }
+
+    if (!city) {
+        document.getElementById('city-error').textContent = 'City field should not be empty!';
+        return false;
+    }
+
+    const pincodeRegex = /^\d{6}$/;
+
+    if (!pincode || !pincode.match(pincodeRegex)) {
+        document.getElementById('pin-error').textContent = 'Pincode should be a 6-digit numeric value.';
+        return false;
+    }
+
+    if (!firstname || !lastname || !mobile || !email || !housename || !city || !state || !district || !pincode) {
+        document.getElementById('all-error').textContent = 'All address fields are required.';
+        return false;
+    }
+
+    return true;
+}
+
+
+</script>
+
+
+<script>
+    function validateEdit() {
+        const firstname = document.getElementById('editFirstName').value;
+        const lastname = document.getElementById('editLastName').value;
+        const mobile = document.getElementById('editMobile').value;
+        const email = document.getElementById('editEmail').value;
+        const housename = document.getElementById('editHousename').value;
+        const state = document.getElementById('editState').value;
+        const district = document.getElementById('editDistrict').value;
+        const city = document.getElementById('editCity').value;
+        const pincode = document.getElementById('editPin').value;
+
+        const errors = document.querySelectorAll('.error');
+
+        for (let error of errors) {
+            error.textContent = '';
+        }
+
+        let isValid = true;
+
+        if (!firstname) {
+            document.getElementById('fname1-error').textContent = 'First Name field should not be empty!';
+            isValid = false;
+        }
+
+        if (!lastname) {
+            document.getElementById('lname1-error').textContent = 'Last Name field should not be empty!';
+            isValid = false;
+        }
+
+        if (!state) {
+            document.getElementById('state1-error').textContent = 'State field should not be empty!';
+            isValid = false;
+        }
+
+        if (!housename) {
+            document.getElementById('housename1-error').textContent = 'House Name field should not be empty!';
+            isValid = false;
+        }
+
+        const mobileRegex = /^[6-9]\d{9}$/;
+
+        if (!mobile || !mobileRegex.test(mobile)) {
+            document.getElementById('mobile1-error').textContent = 'Mobile number should be a 10-digit valid number';
+            isValid = false;
+        }
+
+        if (new Set(mobile).size === 1) {
+            document.getElementById('mobile1-error').textContent = 'Mobile number should not consist of the same digit.';
+            isValid = false;
+        }
+
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+        if (!email || !emailRegex.test(email)) {
+            document.getElementById('email1-error').textContent = 'Please enter a valid email address. (e.g., example@gmail.com)';
+            isValid = false;
+        }
+
+        if (!district) {
+            document.getElementById('district1-error').textContent = 'District field should not be empty!';
+            isValid = false;
+        }
+
+        if (!city) {
+            document.getElementById('city1-error').textContent = 'City field should not be empty!';
+            isValid = false;
+        }
+
+        const pincodeRegex = /^\d{6}$/;
+
+        if (!pincode || !pincode.match(pincodeRegex)) {
+            document.getElementById('pin1-error').textContent = 'Pincode should be a 6-digit numeric value.';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            document.getElementById('all-error').textContent = 'Please fix the errors above.';
+        }
+
+        return isValid;
+    }
+</script>
+
+<script>
+  function validUser() {
+    const fname = document.getElementById('fname');
+    const lname = document.getElementById('lname');
+    const email = document.getElementById('email');
+    const mobile = document.getElementById('mobile');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const newPassword = document.getElementById('newPassword');
+
+    const fnameError = document.getElementById('fname-error');
+    const lnameError = document.getElementById('lname-error');
+    const emailError = document.getElementById('email-error');
+    const mobileError = document.getElementById('mobile-error');
+    const confirmPasswordError = document.getElementById('confirmPassword-error');
+
+    fnameError.textContent = '';
+    lnameError.textContent = '';
+    emailError.textContent = '';
+    mobileError.textContent = '';
+    confirmPasswordError.textContent = '';
+
+    let isValid = true;
+
+    if (fname.value === '') {
+        fnameError.textContent = 'First Name is required';
+        isValid = false;
+    }
+
+    if (lname.value === '') {
+        lnameError.textContent = 'Last Name is required';
+        isValid = false;
+    }
+
+    if (email.value === '') {
+        emailError.textContent = 'Email is required';
+        isValid = false;
+    }
+
+    if (mobile.value === '') {
+        mobileError.textContent = 'Mobile is required';
+        isValid = false;
+    }
+
+    if (newPassword.value !== confirmPassword.value) {
+        confirmPasswordError.textContent = 'New Password and Confirm Password do not match';
+        isValid = false;
+    }
+
+    return isValid;
+}
+</script>
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

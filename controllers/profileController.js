@@ -116,7 +116,7 @@ const updateProfile = async (req, res, next) => {
         const lastname = req.body.lname;
         const email = req.body.email;
         const mobile = req.body.mobile;
-        const currentPassword = req.body.password
+        const currentPassword = req.body.currentPassword;
         const newPassword = req.body.newPassword;
         const confirmPassword = req.body.confirmPassword;
 
@@ -125,12 +125,20 @@ const updateProfile = async (req, res, next) => {
         if (!userData) {
             return res.status(404).send('User not found');
         }
-        
+
         // Check if a new password is provided and it matches the confirm password
-        if (newPassword && newPassword === confirmPassword) {
+        if (newPassword) {
+            // Check if the current password matches the database password
+            const isPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+
+            if (isPasswordValid) {
+              
+                
+
             // Hash and update the new password
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             userData.password = hashedPassword;
+        }
         }
 
         // Update other user profile fields
@@ -146,6 +154,55 @@ const updateProfile = async (req, res, next) => {
         next(err);
     }
 };
+
+
+// const updateProfile = async (req, res, next) => {
+//     try {
+//         const userId = req.session.user_id;
+//         const firstname = req.body.fname;
+//         const lastname = req.body.lname;
+//         const email = req.body.email;
+//         const mobile = req.body.mobile;
+//         const currentPassword = req.body.currentPassword;
+//         const newPassword = req.body.newPassword;
+//         const confirmPassword = req.body.confirmPassword;
+
+//         const userData = await User.findById(userId);
+
+//         if (!userData) {
+//             return res.status(404).send('User not found');
+//         }
+
+//         // Only validate the current password when changing the password
+//         if (newPassword) {
+//             // Check if the current password matches the database password
+//             const isPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+
+//             if (!isPasswordValid) {
+//                 // Passwords do not match; return an error
+//                 return res.status(400).send('Current password is incorrect');
+//             }
+
+//             // Hash and update the new password
+//             const hashedPassword = await bcrypt.hash(newPassword, 10);
+//             userData.password = hashedPassword;
+//         }
+
+//         // Update other user profile fields
+//         userData.firstName = firstname;
+//         userData.lastName = lastname;
+//         userData.email = email;
+//         userData.mobile = mobile;
+
+//         await userData.save();
+
+//         res.json({ success: true, message: "Profile updated successfully" });
+//     } catch (err) {
+//         // Handle errors and send a JSON response for errors
+//         res.status(400).json({ success: false, message: "Error updating profile" });
+//     }
+// };
+
 
 
 
