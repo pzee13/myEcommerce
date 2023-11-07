@@ -13781,19 +13781,7 @@ button:focus {
   color: #333;
   border-bottom: 0.1rem solid #ebebeb;
 }
-.nav-dashboard .nav-link:before {
-  font-family: "Poppins-Medium";
-  content: "\f274";
-  display: block;
-  font-size: 1.5rem;
-  line-height: 1;
-  position: absolute;
-  top: 50%;
-  left: -15px;
-  margin-top: -7.5px;
-  transition: all 0.3s;
-  opacity: 0;
-}
+
 .nav-dashboard .nav-link:hover,
 .nav-dashboard .nav-link:focus,
 .nav-dashboard .nav-link.active {
@@ -14761,21 +14749,7 @@ button:focus {
   font-weight: normal;
   font-style: normal;
 }
-[class^="icon-"]:before,
-[class*=" icon-"]:before {
-  font-family: "Poppins-Medium";
-  font-style: normal;
-  font-weight: normal;
-  speak: none;
-  display: inline-block;
-  text-decoration: inherit;
-  text-align: center;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+
 .icon-google:before {
   content: "\e800";
 }

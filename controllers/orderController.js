@@ -5,104 +5,214 @@ const Cart = require("../models/cartModel")
 const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
+const Razorpay = require("razorpay")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
 
+var instance = new Razorpay({
+  key_id: process.env.Razorpay_KEY_ID,
+  key_secret: process.env.Razorpay_KEY_SECRET,
+});
 
 
-const placeOrder = async (req, res) => {
+
+// const placeOrder = async (req, res) => {
+//     try {
+//       const { addressId, paymentOption } = req.body;
+//       const userId = req.session.user_id;
+//         console.log(paymentOption)
+//         console.log(addressId)
+//       // Parse totalAmount as a number
+//       const totalAmount = parseFloat(req.body.totalAmount);
+  
+//       // Check if paymentOption is valid
+  
+//       // Fetch the cart items from the database based on the user's ID
+//       const cartItems = await Cart.findOne({ user_id: userId })
+//       .populate({
+//         path: 'items.product_Id', 
+//         model: 'product', // Replace 'product' with the correct model name ('Product' or whatever your model is named)
+//       });
+
+//       if (!cartItems) {
+//         return res.status(400).json({
+//           success: false,
+//           message: 'Cart is empty. Unable to place an order.',
+//         });
+//       }
+
+//       const orderDataUser = await Order.find({ user: userId });
+
+
+//       function generateOrderID() {
+//         return Math.floor(Math.random() * 900000) + 100000;
+//       }
+  
+//       let orderIdSample;
+  
+//       if (!orderDataUser[0]) {
+//         orderIdSample = generateOrderID();
+//         console.log(orderIdSample)
+//       } else {
+//         const lastOrder = orderDataUser[orderDataUser.length - 1];
+//         orderIdSample = lastOrder.orderID + 1;
+//       }
+//       console.log(orderIdSample)
+
+//       const products = cartItems.items.map((item) => ({
+//         product_Id: item.product_Id,
+//         total: item.total,
+//         quantity: item.quantity,
+//       }));
+      
+//       const today = new Date();
+//       const deliveryDate = new Date(today);
+//       deliveryDate.setDate(today.getDate() + 7);
+//       // Create a new order
+//       const newOrder = new Order({
+//         user: userId,
+//         orderID:orderIdSample,
+//         deliveryAddress: addressId,
+//         paymentOption,
+//         totalAmount,
+//         orderDate: new Date(),
+//         expectedDelivery: deliveryDate,
+//         products:products,
+//         // You can add more details to the order as needed
+//       });
+  
+//       // Save the order to the database
+//       await newOrder.save();
+  
+//       // Update product stock (for COD payments)
+//       if (paymentOption === 'COD') {
+//         for (const item of cartItems.items) {
+//           const productId = item.product_Id._id;
+//           const quantity = parseInt(item.quantity, 10);
+//           console.log(quantity)
+
+//           await Product.findByIdAndUpdate({_id:productId}, {
+//             $inc: { quantity: -quantity },
+//           });
+//         }
+//       }else{
+
+//       }
+  
+//       // You can also clear the user's cart or perform other necessary actions here
+//       await Cart.findOneAndDelete({user_id:userId}) 
+      
+//       // Send a success response
+//       res.json({ success: true, message: 'Order placed successfully' });
+      
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ success: false, message: 'Failed to place the order' });
+//     }
+//   };
+
+
+  const placeOrder = async (req, res) => {
     try {
-      const { addressId, paymentOption } = req.body;
-      const userId = req.session.user_id;
-        console.log(paymentOption)
-        console.log(addressId)
-      // Parse totalAmount as a number
-      const totalAmount = parseFloat(req.body.totalAmount);
-  
-      // Check if paymentOption is valid
-  
-      // Fetch the cart items from the database based on the user's ID
-      const cartItems = await Cart.findOne({ user_id: userId })
-      .populate({
-        path: 'items.product_Id', 
-        model: 'product', // Replace 'product' with the correct model name ('Product' or whatever your model is named)
-      });
+        const { addressId, paymentOption } = req.body;
+        const userId = req.session.user_id;
+        const totalAmount = parseFloat(req.body.totalAmount);
 
-      if (!cartItems) {
-        return res.status(400).json({
-          success: false,
-          message: 'Cart is empty. Unable to place an order.',
-        });
-      }
+        // Fetch the cart items from the database based on the user's ID
+        const cartItems = await Cart.findOne({ user_id: userId })
+            .populate({
+                path: 'items.product_Id',
+                model: 'Product', // Replace 'product' with the correct model name ('Product' or whatever your model is named)
+            });
 
-      const orderDataUser = await Order.find({ user: userId });
-
-
-      function generateOrderID() {
-        return Math.floor(Math.random() * 900000) + 100000;
-      }
-  
-      let orderIdSample;
-  
-      if (!orderDataUser[0]) {
-        orderIdSample = generateOrderID();
-        console.log(orderIdSample)
-      } else {
-        const lastOrder = orderDataUser[orderDataUser.length - 1];
-        orderIdSample = lastOrder.orderID + 1;
-      }
-      console.log(orderIdSample)
-
-      const products = cartItems.items.map((item) => ({
-        product_Id: item.product_Id,
-        total: item.total,
-        quantity: item.quantity,
-      }));
-      
-      const today = new Date();
-      const deliveryDate = new Date(today);
-      deliveryDate.setDate(today.getDate() + 7);
-      // Create a new order
-      const newOrder = new Order({
-        user: userId,
-        orderID:orderIdSample,
-        deliveryAddress: addressId,
-        paymentOption,
-        totalAmount,
-        orderDate: new Date(),
-        expectedDelivery: deliveryDate,
-        products:products,
-        // You can add more details to the order as needed
-      });
-  
-      // Save the order to the database
-      await newOrder.save();
-  
-      // Update product stock (for COD payments)
-      if (paymentOption === 'COD') {
-        for (const item of cartItems.items) {
-          const productId = item.product_Id._id;
-          const quantity = parseInt(item.quantity, 10);
-          console.log(quantity)
-
-          await Product.findByIdAndUpdate({_id:productId}, {
-            $inc: { quantity: -quantity },
-          });
+        if (!cartItems) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cart is empty. Unable to place an order.',
+            });
         }
-      }
-  
-      // You can also clear the user's cart or perform other necessary actions here
-      await Cart.findOneAndDelete({user_id:userId}) 
-      
-      // Send a success response
-      res.json({ success: true, message: 'Order placed successfully' });
-      
+
+        const orderDataUser = await Order.find({ user: userId });
+
+        function generateOrderID() {
+            return Math.floor(Math.random() * 900000) + 100000;
+        }
+
+        let orderIdSample;
+
+        if (!orderDataUser[0]) {
+            orderIdSample = generateOrderID();
+        } else {
+            const lastOrder = orderDataUser[orderDataUser.length - 1];
+            orderIdSample = lastOrder.orderID + 1;
+        }
+
+        const products = cartItems.items.map((item) => ({
+            product_Id: item.product_Id,
+            total: item.total,
+            quantity: item.quantity,
+        }));
+
+        const today = new Date();
+        const deliveryDate = new Date(today);
+        deliveryDate.setDate(today.getDate() + 7);
+
+        const newOrder = new Order({
+            user: userId,
+            orderID: orderIdSample,
+            deliveryAddress: addressId,
+            paymentOption,
+            totalAmount,
+            orderDate: new Date(),
+            expectedDelivery: deliveryDate,
+            products: products,
+        });
+
+        await newOrder.save();
+
+        if (paymentOption === 'COD') {
+            for (const item of cartItems.items) {
+                const productId = item.product_Id._id;
+                const quantity = parseInt(item.quantity, 10);
+                await Product.findByIdAndUpdate({ _id: productId }, {
+                    $inc: { quantity: -quantity },
+                });
+            }
+        } else if (paymentOption === 'Online') {
+            const totalAmount = newOrder.totalAmount;
+
+            
+                var options = {
+                    amount: totalAmount * 100, // Amount should be in paise (100 paise = 1 INR)
+                    currency: 'INR',
+                    receipt: `${newOrder.orderID}`,
+                };
+
+                instance.orders.create(options, (error, order) => {
+                    if (error) {
+                        return res.status(500).json({
+                            success: false,
+                            message: 'Failed to create Razorpay order',
+                        });
+                    }
+
+                    // You can store the order.id in the database or send it to the client
+                    res.json({ order });
+                });
+            
+        }
+
+        await Cart.findOneAndDelete({ user_id: userId });
+
+        res.json({ success: true, message: 'Order placed successfully' });
+
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Failed to place the order' });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to place the order' });
     }
-  };
+};
+
 
 
 const loadOrderPlaced = async (req, res, next) => {
@@ -146,7 +256,7 @@ const loadOrder = async(req,res)=>{
   try{
     const userId = req.session.user_id;
     const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-    const orders = await Order.find({user:userId}).populate('user')
+    const orders = await Order.find({user:userId}).populate('user').sort({ orderDate: -1 });
       res.render("orders",{orders:orders,userIsLoggedIn: req.session.user_id ? true : false,products})
   }
   catch(error)

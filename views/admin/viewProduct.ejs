@@ -5,7 +5,6 @@
 <!-- Content for viewing products -->
 <div class="main-panel">
   <div class="content-wrapper">
-
     <div class="category-filter">
       <label for="categoryFilter">Filter by Category:</label>
       <select id="categoryFilter" name="category">
@@ -19,10 +18,19 @@
     <div class="col-12 grid-margin stretch-card">
       <div class="card">
         <div class="card-body">
+          <div class="mb-5">
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <div class="nav-link mt-2 mt-md-0 col-12 d-lg-flex search">
+                  <input type="text" id="searchInput" class="form-control mb-1 text-light" placeholder="Search Products">
+                </div>
+              </li>
+            </ul>
+          </div>
           <h2 class="card-title">PRODUCTS</h2>
 
           <!-- Display the list of products -->
-          <table class="table">
+          <table class="table" id="product-table">
             <thead>
               <tr>
                 <th>Product Name</th>
@@ -30,7 +38,7 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Description</th>
-                <th>Images</th> <!-- Updated column name -->
+                <th>Images</th>
                 <th>Size</th>
                 <th> Edit </th>
                 <th> Action </th>
@@ -51,9 +59,9 @@
                   </td>
                   <td><%= data.size %></td>
                   <td> <a href="/admin/edit_product?id=<%= data._id%>">
-                    <button type="button" class="btn btn-outline-secondary btn-icon-text">
+                 
                       Edit <i class="mdi mdi-file-check btn-icon-append"></i>
-                    </button>
+                    
                   </a></td>
                   <td><% if (data.status === false) { %>
                     <a href="/admin/unlist_product?id=<%= data._id %>">
@@ -66,7 +74,7 @@
                       <button type="button" class="btn btn-inverse-danger btn-fw">
                         Unlist
                       </button>
-                    </a> 
+                    </a>
                   <% } %></td>
                 </tr>
               <% }); %>
@@ -85,32 +93,80 @@
           <% } %>
         </div>
       </div>
-      
+    </div>
   </div>
-
-
 </div>
-</div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function () {
+    const $productTable = $('#product-table');
+    const $searchInput = $('#searchInput');
+    
     $('#categoryFilter').change(function () {
-      var selectedCategory = $(this).val();
-      var products = $('.table tbody tr');
-      if (selectedCategory === '') {
-        products.show();
-      } else {
-        products.hide();
-        products.each(function () {
-          var category = $(this).find('td:eq(1)').text();
-          if (category === selectedCategory) {
-            $(this).show();
-          }
-        });
-      }
+      filterProducts();
     });
+
+    // Function to filter products based on search and category
+    function filterProducts() {
+      const selectedCategory = $('#categoryFilter').val().toLowerCase();
+      const searchText = $searchInput.val().toLowerCase();
+
+      $productTable.find('tbody tr').each(function () {
+        const row = $(this);
+        const category = row.find('td:eq(1)').text().toLowerCase();
+        const cellText = row.text().toLowerCase();
+        const matchCategory = selectedCategory === '' || category === selectedCategory;
+        const matchSearch = searchText === '' || cellText.includes(searchText);
+
+        if (matchCategory && matchSearch) {
+          row.show();
+        } else {
+          row.hide();
+        }
+      });
+    }
+
+     // Function to confirm the action using SweetAlert
+     function confirmAction(action, productName, productId) {
+      Swal.fire({
+        title: `Confirm ${action}`,
+        text: `Are you sure you want to ${action} the product "${productName}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: `Yes, ${action}`,
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Determine the appropriate action URL based on the action
+          const actionUrl = action === 'List' ? 'unlist_product' : 'unlist_product';
+          // Redirect to the correct URL for the action
+          window.location.href = `/admin/${actionUrl}?id=${productId}`;
+        }
+      });
+    }
+
+    // Add event listeners to your action buttons
+    $productTable.find('td button').on('click', function () {
+      const action = $(this).text().trim();
+      const productName = $(this).closest('tr').find('td:eq(0)').text().trim();
+      const productId = $(this).closest('tr').find('a').attr('href').split('=')[1]; // Extract product ID from the URL
+
+      if (action === 'List' || action === 'Unlist') {
+        confirmAction(action, productName, productId);
+      }
+      return false; // Prevent the default click behavior
+    });
+
+
+
+    // Listen for input changes in the search bar
+    $searchInput.on('input', function () {
+      filterProducts();
+    });
+
+    // Initialize filter when the page loads
+    filterProducts();
   });
 </script>
 

@@ -210,7 +210,8 @@ const loadadHome = async(req,res)=>{
       
       const orders = await Order.find().populate('user').populate({
         path: 'products.product_Id',
-    })
+    }).sort({orderDate:-1})
+
       const products = await Cart.find().populate('items.product_Id')
       res.render("addorder",{orders:orders,products})
     }
@@ -302,6 +303,17 @@ const loadadHome = async(req,res)=>{
         // Find the order by ID
         const order = await Order.findById(orderId);
 
+        const statusMap = {
+          'Shipped': 2,
+          'Out for Delivery': 3,
+          'Delivered': 4,
+        };
+    
+        const selectedStatus = value;
+        const statusLevel = statusMap[selectedStatus];
+    
+        console.log(statusLevel);
+
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
@@ -318,8 +330,13 @@ const loadadHome = async(req,res)=>{
             return res.status(400).json({ success: false, message: 'Product is already canceled' });
         }
 
+        if(product.status === 'Delivered'){
+          return res.status(400).json({ success: false, message: 'Product is already delivered' });
+        }
+
         // Update the status of the product in the order
         product.status = value; // Assuming 'status' is a field in your database
+        product.StatusLevel = statusLevel;
         await order.save();
 
         res.json({ success: true, message: 'Order status updated successfully' });
@@ -328,6 +345,8 @@ const loadadHome = async(req,res)=>{
         res.status(500).json({ success: false, message: 'Failed to update order status' });
     }
 };
+
+
 
 
 const cancelOrder = async (req, res) => {
@@ -421,5 +440,6 @@ module.exports = {
     load404,
     updateOrderStatus,
     adorderDetails,
-    cancelOrder
+    cancelOrder,
+
 }   

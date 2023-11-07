@@ -72,14 +72,71 @@ const loadCheckout0 = async (req, res,next) => {
 
 
 
+// const addAddressForCheckout = async (req, res, next) => {
+//   try {
+//     const userId = req.session.user_id;
+//     let newAddress; // Define newAddress variable here
+
+//     const address = await Address.find({ user_id: userId });
+
+//     if (address) {
+//       await Address.updateOne(
+//         { user_id: userId },
+//         {
+//           $push: {
+//             address: {
+//               fname: req.body.fname,
+//               lname: req.body.lname,
+//               mobile: req.body.mobile,
+//               email: req.body.email,
+//               housename: req.body.housename,
+//               pin: req.body.pin,
+//               city: req.body.city,
+//               district: req.body.district,
+//               state: req.body.state,
+//             },
+//           },
+//         }
+//       );
+//     } else {
+//       newAddress = new Address({
+//         user_id: userId,
+//         address: [
+//           {
+//             fname: req.body.fname,
+//             lname: req.body.lname,
+//             mobile: req.body.mobile,
+//             email: req.body.email,
+//             housename: req.body.housename,
+//             pin: req.body.pin,
+//             city: req.body.city,
+//             district: req.body.district,
+//             state: req.body.state,
+//           },
+//         ],
+//       });
+//       await newAddress.save();
+//     }
+
+//     // Redirect back to the checkout page after adding the address
+//     // You can also include a success message if needed
+//     res.redirect('/checkout0');
+
+//   } catch (err) {
+//     // Handle errors and respond with an error message
+//     console.error(err); // Log the error for debugging
+//   }
+// };
+
+
 const addAddressForCheckout = async (req, res, next) => {
   try {
     const userId = req.session.user_id;
-    let newAddress; // Define newAddress variable here
+    let newAddress;
 
     const address = await Address.find({ user_id: userId });
 
-    if (address) {
+    if (address.length > 0) {
       await Address.updateOne(
         { user_id: userId },
         {
@@ -99,7 +156,7 @@ const addAddressForCheckout = async (req, res, next) => {
         }
       );
     } else {
-      newAddress = new Address({
+      newAddress = await Address.create({
         user_id: userId,
         address: [
           {
@@ -115,13 +172,11 @@ const addAddressForCheckout = async (req, res, next) => {
           },
         ],
       });
-      await newAddress.save();
     }
 
     // Redirect back to the checkout page after adding the address
     // You can also include a success message if needed
     res.redirect('/checkout0');
-
   } catch (err) {
     // Handle errors and respond with an error message
     console.error(err); // Log the error for debugging

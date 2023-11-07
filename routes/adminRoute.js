@@ -97,6 +97,8 @@ admin_route.patch('/OrderUpdate',adminController.updateOrderStatus)
 
 admin_route.post('/cancel_order/:orderId/:productId',adminController.cancelOrder)
 
+
+
 admin_route.get('/*',adminController.load404)
 
 module.exports = admin_route;   

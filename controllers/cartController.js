@@ -14,13 +14,19 @@ const loadCart = async(req,res)=>{
     try{
         const user_id = req.session.user_id
         console.log(user_id)
-        const products = await Cart.findOne({user_id:user_id}).populate('items.product_Id')
+        
+        if(user_id)
+        {
+            const products = await Cart.findOne({user_id:user_id}).populate('items.product_Id')
 
         if (!products) {
         res.render('cart2',{ products: { totalPrice: 0, items: [] },userIsLoggedIn: req.session.user_id ? true : false });
     } else {
         res.render('cart2', { products,userIsLoggedIn: req.session.user_id ? true : false });
     }
+}else{
+    res.redirect('/login')
+}
 }
     catch(error)
     {
@@ -32,6 +38,7 @@ const addCart = async (req, res, next) => {
     try {
         const userid = req.session.user_id;
         let quantity = parseInt(req.body.data_quantity);
+        if(userid){
         if (isNaN(quantity) || quantity <= 0) {
             // Set a default quantity, e.g., 1
             quantity = 1;
@@ -107,6 +114,10 @@ const addCart = async (req, res, next) => {
 
             res.json({ count: 'ADDED' });
         }
+    }
+    else{
+        res.redirect('/login')
+    }
     } catch (err) {
         next(err);
     }

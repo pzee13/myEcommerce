@@ -54,7 +54,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: 'Pending'
+        default: 'Order Placed'
     },
 
     expectedDelivery: {

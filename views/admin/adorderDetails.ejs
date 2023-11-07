@@ -1,6 +1,7 @@
 <%- include('../admin/layouts/header.ejs') %>
 <%- include('../admin/layouts/sidebar.ejs') %>
 <%- include('../admin/layouts/navbar.ejs') %>
+<link rel="stylesheet" href="/public/adminAssets/assets/css/order.css">
 
 <div class="main-panel">
     <div class="content-wrapper">
@@ -36,7 +37,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
+                                                        <tr data-product-id="<%= product.product_Id._id %>">
                                                             <td>
                                                                 <img src="/public/adminAssets/assets/images/products/<%= product.product_Id.images[0] %>"
                                                                     alt="Product Image">
@@ -51,17 +52,17 @@
                                                                 <%= product.quantity %>
                                                             </td>
                                                             <td class="align-middle">
-                                                                $<%= order.totalAmount %>
+                                                                $<%= product.total %>
                                                             </td>
                                                             <td class="align-middle status-cell">
                                                                 <span class="product-status"><%= product.status %></span>
                                                             </td>
                                                             <td>
-                                                                <select onchange="updateStatus('<%= product.product_Id._id %>', '<%= order._id %>', this.value)">
-                                                                <option value="" disabled selected>Select Status</option>
-                                                                <option value="Shipped" <% if (product.status === 'Shipped') { %> selected <% } %>> Shipped </option>
-                                                                <option value="Out for Delivery" <% if (product.status === 'Out for delivery') { %> selected <% } %>> Out For Delivery </option>
-                                                                <option value="Delivered" <% if (product.status === 'Delivered') { %> selected <% } %>> Delivered </option>
+                                                                <select onchange="confirmStatusUpdate('<%= product.product_Id._id %>', '<%= order._id %>', this.value)">
+                                                                    <option value="" disabled selected>Select Status</option>
+                                                                    <option value="Shipped" <% if (product.status === 'Shipped') { %> selected <% } %>> Shipped </option>
+                                                                    <option value="Out for Delivery" <% if (product.status === 'Out for delivery') { %> selected <% } %>> Out For Delivery </option>
+                                                                    <option value="Delivered" <% if (product.status === 'Delivered') { %> selected <% } %>> Delivered </option>
                                                                 </select>
                                                             </td>
                                                             <td class="align-middle">
@@ -73,7 +74,32 @@
                                                             </td>
                                                         </tr>
                                                     </tbody>
+                                                  
                                                 </table>
+                                                <div id="orderStatusDiv" class="container-fluid d-flex flex-column justify-content-center my-3 mx-auto">
+                                                    <div class="card row col-12 p-2" style="border: 1px solid #d1d1d1; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
+                                                        <div class="col-md-9 mx-auto">
+                                                            <h3 class="text-center py-4">Order Status</h3>
+                                                        <%if(product.status!=='Canceled'){%>
+                                                            <div class="progress-track">
+                                                                <ul id="progressbar">
+                                                                    <li class="step0 active" id="step1">Order placed</li>
+                                                                    <li class="step0 text-center <%= product.StatusLevel >= 2 ? 'active' : '' %>" id="step2">Shipped</li>
+                                                                    <li class="step0 text-center <%= product.StatusLevel >= 3 ? 'active' : '' %>" id="step3">Out for Delivery</li>
+                                                                    <li class="step0 text-center <%= product.StatusLevel >= 4? 'active' : '' %>" id="step4">Delivered</li>
+                                                                </ul>
+                                                            </div>
+                                                            <%}else{%>
+
+                                                                <h3 class="text-center py-4" style="color: rgba(194, 73, 73, 0.777);">Order canceled</h3>
+                                                            <%}%>
+                                                    
+                                                        </div>
+                                                        <button id="refreshOrderStatus" class="btn btn-primary">
+                                                            Refresh Order Status
+                                                          </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         <% }) %>
                                     <% } %>
@@ -117,42 +143,117 @@
     </div>
 </div>
 
+
+
 <script>
-    $(document).ready(function () {
-      $('.cancel-product').on('click', function () {
+  $(document).ready(function () {
+    $('.cancel-product').on('click', function () {
         const button = $(this);
         const productId = button.data('product-id');
         const orderId = '<%= order._id %>'; // Retrieve the order ID
-    
-        $.ajax({
-          type: 'POST',
-          url: `/admin/cancel_order/${orderId}/${productId}`, // Replace with your actual route
-          success: function (data) {
-            if (data.success) {
-              // Product canceled successfully, update the UI
-              button.prop('disabled', true); // Disable the button
-              const statusCell = button.closest('tr').find('.status-cell');
-              statusCell.find('.product-status').text('Canceled'); // Update the status in the UI
-              statusCell.find('.product-status').removeClass('text-success'); // Optional: Remove success text color
-              statusCell.find('.product-status').addClass('text-danger'); // Optional: Add a different color for canceled status
-              button.text('Canceled'); // Update the button text
-              // Update other UI elements as needed
-            } else {
-              // Handle error
-              console.log(data.error);
-            }
-          },
-          error: function (err) {
-            // Handle AJAX error
-            console.error(err);
-          },
-        });
-      });
+
+        // Check the current status of the product
+        const statusCell = button.closest('tr').find('.status-cell .product-status');
+        const currentStatus = statusCell.text().trim().toLowerCase();
+
+        if (currentStatus === 'canceled') {
+            Swal.fire({
+                title: 'Product Already Canceled',
+                text: 'This product is already canceled.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        } else if (currentStatus === 'delivered') {
+            Swal.fire({
+                title: 'Product Already Delivered',
+                text: 'This product is already delivered.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            Swal.fire({
+                title: 'Cancel Product',
+                text: 'Are you sure you want to cancel this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with cancellation
+                    $.ajax({
+                        type: 'POST',
+                        url: `/admin/cancel_order/${orderId}/${productId}`, // Replace with your actual route
+                        success: function (data) {
+                            if (data.success) {
+                                // Product canceled successfully, update the UI
+                                button.prop('disabled', true); // Disable the button
+                                statusCell.text('Canceled'); // Update the status in the UI
+                                statusCell.removeClass('text-success'); // Optional: Remove success text color
+                                statusCell.addClass('text-danger'); // Optional: Add a different color for canceled status
+                                button.text('Canceled'); // Update the button text
+                                // Update other UI elements as needed
+                            } else {
+                                // Handle error
+                                console.log(data.error);
+                            }
+                        },
+                        error: function (err) {
+                            // Handle AJAX error
+                            console.error(err);
+                        },
+                    });
+                }
+            });
+        }
     });
-    
-      </script>
-      
+});
+
+</script>
+
+
+
 <script>
+
+
+    function confirmStatusUpdate(productId, orderId, value) {
+        // Check if the product is already canceled
+        const statusCell = $(`tr[data-product-id="${productId}"] .status-cell .product-status`);
+        if (statusCell.text().trim().toLowerCase() === 'canceled') {
+            Swal.fire({
+                title: 'Product Already Canceled',
+                text: 'This product is already canceled.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        } else if (statusCell.text().trim().toLowerCase() === 'delivered') {
+            Swal.fire({
+                title: 'Product Already delivered',
+                text: 'This product is already delivered.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }
+        else {
+            Swal.fire({
+                title: 'Change Status',
+                text: `Are you sure you want to change the status to ${value}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with status update
+                    updateStatus(productId, orderId, value);
+                }
+            });
+        }
+    }
+
+
+   
+
 
     function updateStatus(productId, orderId, value) {
         $.ajax({
@@ -165,13 +266,25 @@
             },
             success: function (response) {
                 if (response.success) {
+                    // Update the status in the table without refreshing
+                    const statusCell = $(`tr[data-product-id="${productId}"] .status-cell`);
+                    statusCell.find('.product-status').text(value);
+
+                  
+                    // Optionally, update the color based on the status (if needed)
+                    if (value === 'Canceled') {
+                        statusCell.find('.product-status').removeClass('text-success');
+                        statusCell.find('.product-status').addClass('text-danger');
+                    } else {
+                        // Handle other status color changes here
+                    }
+
                     Swal.fire({
                         title: 'Success',
                         icon: 'success',
                         text: 'Order status updated successfully',
                         timer: 2000,
                     });
-                    $('#reloadDiv').load('/admin/add_order #reloadDiv');
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -183,6 +296,17 @@
             },
         });
     }
+
+
+</script>
+
+
+<script>
+    // Add an event listener to the "Refresh Order Status" button
+    document.getElementById('refreshOrderStatus').addEventListener('click', function () {
+        // Reload the page to refresh the content within "orderStatusDiv"
+        location.reload();
+    });
 </script>
 
 <%- include('../admin/layouts/footer.ejs') %>

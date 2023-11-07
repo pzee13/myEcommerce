@@ -28,7 +28,7 @@
               <div class="col-md-4 form-group">
                 <label for="price">Price</label>
                 <input type="text" class="form-control" id="price" name="price" placeholder="Price">
-                <div class="error"></div>
+                <div class "error"></div>
               </div>
               <div class="col-md-4 form-group">
                 <label for="quantity">Quantity</label>
@@ -49,11 +49,14 @@
                 <div class="col-md-6 mb-0">
                   <div class="dynamic-image-inputs">
                     <div class="input-group">
-                      <input type="file" name="images" class="form-control" required>
+                      <input type="file" name="images" id="image-input" class="form-control" required>
                       <div class="input-group-append">
                         <button class="btn btn-primary add-image-input" type="button">Add Image</button>
                       </div>
                     </div>
+                  </div>
+                  <div id="image-preview-container">
+                    <img id="image-preview" style="max-width: 300px;">
                   </div>
                 </div>
                 <div class="col-md-6 mb-4">
@@ -195,12 +198,64 @@
       removeButton.textContent = "Remove";
       removeButton.addEventListener("click", function () {
         inputGroup.remove();
+        imagePreviewContainer.remove();
       });
       inputGroupAppend.appendChild(removeButton);
       inputGroup.appendChild(inputFile);
       inputGroup.appendChild(inputGroupAppend);
       dynamicImageInputs.appendChild(inputGroup);
+
+      // Add an image preview container for the new input
+      const imagePreviewContainer = document.createElement("div");
+      const imagePreview = document.createElement("img");
+      imagePreview.alt = "Image Preview";
+      imagePreview.style.maxWidth = "300px";
+      imagePreviewContainer.appendChild(imagePreview);
+      dynamicImageInputs.appendChild(imagePreviewContainer);
+
+      // Attach the event listener for the new input's change event
+      inputFile.addEventListener("change", () => {
+        const file = inputFile.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+            imagePreviewContainer.style.display = 'block';
+          };
+
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.src = '';
+          imagePreviewContainer.style.display = 'none';
+        }
+      });
     });
   });
 </script>
+<script>
+  const imageInput = document.getElementById('image-input');
+  const imagePreview = document.getElementById('image-preview');
+  const imagePreviewContainer = document.getElementById('image-preview-container');
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        imagePreviewContainer.style.display = 'block';
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.src = '';
+      imagePreviewContainer.style.display = 'none';
+    }
+  });
+</script>
+
 <%- include('../admin/layouts/footer.ejs') %>
