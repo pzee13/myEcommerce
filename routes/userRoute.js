@@ -98,7 +98,7 @@ user_route.post('/edit_address',profileController.EditAddress)
 
 user_route.delete('/delete_address/:addressId',auth.isLogin,profileController.deleteAddress)
 
-user_route.get('/checkout0',auth.isLogin,checkoutController.loadCheckout0)
+user_route.get('/checkout',auth.isLogin,checkoutController.loadCheckout0)
 
 user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
 
@@ -111,5 +111,7 @@ user_route.get('/orders',auth.isLogin,orderController.loadOrder)
 user_route.get('/order_details',auth.isLogin,orderController.orderDetails)
 
 user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder);
+
+user_route.post('/verify_payment',orderController.validatePaymentVerification)
 
 module.exports = user_route 

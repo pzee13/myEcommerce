@@ -31,6 +31,9 @@ const orderSchema = new mongoose.Schema({
   expectedDelivery:{
     type:Date
   },
+  payment_Id:{
+    type: String
+  },
 
   products: [{
     product_Id: {
@@ -55,6 +58,9 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'Order Placed'
+    },
+    paymentStatus:{
+      type: String,
     },
 
     expectedDelivery: {

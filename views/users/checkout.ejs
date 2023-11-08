@@ -32,7 +32,7 @@
                     </div><!-- End .checkout-discount -->
                        <% if(address){%>
                     <% if (address.address.length !== 0) { %>
-                    <form action="/checkout0" method="post" id="newAddressForm" class="col-sm-9">
+                    <form action="/checkout" method="post" id="newAddressForm" class="col-sm-9">
                         <% for (let i = address.address.length - 1; i >= 0; i--) { %>
                         <label class="p-3 border rounded-4 m-2 custom-label">
                             <div class="form-check d-flex align-items-center mx-4">
@@ -118,7 +118,7 @@
                             <% } %>
                                 <tr class="summary-subtotal">
                                     <td>Subtotal:</td>
-                                    <td>₹<%=products.totalPrice%></td>
+                                    <td id="total1" >₹<%=products.totalPrice%></td>
                                 </tr><!-- End .summary-subtotal -->
                                 <tr>
                                     <td>Shipping:</td>
@@ -176,11 +176,11 @@
                                     <div class="row">
                                         <div class="col-1">
                                             <label>
-                                                <input type="radio" name="paymentOption" value="check" id="checkpayments">
+                                                <input type="radio" name="paymentOption" value="Online" id="Online">
                                             </label>
                                         </div>
                                         <div class="col-11">
-                                            Check payments
+                                         Online
                                         </div>
                                     </div>
                                 </h2>
@@ -210,7 +210,7 @@
                                     <div class="row">
                                         <div class="col-1">
                                             <label>
-                                                <input type="radio" name="paymentOption" value="Online" id="paypal">
+                                                <input type="radio" name="paymentOption" value="paypal" id="paypal">
                                             </label>
                                         </div>
                                         <div class="col-11">
@@ -333,7 +333,7 @@
     }
   </style>
   
-
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
      function updateCart() {
         fetch('/update_cart', {
@@ -356,37 +356,40 @@
 </script>
 
 <script>
-// Add an event listener to the "Place Order" button
-const placeOrderButton = document.getElementById('placeOrderButton');
-placeOrderButton.addEventListener('click', function () {
+    function placeOrder() {
+        const selectedAddressInput = document.querySelector('input[name="address"]:checked');
+        const cartPriceElement = document.getElementById('cartPrice');
+        const selectedPaymentOption = document.querySelector('input[name="paymentOption"]:checked').value;
     
+        if (selectedAddressInput && cartPriceElement && selectedPaymentOption) {
+            const selectedAddressJSON = selectedAddressInput.value;
     
-    // Pass the selected payment option to the placeOrder function
-    placeOrder();
-});
-
-function placeOrder() {
-    const selectedAddressInput = document.querySelector('input[name="address"]:checked');
-    const cartPriceElement = document.getElementById('cartPrice');
-    const selectedPaymentOption = document.querySelector('input[name="paymentOption"]:checked').value;
-    console.log(selectedPaymentOption)
-    console.log(selectedPaymentOption)
-
-    if (selectedAddressInput && cartPriceElement && selectedPaymentOption) {
-        const selectedAddressJSON = selectedAddressInput.value; 
-        console.log(selectedAddressJSON)// Get the JSON string
-        const selectedAddress = selectedAddressJSON; // Parse it back into an object
-        const totalAmount = cartPriceElement.textContent;
-
-
-        // Create an object with the order details
-        const orderData = {
-            addressId: selectedAddress,
-            paymentOption: selectedPaymentOption, // Use the selected payment option here
-            totalAmount: totalAmount,
-        };
-
-        // Send an HTTP POST request to place the order
+            try {
+                const selectedAddress = selectedAddressJSON
+                const totalAmount = parseInt(cartPriceElement.textContent.trim()); // Remove any leading/trailing spaces
+    
+                const orderData = {
+                    addressId: selectedAddress,
+                    paymentOption: selectedPaymentOption,
+                    totalAmount: totalAmount,
+                };
+    
+               
+                
+              
+                    // Handle other payment methods
+                    placeOrderProcess(orderData);
+            
+            } catch (error) {
+                console.error('Error parsing selectedAddressJSON:', error);
+                console.error('Selected Address JSON:', selectedAddressJSON);
+            }
+        } else {
+            console.error('No address selected or missing cartPrice element');
+        }
+    }
+    
+    function placeOrderProcess(orderData) {
         fetch('/place_order', {
             method: 'POST',
             headers: {
@@ -394,34 +397,92 @@ function placeOrder() {
             },
             body: JSON.stringify(orderData),
         })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Order Placed Successfully',
-                        icon: 'success',
-                        timer: 3000, // 3 seconds timeout
-                        showConfirmButton: false,
-                    }).then(() => {
-                        // Redirect to '/order_placed' after the timeout
-                        window.location.href = '/order_placed';
-                    });
-                } else {
-                    // Handle errors, display an error message, or take appropriate action
-                    Swal.fire('Order placement failed:', data.message);
-                }
-            })
-            .catch((error) => {
-                console.error('An error occurred while placing the order:', error);
-            });
-    } else {
-        // Handle the case where no address is selected or cart price element is missing.
-        console.error('No address selected or missing cartPrice element');
+        .then(response => response.json())
+        .then(data => {
+            if (data.codSuccess === true) {
+                Swal.fire({
+                    title: 'Order Placed Successfully',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false,
+                }).then(() => {
+                    window.location.href = '/order_placed';
+                });
+            } else {
+                razorpayPayment(data.order)
+            }
+        })
+        .catch(error => {
+            console.error('An error occurred while placing the order:', error);
+        });
     }
+    
+    function razorpayPayment(order) {
+        var options = {
+            key: '<%=process.env.Razorpay_KEY_ID%>',
+            amount: order.amount, // Amount should be in paisa, e.g., $100 should be 10000
+            currency: 'INR',
+            name: 'Your Website Name',
+            description: 'Payment for your order',
+            order_id:order.id,
+            handler: function (response) {
+                verifyPayment(response, order);
+            },
+            prefill: {
+                name: 'Your Name',
+                email: 'yourname@example.com',
+                contact: '+911234567890',
+            },
+            notes: {
+                address: "Razorpay Corporate Office",
+            },
+            theme: {
+                color: "#c96",
+            },
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+    
+    
+    function verifyPayment(payment, order) {
+    
+    fetch('/verify_payment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ payment, order}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success===true) {
+            Swal.fire({
+                title: 'Payment Successful',
+                icon: 'success',
+                timer: 3000,
+                showConfirmButton: false,
+            }).then(() => {
+                window.location.href = '/order_placed';
+            });
+        } else {
+            Swal.fire({
+                title: 'Payment verification failed',
+                icon: 'error',
+                text: 'An error occurred during payment verification',
+            });
+           
+            
+        }
+    })
+    .catch(error => {
+        console.error('Error verifying payment:', error);
+    });
 }
 
+    </script>
+    
 
-</script>
 
 
 
