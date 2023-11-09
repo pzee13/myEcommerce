@@ -1,24 +1,28 @@
 <%- include('../userMainlayouts/mainheader.ejs') %>
+<link rel="stylesheet" href="/public/userAssets/userAccount/assets/css/style.css">
 
-<form class="bg0 p-t-75 p-b-85" style="background-color: #fcfbfa;">
-    <div class="container">
-        <h1>Your Wallet</h1>
+<div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+    <form class="bg0 p-t-75 p-b-85" style="background-color: #fcfbfa; max-width: 400px; width: 100%;">
+        
+
+
+        <h1 style="text-align: center; font-family: Poppins-Medium; color: #3333;">Your Wallet</h1>
 
         <!-- Display Wallet Balance -->
-        <p class="wallet-balance">Wallet Balance: <%= wallet %> </p>
+        <p class="wallet-balance" style="text-align: center;">Wallet Balance: <%= wallet %></p>
 
         <!-- Add Money to Wallet Form -->
         <form id="addMoneyForm">
-            <label for="amount">Enter Amount to Add:</label>
-            <input type="number" id="amount" name="amount" required>
-            <button type="button" onclick="addMoney()" class="add-money-button">Add Money</button>
+            <label for="amount" style="display: block; margin-bottom: 10px; text-align: center;">Enter Amount to Add:</label>
+            <input type="number" id="amount" name="amount" class="d-flex justify-content-center" required style="width: 100%; margin-bottom: 15px; justify-content: center; background-color: bisque;">
+            <button type="button" onclick="addMoney()" class="add-money-button" style="width: 100%;">Add Money</button>
         </form>
 
         <!-- Wallet History Section -->
-        <h2>Wallet History</h2>
-        <a href="/wallet_history" class="wallet-history-button">View Wallet History</a>
-    </div>
-</form>
+        <h2 style="text-align: center; margin-top: 20px;">Wallet History</h2>
+        <a href="/wallet_history" class="wallet-history-button" style="display: block; text-align: center; margin-top: 10px;">View Wallet History</a>
+    </form>
+</div>
 
 <style>
     /* Add your custom styles here */
@@ -46,7 +50,6 @@
         margin-bottom: 8px;
     }
 </style>
-
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>

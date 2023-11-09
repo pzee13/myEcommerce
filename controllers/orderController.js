@@ -99,6 +99,14 @@ const placeOrder = async (req, res) => {
             $inc: { quantity: -quantity },
           }
         );
+        if(paymentOption == 'Wallet')
+        {
+          await Order.findOneAndUpdate(
+            { _id: orderId },
+            { $set: { 'products.$[].paymentStatus': 'Success' } }
+        );
+        }
+        
       }
       res.json({ codSuccess:true})
       await Cart.findOneAndDelete({ user_id: userId });
