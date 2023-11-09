@@ -114,4 +114,12 @@ user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder
 
 user_route.post('/verify_payment',orderController.validatePaymentVerification)
 
+user_route.get('/wallet_history',auth.isLogin,userController.walletHistory)
+
+user_route.get('/wallet',auth.isLogin,profileController.loadWallet)
+
+user_route.post('/add_wallet',auth.isLogin,userController.addMoneyWallet)
+
+user_route.post('/verify_wallet',auth.isLogin,userController.verifyWalletpayment)
+
 module.exports = user_route 

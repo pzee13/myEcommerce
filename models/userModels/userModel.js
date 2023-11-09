@@ -32,7 +32,27 @@ const userSchema = mongoose.Schema({
                 token:{
                     type:String,
                     default:''
-                }
+                },
+                wallet : {
+                    type : Number,
+                    default : 0
+                },
+                walletHistory: [
+                    {
+                      date: {
+                        type: Date,
+                      },
+                      amount: {
+                        type: Number
+                      },
+                      description: {
+                        type: String,
+                      },
+                      transactionType:{
+                        type:String
+                      },
+                    },
+                  ]
             },
             {
               timestamps:true

@@ -1,0 +1,43 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+
+<br><br>
+
+<div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/wallet" class="btn btn-md btn-success mt-3">Back</a>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <h3>Wallet History</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Transaction Method</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% walletData.forEach((wallet) => { %>
+                <tr>
+                  <td><%= wallet.walletHistory.date.toISOString().substr(0, 10) %></td>
+                  <% if (wallet.walletHistory.amount > 0) { %>
+                    <td class="text-success">₹<%= wallet.walletHistory.amount %></td>
+                  <% } else { %>
+                    <td class="text-danger">₹<%= wallet.walletHistory.amount %></td>
+                  <% } %>
+                  <td><%= wallet.walletHistory.description %></td>
+                  <td><%= wallet.walletHistory.transactionType %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../userMainlayouts/mainfooter.ejs') %>

@@ -36,7 +36,7 @@ const placeOrder = async (req, res) => {
     }
 
     const orderDataUser = await Order.find({ user: userId });
-
+    let status = paymentOption == 'COD' ? 'placed' : 'pending'
     function generateOrderID() {
       return Math.floor(Math.random() * 900000) + 100000;
     }
@@ -60,6 +60,21 @@ const placeOrder = async (req, res) => {
     const deliveryDate = new Date(today);
     deliveryDate.setDate(today.getDate() + 7);
 
+    if(paymentOption==='Wallet'){
+      const userid=req.session.user_id
+      await User.findByIdAndUpdate({_id:userid},{$inc:{wallet:-totalAmount},$push: {
+        walletHistory: {
+          date: new Date(),
+          amount: totalAmount,
+          description: `Buy product with wallet - Order ${orderIdSample}`,
+          transactionType:'Debit'
+        },
+      },})
+      status='placed'
+    
+     }
+
+
     const newOrder = new Order({
       user: userId,
       orderID: orderIdSample,
@@ -74,7 +89,7 @@ const placeOrder = async (req, res) => {
     const orderData =await newOrder.save();
     const orderId = newOrder._id;
 
-    if (paymentOption === 'COD') {
+    if (status == 'placed') {
       for (const item of cartItems.items) {
         const productId = item.product_Id._id;
         const quantity = parseInt(item.quantity, 10);
@@ -139,7 +154,7 @@ console.log('Received razorpay_signature:', body.payment.razorpay_signature);
       );
       await Order.findByIdAndUpdate(
         { _id: body.order.receipt },
-        { $set: { status: 'Order Placed' } }
+        { $set: { status: 'Success' } }
       );
       for (let item of items.products) {
         await Product.updateOne(
@@ -147,6 +162,11 @@ console.log('Received razorpay_signature:', body.payment.razorpay_signature);
           { $inc: { quantity: -item.quantity } }
         );
       }
+      await Order.findOneAndUpdate(
+        { _id: body.order.receipt },
+        { $set: { 'products.$[].paymentStatus': 'Success' } }
+    );
+
       await Cart.deleteOne({ user_id: userid });
       res.json({ success: true });
     } else {
@@ -286,7 +306,21 @@ const cancelOrder = async (req, res) => {
         await Product.findByIdAndUpdate(product.product_Id._id, {
           $inc: { quantity: product.quantity },
         });
+
+        if(order.paymentOption=="Online"||order.paymentOption=="Wallet"){
+
+          await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:product.total},$push: {
+           walletHistory: {
+             date: new Date(),
+             amount: product.total,
+             description: `Refunded for Order cancel - Order ${order.orderID}`,
+             transactionType:'Credit'
+           },
+         },})
+            }
       }
+
+
     }
 
     await order.save();

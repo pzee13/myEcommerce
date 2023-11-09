@@ -17,7 +17,7 @@ const orderSchema = new mongoose.Schema({
   },
   paymentOption: {
     type: String,
-    enum: ['COD', 'Online','PayPal', 'Other'], 
+    enum: ['COD', 'Online','PayPal', 'Wallet'], 
     required: true,
   },
   totalAmount: {
@@ -61,8 +61,9 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus:{
       type: String,
+      default:'Pending'
+   
     },
-
     expectedDelivery: {
         type: Date,
        

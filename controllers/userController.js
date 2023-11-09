@@ -1,5 +1,6 @@
 
 const Swal = require('sweetalert2');
+const mongoose = require("mongoose");
 const User = require('../models/userModels/userModel') 
 const Category = require('../models/categoryModel')
 const Product = require('../models/productModel')
@@ -11,8 +12,15 @@ const otpGenerator = require("otp-generator")
 const Cart = require('../models/cartModel')
 const dotenv = require("dotenv").config()
 
+const Order = require("../models/orderModel")
+const Razorpay = require("razorpay")
+var crypto = require("crypto");
 
-
+var instance = new Razorpay({
+    key_id: process.env.Razorpay_KEY_ID,
+    key_secret: process.env.Razorpay_KEY_SECRET
+  });
+  
 
 const securePassword = async(password)=>{
     try {
@@ -508,6 +516,110 @@ const searchProducts = async (req, res) => {
     }
   };
 
+
+  const walletHistory = async (req, res,next) => {
+    try {
+      const  userId  = req.session.user_id
+      const walletData = await User.aggregate([
+        { $match: { _id:new mongoose.Types.ObjectId(userId)} },
+        {$project:{walletHistory:1}},
+        { $unwind: "$walletHistory" },
+        { $sort: { "walletHistory.date": -1 } }
+      ]);
+      console.log(walletData);
+      const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+      res.render("walletHistory", { walletData,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+    } catch (err) {
+console.log(err.message);
+     next(err)
+    }
+  };
+
+
+  const addMoneyWallet = async (req,res)=>{
+    try {
+        console.log("monry comong");
+
+    const {amount}=req.body
+    console.log('amount',amount);
+    const id=crypto.randomBytes(8).toString('hex')
+    console.log(id);
+    var options={ 
+        amount:amount*100,
+        currency:'INR',
+        receipt:""+id
+    }
+    console.log('//',options);
+    
+    instance.orders.create(options, (err, order) => {
+        console.log('///orr',order);
+        if(err){
+            console.log('err');
+            res.json({status: false})
+        }else{
+            console.log('stts');
+            res.json({ status: true, order:order })
+        }
+    
+    })
+    
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+const verifyWalletpayment = async(req,res)=>{
+    try{
+  
+      console.log("entered into post verify wallet payment");
+  
+     
+      const userId=req.session.user_id
+  
+      const body = req.body;
+      console.log("data",body)
+      const amount = parseInt(body.order.amount)/100;
+          let hmac = crypto.createHmac('sha256',process.env.Razorpay_KEY_SECRET)
+  
+  
+          hmac.update(
+            body.payment.razorpay_order_id + '|' + body.payment.razorpay_payment_id
+        )
+        hmac = hmac.digest('hex')
+        if(hmac == body.payment.razorpay_signature){
+            
+          const walletHistory = {
+            date: new Date(),
+            description: 'Deposited via Razorpay',
+            transactionType: 'Credit',
+            amount: amount,
+        }
+            await User.findByIdAndUpdate(
+                {_id: userId},
+                {
+                    $inc:{
+                        wallet: amount
+                    },
+                    $push:{
+                        walletHistory
+                    }
+                }
+            );
+            console.log('udddd')
+            res.json({status: true})
+        }else{
+            res.json({status: false})
+        }
+  
+  
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+
+
   
 
 module.exports = {
@@ -529,6 +641,9 @@ module.exports = {
     resendOTP,
     getProductDetails,
     searchProducts,
+    walletHistory,
+    addMoneyWallet,
+    verifyWalletpayment
     // sendVerificationEmail
 }
 

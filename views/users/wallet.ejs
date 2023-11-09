@@ -1,0 +1,151 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+<form class="bg0 p-t-75 p-b-85" style="background-color: #fcfbfa;">
+    <div class="container">
+        <h1>Your Wallet</h1>
+
+        <!-- Display Wallet Balance -->
+        <p class="wallet-balance">Wallet Balance: <%= wallet %> </p>
+
+        <!-- Add Money to Wallet Form -->
+        <form id="addMoneyForm">
+            <label for="amount">Enter Amount to Add:</label>
+            <input type="number" id="amount" name="amount" required>
+            <button type="button" onclick="addMoney()" class="add-money-button">Add Money</button>
+        </form>
+
+        <!-- Wallet History Section -->
+        <h2>Wallet History</h2>
+        <a href="/wallet_history" class="wallet-history-button">View Wallet History</a>
+    </div>
+</form>
+
+<style>
+    /* Add your custom styles here */
+    .wallet-balance {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .add-money-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .wallet-history-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .wallet-history-list li {
+        margin-bottom: 8px;
+    }
+</style>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function addMoney() {
+        var number = document.getElementById('amount').value
+          var amount=parseInt(number)
+        addMoneyProcess(amount);
+    }
+
+    function addMoneyProcess(amount) {
+        fetch('/add_wallet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount: amount }),
+        })
+        .then(response => response.json())
+        .then(data => {
+        if (data.status === true) {
+            console.log('//////', data);
+            razorpayPayment(data.order, amount);
+        } else {
+            // Handle failure, show an error message
+            console.log('Money added failed');
+        }
+    })
+        .catch(error => {
+            console.error('An error occurred while adding money:', error);
+        });
+    }
+
+    function razorpayPayment(order, amount) {
+    console.log(order)
+    var options = {
+        key: '<%=process.env.Razorpay_KEY_ID%>',
+        amount: order.amount, // Amount is in paisa
+        currency: 'INR',
+        name: 'FORMEN',
+        description: 'Add Money to Wallet',
+        image: '/public/userlogin/assets/mylogo.svg',
+        order_id: order.id,
+        handler: function (response) {
+            // Handle the Razorpay response and update wallet balance
+            // You may want to make an API call to update the server with the transaction details
+            console.log('Payment ID:', response.razorpay_payment_id);
+            console.log('Signature:', response.razorpay_signature);
+
+            // Verify the payment after Razorpay response
+            verifyPayment(response,order);
+        },
+        prefill: {
+            name: 'FORMEN',
+            email: 'FORMEN@example.com',
+            contact: '9847378466'
+        },
+        notes: {
+            // Add any additional notes if needed
+        },
+        theme: {
+            color: '#F37254'
+        }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+}
+
+    // Verify the payment with the server
+    function verifyPayment(payment,order) {
+        fetch('/verify_wallet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({payment,order}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === true) {
+                Swal.fire({
+                    title: 'Payment Verified Successfully',
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false,
+                }).then(() => {
+                    // Redirect or update UI as needed
+                    console.log('Payment verified successfully');
+                });
+            } else {
+                // Handle failure, show an error message
+                console.log('Payment verification failed');
+            }
+        })
+        .catch(error => {
+            console.error('An error occurred while verifying payment:', error);
+        });
+    }
+</script>
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>
+

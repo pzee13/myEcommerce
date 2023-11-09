@@ -39,10 +39,10 @@
                                 <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                                <a class="nav-link" id="tab-wallet-link" data-toggle="tab" href="#tab-wallet" role="tab" aria-controls="tab-wallet" aria-selected="false">Wallet</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Sign Out</a>
+                                <a class="nav-link" href="/logout">Sign Out</a>
                             </li>
                         </ul>
                     </aside><!-- End .col-lg-3 -->
@@ -206,7 +206,9 @@
                                 <%} %>
                             </div>
                             </div><!-- .End .tab-pane -->
-                            
+                            <div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+                                <a href="/wallet" class="btn btn-outline-primary-2"><span>Wallet</span><i class="icon-long-arrow-right"></i></a>
+                            </div>
                            
                         </div>
                     </div><!-- End .col-lg-9 -->

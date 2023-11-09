@@ -356,6 +356,43 @@ const deleteAddress = async (req, res) => {
     }
 };
 
+const loadWallet = async (req, res) => {
+    try {
+        const userId = req.session.user_id;
+        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+
+        const user = await User.aggregate([
+            { $match: { _id:new mongoose.Types.ObjectId(userId)} },
+            {
+                $project: {
+                    _id: 1,
+                    wallet: 1,
+                    walletHistory: {
+                        $map: {
+                            input: '$walletHistory',
+                            as: 'transaction',
+                            in: {
+                                date: '$$transaction.date',
+                                amount: '$$transaction.amount',
+                                description: '$$transaction.description',
+                            },
+                        },
+                    },
+                },
+            },
+        ]);
+
+        if (user.length > 0) {
+            res.render('wallet', { wallet: user[0].wallet, walletHistory: user[0].walletHistory ,
+                products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal server error');
+    }
+};
 
 
 module.exports = {
@@ -364,5 +401,6 @@ module.exports = {
     addAddress,
     // loadEditAddress,
     EditAddress,
-    deleteAddress
+    deleteAddress,
+    loadWallet
 }
