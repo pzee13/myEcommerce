@@ -9,8 +9,7 @@
         <h1 style="text-align: center; font-family: Poppins-Medium; color: #3333;">Your Wallet</h1>
 
         <!-- Display Wallet Balance -->
-        <p class="wallet-balance" style="text-align: center;">Wallet Balance: <%= wallet %></p>
-
+        <p id="walletBalance" class="wallet-balance" style="text-align: center;">Wallet Balance: <%= wallet %></p>
         <!-- Add Money to Wallet Form -->
         <form id="addMoneyForm">
             <label for="amount" style="display: block; margin-bottom: 10px; text-align: center;">Enter Amount to Add:</label>
@@ -136,9 +135,10 @@
                     timer: 3000,
                     showConfirmButton: false,
                 }).then(() => {
-                    // Redirect or update UI as needed
-                    console.log('Payment verified successfully');
-                });
+                // Update the wallet balance on the page
+                console.log('Updating wallet balance:',data.wallet);
+                updateWalletBalance(data.wallet);
+            });
             } else {
                 // Handle failure, show an error message
                 console.log('Payment verification failed');
@@ -148,6 +148,15 @@
             console.error('An error occurred while verifying payment:', error);
         });
     }
+
+   function updateWalletBalance(wallet) {
+    // Update the content of the wallet balance element
+    const walletBalanceElement = document.getElementById('walletBalance');
+    if (walletBalanceElement) {
+        walletBalanceElement.textContent = 'Wallet Balance:' + wallet;
+    }
+}
+    
 </script>
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

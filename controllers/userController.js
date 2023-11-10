@@ -606,8 +606,10 @@ const verifyWalletpayment = async(req,res)=>{
                     }
                 }
             );
+
+            const updatedUser = await User.findById(userId);
             console.log('udddd')
-            res.json({status: true})
+            res.json({status: true,wallet:updatedUser.wallet})
         }else{
             res.json({status: false})
         }

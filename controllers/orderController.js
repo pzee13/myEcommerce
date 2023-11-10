@@ -22,6 +22,16 @@ const placeOrder = async (req, res) => {
     const userId = req.session.user_id;
     const totalAmount = parseInt(req.body.totalAmount);
 
+    const user = await User.findById(userId);
+
+    if (paymentOption === 'Wallet' && user.wallet < totalAmount) {
+      return res.status(400).json({
+        success: false,
+        insufficientBalance: true, // Indicate insufficient wallet balance
+        message: 'Wallet balance is insufficient. Please choose another payment option.',
+      });
+    }
+
     // Fetch the cart items from the database based on the user's ID
     const cartItems = await Cart.findOne({ user_id: userId }).populate({
       path: 'items.product_Id',
@@ -60,7 +70,7 @@ const placeOrder = async (req, res) => {
     const deliveryDate = new Date(today);
     deliveryDate.setDate(today.getDate() + 7);
 
-    if(paymentOption==='Wallet'){
+    if(paymentOption==='Wallet' && user.wallet >= totalAmount){
       const userid=req.session.user_id
       await User.findByIdAndUpdate({_id:userid},{$inc:{wallet:-totalAmount},$push: {
         walletHistory: {
@@ -289,6 +299,7 @@ const cancelOrder = async (req, res) => {
     }
 
     let canCancel = true;
+    let refundedAmount = 0;
 
     for (const product of order.products) {
     
@@ -298,7 +309,9 @@ const cancelOrder = async (req, res) => {
       if (product.status === 'Delivered' || product.status === 'Canceled') {
         canCancel = false;
         break; // Exit the loop if any product cannot be canceled
-      }
+      } else {
+          refundedAmount += product.total; // Accumulate the refunded amount
+        }
     }
     }
 
@@ -317,6 +330,8 @@ const cancelOrder = async (req, res) => {
 
         if(order.paymentOption=="Online"||order.paymentOption=="Wallet"){
 
+          order.totalAmount -= refundedAmount;
+
           await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:product.total},$push: {
            walletHistory: {
              date: new Date(),
@@ -327,8 +342,6 @@ const cancelOrder = async (req, res) => {
          },})
             }
       }
-
-
     }
 
     await order.save();

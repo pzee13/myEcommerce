@@ -21,7 +21,7 @@ const loadWishlist = async (req, res) => {
 
         if (wishlist.length === 0) {
             // Wishlist is empty, return an empty array
-            res.render('wishlist3', { data: [] });
+            res.render('wishlist3', { data: [] ,userIsLoggedIn: req.session.user_id ? true : false,products:products1});
             console.log(wishlist)
         } else {
             res.render('wishlist3', { data: wishlist ,products:products1,userIsLoggedIn: req.session.user_id ? true : false});

@@ -408,9 +408,18 @@
                 }).then(() => {
                     window.location.href = '/order_placed';
                 });
-            } else {
+            }else if (data.insufficientBalance) {
+                    // Display SweetAlert for insufficient wallet balance
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Wallet Balance',
+                    text: 'Your wallet balance is insufficient. Please choose a different payment method or recharge your wallet.',
+                    });
+                } else {
                 razorpayPayment(data.order)
             }
+
+           
         })
         .catch(error => {
             console.error('An error occurred while placing the order:', error);

@@ -12,6 +12,9 @@
             <p class="order-id">Your order ID is: <strong>
                 <%=order.orderID%>
               </strong></p>
+              <p class="order-id">Your Total Amount: <strong>
+                ₹<%=order.totalAmount%>
+              </strong></p>
           </div>
         </div>
         <div class="card mt-4 border-0 shadow">
@@ -38,13 +41,13 @@
                       <%=products.product_Id.productName%>
                     </td>
                     <td class="align-middle">
-                      <%=products.product_Id.price%>
+                      ₹<%=products.product_Id.price%>
                     </td>
                     <td class="align-middle">
                       <%=products.quantity%>
                     </td>
                     <td class="align-middle">
-                        $<%=order.totalAmount%>
+                        ₹<%=products.total%>
                       </td>
                   </tr>
                 </tbody>
