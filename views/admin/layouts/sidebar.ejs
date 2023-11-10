@@ -137,12 +137,20 @@
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="http://www.bootstrapdash.com/demo/corona-free/jquery/documentation/documentation.html">
+            <a class="nav-link" data-toggle="collapse" href="#ui-coupons" aria-expanded="false" aria-controls="ui-coupons">
               <span class="menu-icon">
-                <i class="mdi mdi-file-document-box"></i>
+                <i class="mdi mdi-laptop"></i>
               </span>
-              <span class="menu-title">Coupons</span>
+              <span class="menu-title">Coupon</span>
+              <i class="menu-arrow"></i>
             </a>
+            <div class="collapse" id="ui-coupons">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="/admin/adcoupon">Add coupons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/coupon">View coupons</a></li>
+                <!-- <li class="nav-item"> <a class="nav-link" href="/admin/edit_category">Edit category</a></li> -->
+              </ul>
+            </div>
           </li>
         </ul>
       </nav>

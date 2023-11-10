@@ -427,6 +427,153 @@ const  load404 = async(req,res)=>{
 }
 
 
+const loadDashbord = async (req, res,next) => {
+  try {
+    let currentDate = new Date();
+
+    const categoryOrders = await Order.aggregate([
+      {
+        $unwind: "$products",
+
+      },
+      {
+        $match: {
+          "products.status": { $ne: "canceled" }
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product_Id",
+          foreignField: "_id",
+          as: "productData",
+        },
+      },
+      {
+        $unwind: "$productData",
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "productData.category",
+          foreignField: "_id",
+          as: "categoryData",
+        },
+      },
+      {
+        $unwind: "$categoryData",
+      },
+      {
+        $group: {
+          _id: "$categoryData.name",
+          totalQuantitySold: { $sum: "$products.quantity" },
+        },
+      },
+      {
+        $project: {
+          category: "$_id",
+          totalQuantitySold: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    let ordersCategory = {};
+
+    categoryOrders.forEach((category) => {
+      ordersCategory[category.category] = category.totalQuantitySold;
+
+    });
+    const Category = await Category.find({});
+
+ 
+
+
+    const paymentCod1 = await Order.aggregate([
+      { $match: { paymentOption: "COD", 'products.status': "delivered" } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      { $project: { total: 1, _id: 0 } }
+    ])
+    const paymentRazor1 = await Order.aggregate([
+      { $match: { paymentOption: 'Razorpay', 'products.status': "delivered" } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      { $project: { total: 1, _id: 0 } }
+    ])
+
+
+
+let paymentRazor;
+let paymentCod;
+if(paymentRazor1.length>0){
+  paymentRazor = parseInt(paymentRazor1[0].total)
+}else{
+  paymentRazor=0
+}
+     
+if(paymentCod1.length>0){
+  paymentCod = parseInt(paymentCod1[0].total)
+}else{
+    paymentCod=0
+}
+     
+  
+    
+
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+    const endOfWeek = new Date(currentDate);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+   
+
+
+    const dailyOrders = await Order.aggregate([
+      {
+        $match: {
+          status: {
+            $ne: "pending"
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$date"
+            },
+
+          },
+          dailyrevenue: {
+            $sum: "$totalAmount"
+          }
+        }
+      },
+      {
+        $sort: {
+          _id: 1
+        }
+      },
+      {
+        $limit: 7
+      }
+    ])
+
+    const result = dailyOrders || 0
+   
+const Revenue=paymentCod+paymentRazor
+
+const countOrder=await Order.find().countDocuments()
+
+const countProduct=await Product.find().countDocuments()
+const countCategory=await Category.find().countDocuments()
+  const countUser= await  User.find().countDocuments()
+    res.render('Dashbord', { ordersCategory, Category, paymentCod, paymentRazor, result,Revenue ,countOrder,countCategory,countProduct,countUser})
+  } catch (err) {
+  next(err)
+  }
+}
+
+
 module.exports = {
     loadadlogin,
     verifyadlogin,

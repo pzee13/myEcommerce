@@ -2,6 +2,7 @@ const express = require('express');
 const adminController = require("../controllers/adminController"); 
 const categoryController =require("../controllers/categoryController")
 const productController = require("../controllers/productController")
+const couponController = require("../controllers/couponController")
 
 const session = require('express-session');
 const config = require('../config/config');
@@ -93,11 +94,21 @@ admin_route.get('/add_order',auth.isLogin,adminController.loadorders)
 
 admin_route.get('/adorder_details',auth.isLogin,adminController.adorderDetails)
 
-admin_route.patch('/OrderUpdate',adminController.updateOrderStatus)
+admin_route.patch('/OrderUpdate',auth.isLogin,adminController.updateOrderStatus)
 
-admin_route.post('/cancel_order/:orderId/:productId',adminController.cancelOrder)
+admin_route.post('/cancel_order/:orderId/:productId',auth.isLogin,adminController.cancelOrder)
 
+admin_route.get('/adcoupon',auth.isLogin,couponController.couponAdmin)
 
+admin_route.post('/add_coupon',auth.isLogin,couponController.addCoupon)
+
+admin_route.get('/coupon',auth.isLogin,couponController.loadCoupon)
+
+admin_route.delete('/delete_coupon',auth.isLogin,couponController.deleteCoupon)
+
+admin_route.get('/edit_coupon',auth.isLogin,couponController.loadCouponEdit)
+
+admin_route.post('/edit_coupon',auth.isLogin,couponController.editCoupon)
 
 admin_route.get('/*',adminController.load404)
 
