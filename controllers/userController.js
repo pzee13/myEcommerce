@@ -397,7 +397,7 @@ const loaduserHome = async (req, res) => {
     catch (error)
     {
         console.log(error.message)
-        res.status(500).send('Server Error');
+        res.status(500).render('505-error');
         return
     }
 }
@@ -423,7 +423,7 @@ const viewProducts = async (req, res) => {
         totalPages: totalPages,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('505-error');
     }
   }
 
@@ -437,13 +437,14 @@ const viewProducts = async (req, res) => {
         const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
 
         if (!product) {
-            return res.status(404).render('error', { message: 'Product not found' });
+            return res.status(404).render('404-error', { message: 'Product not found' });
         }
 
         res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (error) {
         console.error(error);
-        res.status(500).render('error', { message: 'Internal Server Error' });
+        res.status(404).render('404-error', { message: 'Internal Server Error' });
+        
     }
 };
 

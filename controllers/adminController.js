@@ -59,15 +59,15 @@ const verifyadlogin = async (req, res) => {
 }
 
 
-const loadadHome = async(req,res)=>{
-    try{
-        res.render('dashboard')
-    }
-    catch(error)
-    {
-        console.log(error.message)
-    }
-}
+// const loadadHome = async(req,res)=>{
+//     try{
+//         res.render('dashboard')
+//     }
+//     catch(error)
+//     {
+//         console.log(error.message)
+//     }
+// }
 
 
   const loadusers = async(req,res)=>{
@@ -295,6 +295,10 @@ const loadadHome = async(req,res)=>{
 
   const updateOrderStatus = async (req, res) => {
     try {
+     
+  
+
+
         const { productId, orderId, value } = req.body;
         console.log(value);
         console.log(orderId);
@@ -302,6 +306,7 @@ const loadadHome = async(req,res)=>{
 
         // Find the order by ID
         const order = await Order.findById(orderId);
+
 
         const statusMap = {
           'Shipped': 2,
@@ -313,6 +318,7 @@ const loadadHome = async(req,res)=>{
         const statusLevel = statusMap[selectedStatus];
     
         console.log(statusLevel);
+
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
@@ -337,6 +343,13 @@ const loadadHome = async(req,res)=>{
         // Update the status of the product in the order
         product.status = value; // Assuming 'status' is a field in your database
         product.StatusLevel = statusLevel;
+
+        if (product.status === 'Delivered') {
+        if (order.paymentOption === 'COD') {
+          product.paymentStatus = 'Success';
+        }
+      }
+
         await order.save();
 
         res.json({ success: true, message: 'Order status updated successfully' });
@@ -349,31 +362,83 @@ const loadadHome = async(req,res)=>{
 
 
 
+// const cancelOrder = async (req, res) => {
+//   try {
+  
+//     const orderId = req.params.orderId;
+//     const productId = req.params.productId;
+
+//     // Find the order by orderId and user ID
+//     const order = await Order.findOne({ _id: orderId});
+
+//     if (!order) {
+//       return res.status(404).json({ success: false, message: 'Order not found' });
+//     }
+
+//     let canCancel = true;
+
+//     for (const product of order.products) {
+    
+//       if(product.product_Id._id.toString() === productId)
+//       {
+//         console.log(product.status)
+//       if (product.status === 'Delivered' || product.status === 'Canceled') {
+//         canCancel = false;
+//         break; // Exit the loop if any product cannot be canceled
+//       }
+//     }
+//     }
+
+//     if (!canCancel) {
+//       return res.status(400).json({ success: false, message: 'Order cannot be canceled' });
+//     }
+
+//     // Set the status of the product with the specified productId to 'Canceled' within the order
+//     for (const product of order.products) {
+//       if (product.product_Id._id.toString() === productId) {
+//         product.status = 'Canceled';
+//          // Save the product status
+//         await Product.findByIdAndUpdate(product.product_Id._id, {
+//           $inc: { quantity: product.quantity },
+//         });
+//       }
+//     }
+
+//     await order.save();
+
+//     res.json({ success: true, message: 'Order has been canceled' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: 'Failed to cancel the order' });
+//   }
+// };
+
+
 const cancelOrder = async (req, res) => {
   try {
-  
     const orderId = req.params.orderId;
     const productId = req.params.productId;
 
-    // Find the order by orderId and user ID
-    const order = await Order.findOne({ _id: orderId});
+    // Find the order by orderId
+    const order = await Order.findOne({ _id: orderId });
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
     let canCancel = true;
+    let refundedAmount = 0;
 
     for (const product of order.products) {
-    
-      if(product.product_Id._id.toString() === productId)
-      {
-        console.log(product.status)
-      if (product.status === 'Delivered' || product.status === 'Canceled') {
-        canCancel = false;
-        break; // Exit the loop if any product cannot be canceled
+      if (product.product_Id._id.toString() === productId) {
+        console.log(product.status);
+        if (product.status === 'Delivered' || product.status === 'Canceled') {
+          canCancel = false;
+          break; // Exit the loop if any product cannot be canceled
+        } else {
+          refundedAmount += product.total; // Accumulate the refunded amount
+        }
       }
-    }
     }
 
     if (!canCancel) {
@@ -384,10 +449,28 @@ const cancelOrder = async (req, res) => {
     for (const product of order.products) {
       if (product.product_Id._id.toString() === productId) {
         product.status = 'Canceled';
-         // Save the product status
+        // Save the product status
         await Product.findByIdAndUpdate(product.product_Id._id, {
           $inc: { quantity: product.quantity },
         });
+
+        if (order.paymentOption === 'Online' || order.paymentOption === 'Wallet') {
+          order.totalAmount -= refundedAmount;
+
+          // Refund the amount to the user's wallet
+          const userId = order.user;
+          await User.findByIdAndUpdate({ _id: userId }, {
+            $inc: { wallet: refundedAmount },
+            $push: {
+              walletHistory: {
+                date: new Date(),
+                amount: refundedAmount,
+                description: `Refunded for Order cancel - Order ${order.orderID}`,
+                transactionType: 'Credit',
+              },
+            },
+          });
+        }
       }
     }
 
@@ -399,6 +482,7 @@ const cancelOrder = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to cancel the order' });
   }
 };
+
 
 
 
@@ -427,157 +511,12 @@ const  load404 = async(req,res)=>{
 }
 
 
-const loadDashbord = async (req, res,next) => {
-  try {
-    let currentDate = new Date();
-
-    const categoryOrders = await Order.aggregate([
-      {
-        $unwind: "$products",
-
-      },
-      {
-        $match: {
-          "products.status": { $ne: "canceled" }
-        }
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "products.product_Id",
-          foreignField: "_id",
-          as: "productData",
-        },
-      },
-      {
-        $unwind: "$productData",
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "productData.category",
-          foreignField: "_id",
-          as: "categoryData",
-        },
-      },
-      {
-        $unwind: "$categoryData",
-      },
-      {
-        $group: {
-          _id: "$categoryData.name",
-          totalQuantitySold: { $sum: "$products.quantity" },
-        },
-      },
-      {
-        $project: {
-          category: "$_id",
-          totalQuantitySold: 1,
-          _id: 0,
-        },
-      },
-    ]);
-
-    let ordersCategory = {};
-
-    categoryOrders.forEach((category) => {
-      ordersCategory[category.category] = category.totalQuantitySold;
-
-    });
-    const Category = await Category.find({});
-
- 
-
-
-    const paymentCod1 = await Order.aggregate([
-      { $match: { paymentOption: "COD", 'products.status': "delivered" } },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
-      { $project: { total: 1, _id: 0 } }
-    ])
-    const paymentRazor1 = await Order.aggregate([
-      { $match: { paymentOption: 'Razorpay', 'products.status': "delivered" } },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
-      { $project: { total: 1, _id: 0 } }
-    ])
-
-
-
-let paymentRazor;
-let paymentCod;
-if(paymentRazor1.length>0){
-  paymentRazor = parseInt(paymentRazor1[0].total)
-}else{
-  paymentRazor=0
-}
-     
-if(paymentCod1.length>0){
-  paymentCod = parseInt(paymentCod1[0].total)
-}else{
-    paymentCod=0
-}
-     
-  
-    
-
-    const startOfWeek = new Date(currentDate);
-    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-    const endOfWeek = new Date(currentDate);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-   
-
-
-    const dailyOrders = await Order.aggregate([
-      {
-        $match: {
-          status: {
-            $ne: "pending"
-          }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$date"
-            },
-
-          },
-          dailyrevenue: {
-            $sum: "$totalAmount"
-          }
-        }
-      },
-      {
-        $sort: {
-          _id: 1
-        }
-      },
-      {
-        $limit: 7
-      }
-    ])
-
-    const result = dailyOrders || 0
-   
-const Revenue=paymentCod+paymentRazor
-
-const countOrder=await Order.find().countDocuments()
-
-const countProduct=await Product.find().countDocuments()
-const countCategory=await Category.find().countDocuments()
-  const countUser= await  User.find().countDocuments()
-    res.render('Dashbord', { ordersCategory, Category, paymentCod, paymentRazor, result,Revenue ,countOrder,countCategory,countProduct,countUser})
-  } catch (err) {
-  next(err)
-  }
-}
 
 
 module.exports = {
     loadadlogin,
     verifyadlogin,
-    loadadHome,
+    // loadadHome,
     loadusers,
     loadviewUsers,
     blockUser,

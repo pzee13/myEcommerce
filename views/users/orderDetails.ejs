@@ -190,6 +190,17 @@ $(document).ready(function () {
     const productId = button.data('product-id');
     const orderId = '<%= order._id %>'; // Retrieve the order ID
 
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it!',
+        cancelButtonText: 'No, keep it',
+      }).then((result) => {
+        if (result.isConfirmed) {
+
     $.ajax({
       type: 'POST',
       url: `/cancel_order/${orderId}/${productId}`, // Replace with your actual route
@@ -213,6 +224,7 @@ $(document).ready(function () {
         console.error(err);
       },
     });
+  }})
   });
 });
 

@@ -31,7 +31,8 @@
                                     <th>Order Date</th>
                                     <th>Amount</th>
                                     <th>Payment</th>
-                                    <th>Status</th>
+                                    <th>Order Status</th>
+                                    <th>Payment Status</th>
                                     <th>Expected Delivery</th>
                                     <th>Tracking Number</th>
                                     <th>Details</th>
@@ -41,12 +42,24 @@
                             <tbody>
                               <% if(orders.length>0){%>
                                    <% for(let i=0;i<orders.length;i++) {%>
+                                    
                                 <tr>
                                     <td><%= i+1 %></td>
                                     <td><%= orders[i].orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
                                     <td>₹ <%= orders[i].totalAmount %></td>
                                     <td> <%= orders[i].paymentOption %></td>
-                                    <td><%= orders[i].products.status %></td>
+                                    <td><% for (let j = 0; j < orders[i].products.length; j++) { %>
+                                        <div>
+                                          <strong><%= j + 1 %> <%= orders[i].products[j].product_Id.productName %></strong><br>
+                                          <%= orders[i].products[j].status %>
+                                        </div>
+                                      <% } %> </td>
+                                    <td><% for (let j = 0; j < orders[i].products.length; j++) { %>
+                                        <div>
+                                          <strong><%= j + 1 %> <%= orders[i].products[j].product_Id.productName %></strong><br>
+                                          <%= orders[i].products[j].paymentStatus %>
+                                        </div>
+                                      <% } %> </td>
                                     <td><%= orders[i].expectedDelivery.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %></td>
                                     <td><%= orders[i].orderID %></td>
                                     <td>
@@ -57,6 +70,7 @@
                                 <!-- <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td> -->
                                     
                                 </tr>
+                               
                                 <% }%>
                                <% }else{%>
                                

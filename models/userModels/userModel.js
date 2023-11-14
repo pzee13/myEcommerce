@@ -41,12 +41,15 @@ const userSchema = mongoose.Schema({
                     {
                       date: {
                         type: Date,
+                        required:true
                       },
                       amount: {
-                        type: Number
+                        type: Number,
+                        required:true
                       },
                       description: {
                         type: String,
+                        required:true
                       },
                       transactionType:{
                         type:String

@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-    
+       
     },
     status: {
         type: String,
@@ -76,7 +76,20 @@ const orderSchema = new mongoose.Schema({
       default: 1
     }
 
-}]
+}],
+coupon: {
+  code: {
+    type: String,
+  },
+  discountTotal: {
+    type: Number,
+  },
+  minimumSpend: {
+    type: Number,
+  },
+ 
+},
+
 
   // You can add more fields as needed, such as order items, order status, etc.
 });

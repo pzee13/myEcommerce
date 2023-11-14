@@ -130,14 +130,14 @@
                                         Have a coupon? enter coupon code
                                     </label>
                                     <div class="d-flex justify-content-center">
-                                        <input class="text-center stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5 align-items-center" type="text" name="coupon" placeholder="Coupon Code">
+                                        <input class="text-center stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5 align-items-center"id="couponCodeInput" placeholder="Coupon Code" type="text" name="coupon" placeholder="Coupon Code">
                                     </div>
                                     <div>
-                                        <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+                                        <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10" onclick="ApplyCoupon()">
                                             Apply coupon
                                         </div>
                                     </div>
-                                    <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10 " onclick="updateCart()">
+                                    <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10 " onclick="updatetotal()">
                                         Update Total
                                     </div>
                                 </div>
@@ -334,26 +334,68 @@
   </style>
   
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-     function updateCart() {
-        fetch('/update_cart', {
-            method: 'PATCH',
+
+  <script>
+    function updatetotal() {
+       fetch('/update_cart', {
+           method: 'PATCH',
+       })
+       .then(response => response.json())
+       .then(data => {
+           if (data.success) {
+               const totalPriceElement = document.getElementById('cartPrice');
+               totalPriceElement.textContent = data.cart.totalPrice;
+           } else {
+               Swal.fire(data.message);
+           }
+       })
+       .catch(error => {
+           console.error(error);
+           Swal.fire('An error occurred while updating the cart.');
+       });
+   }
+</script>
+
+  <script>
+    function ApplyCoupon() {
+        // Get the coupon code from the input field
+        const couponCode = document.getElementById('couponCodeInput').value;
+    
+        // Get the total value from the UI
+        const totalElement = document.getElementById('cartPrice');
+        const total = parseFloat(totalElement.textContent.trim());
+    
+        // Send a request to apply the coupon
+        fetch('/apply_coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ couponCode, total }),
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Coupon applied successfully
                 const totalPriceElement = document.getElementById('cartPrice');
-                totalPriceElement.textContent = data.cart.totalPrice;
+    
+                // Update the total price on the UI
+                if (data.newTotal !== undefined) {
+                    totalPriceElement.textContent = data.newTotal;
+                }
+    
+                Swal.fire('Coupon applied successfully!');
             } else {
                 Swal.fire(data.message);
             }
         })
         .catch(error => {
             console.error(error);
-            Swal.fire('An error occurred while updating the cart.');
+            Swal.fire('An error occurred while applying the coupon.');
         });
     }
-</script>
+    </script>
+    
 
 <script>
     function placeOrder() {
@@ -415,7 +457,15 @@
                     title: 'Insufficient Wallet Balance',
                     text: 'Your wallet balance is insufficient. Please choose a different payment method or recharge your wallet.',
                     });
-                } else {
+                } 
+                else if (data.InvalidQuantity) {
+                    // Display SweetAlert for insufficient wallet balance
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid product quantities',
+                    text: 'Your product quantity is invalid. Please check your cart.',
+                    });
+                }else {
                 razorpayPayment(data.order)
             }
 

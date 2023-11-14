@@ -112,7 +112,7 @@ user_route.get('/order_details',auth.isLogin,orderController.orderDetails)
 
 user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder);
 
-user_route.post('/verify_payment',orderController.validatePaymentVerification)
+user_route.post('/verify_payment',auth.isLogin,orderController.validatePaymentVerification)
 
 user_route.get('/wallet_history',auth.isLogin,userController.walletHistory)
 
@@ -121,5 +121,7 @@ user_route.get('/wallet',auth.isLogin,profileController.loadWallet)
 user_route.post('/add_wallet',auth.isLogin,userController.addMoneyWallet)
 
 user_route.post('/verify_wallet',auth.isLogin,userController.verifyWalletpayment)
+
+user_route.post('/apply_coupon',auth.isLogin,orderController.couponCheck)
 
 module.exports = user_route 
