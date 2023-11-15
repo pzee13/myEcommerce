@@ -1,0 +1,62 @@
+
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
+
+
+
+
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Banner</h4>
+            <div id="errorContainer" class="alert alert-danger" style="display: none;"></div> <!-- Error container -->
+  
+            <form id="productForm" class="forms-sample" action="/admin/add_banner" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="exampleInputName1">Banner Head</label>
+                <input type="text" class="form-control" id="mainHead" name="mainHead" placeholder="Banner Head" required>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail3">Description</label>
+                <input type="text" class="form-control" id="description" name="description" placeholder="Description" required>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail3">Type</label>
+                <input type="text" class="form-control" id="type" name="type" placeholder="Type" required>
+              </div>
+              <div class="form-group">
+                <label>Image</label>
+                <div class="input-group col-xs-12">
+                  <input id="images" type="file" name="image" class="form-control btn btn-primary" placeholder="Upload Image" required>
+                  <span class="input-group-append"></span>
+                </div>
+                <div id="selectedImagesContainer" class="selected-images-container"></div>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputURL">Banner URL</label>
+                <input type="url" class="form-control" id="bannerURL" name="bannerURL" placeholder="https://example.com" required>
+            </div>
+              <div id="openImagePopupDiv"></div>
+  
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+              <a href="/admin/banners"><button type="button" class="btn  mr-2">Cancel</button></a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+<script type="module" src="/public/adminAssets/scripts/cropper1.js"></script>
+
+
+
+<%-include('../admin/layouts/footer.ejs') %>

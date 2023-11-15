@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const User = require('../models/userModels/userModel') 
 const Category = require('../models/categoryModel')
 const Product = require('../models/productModel')
+const Banner = require("../models/bannerModel")
+const Coupon = require("../models/couponModel")
 const nodemailer = require("nodemailer")
 const bcrypt = require('bcrypt')
 const randomstring = require('randomstring')
@@ -297,7 +299,8 @@ const loaduserHome = async (req, res) => {
     try {
         const userId = req.session.user_id 
       const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-      res.render('userHome',{products,userIsLoggedIn: req.session.user_id ? true : false});
+      const banners = await Banner.find()
+      res.render('userHome',{products,userIsLoggedIn: req.session.user_id ? true : false,banners:banners});
         
     } catch (error) {
       console.log(error.message);

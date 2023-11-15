@@ -5,6 +5,7 @@ const productController = require("../controllers/productController")
 const couponController = require("../controllers/couponController")
 const salesController = require("../controllers/salesController")
 const dashboardController = require("../controllers/dasboardController")
+const bannerController = require("../controllers/bannerController")
 const session = require('express-session');
 const config = require('../config/config');
 const mult = require('../middleware/multer')
@@ -102,6 +103,14 @@ admin_route.post('/edit_coupon',auth.isLogin,couponController.editCoupon)
 admin_route.get('/home',auth.isLogin,dashboardController.loadDashboard)
 
 admin_route.get('/sales_report',auth.isLogin,salesController.getSalesReport)
+
+admin_route.get('/add_banner',auth.isLogin,bannerController.loadAddbanner)
+
+admin_route.post('/add_banner',mult.upload.single('image'),auth.isLogin,bannerController.addBanners)
+
+admin_route.get('/banners',auth.isLogin,bannerController.loadBanners)
+
+admin_route.get('/500',adminController.load500)
 
 admin_route.get('/*',adminController.load404)
 

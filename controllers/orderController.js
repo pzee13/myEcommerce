@@ -212,6 +212,8 @@ const placeOrder = async (req, res) => {
     console.error(error);
     if (req.session.coupon && req.session.user_id) {
       await Coupon.findOneAndUpdate({ code: req.session.coupon.code }, { $pull: { user: req.session.user_id } });
+    }else{
+
     }
 
     res.status(500).json({ success: false, message: 'Failed to place the order' });
@@ -241,6 +243,20 @@ console.log('Received razorpay_signature:', body.payment.razorpay_signature);
         { _id: body.order.receipt },
         { $set: { payment_Id: body.payment.razorpay_payment_id } }
       );
+
+    // const cartItems = await Order.findById({ _id: body.order.receipt }).populate({
+    //   path: 'products.product_Id',
+    //   model: 'product',
+    // });
+    //     const isProductQuantityValid = await checkProductQuantities(cartItems);
+    //     if (!isProductQuantityValid) {
+    //       return res.status(400).json({
+    //         success: false,
+    //         InvalidQuantity: true,
+    //         message: 'Invalid product quantities. Please check your order.',
+    //       });
+    //     }
+
       await Order.findByIdAndUpdate(
         { _id: body.order.receipt },
         { $set: { 'products.$[].status': 'Order Placed' } }
@@ -269,6 +285,73 @@ console.log('Received razorpay_signature:', body.payment.razorpay_signature);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
+
+
+
+// const validatePaymentVerification = async (req, res) => {
+//   try {
+//     const body = req.body;
+//     console.log(body);
+//     const userid = req.session.user_id;
+//     let hmac = crypto.createHmac("sha256", process.env.Razorpay_KEY_SECRET); 
+//     hmac.update(
+//       body.payment.razorpay_order_id +
+//         "|" +
+//         body.payment.razorpay_payment_id
+//     );
+//     const hmacValue = hmac.digest("hex");
+
+//     console.log('Calculated HMAC:', hmacValue);
+//     console.log('Received razorpay_signature:', body.payment.razorpay_signature);
+
+//     if (hmacValue === body.payment.razorpay_signature) {
+//       const order = await Order.findByIdAndUpdate(
+//         { _id: body.order.receipt },
+//         { $set: { payment_Id: body.payment.razorpay_payment_id } }
+//       );
+
+//       const isProductQuantityValid = await checkProductQuantities(order.products);
+//       if (!isProductQuantityValid) {
+//         return res.status(400).json({
+//           success: false,
+//           InvalidQuantity: true,
+//           message: 'Invalid product quantities. Please check your order.',
+//         });
+//       }
+
+//       await Order.findByIdAndUpdate(
+//         { _id: body.order.receipt },
+//         { $set: { 'products.$[].status': 'Order Placed' } }
+//       );
+
+//       for (let item of order.products) {
+//         await Product.updateOne(
+//           { _id: item.product_Id },
+//           { $inc: { quantity: -item.quantity } }
+//         );
+//       }
+
+//       await Order.findOneAndUpdate(
+//         { _id: body.order.receipt },
+//         { $set: { 'products.$[].paymentStatus': 'Success' } }
+//       );
+
+//       await Cart.deleteOne({ user_id: userid });
+//       res.json({ success: true });
+//     } else {
+//       if (req.session.coupon && req.session.user_id) {
+//         await Coupon.findOneAndUpdate({ code: req.session.coupon.code }, { $pull: { user: req.session.user_id } });
+//       }else{
+
+//       }
+//       res.status(400).json({ success: false, message: 'Payment verification failed' });
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// };
+
 
 
 const loadOrderPlaced = async (req, res, next) => {

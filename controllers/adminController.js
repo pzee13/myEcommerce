@@ -2,6 +2,7 @@ const Admin = require("../models/adminModels/adminModel")
 const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
+const Coupon = require("../models/couponModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const Cart = require("../models/cartModel")
@@ -445,6 +446,36 @@ const cancelOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Order cannot be canceled' });
     }
 
+    let couponRefundAmount = 0;
+
+    const ftotal = order.totalAmount
+
+    if (order.coupon) {
+      console.log("s1",refundedAmount)
+      const couponData = await Coupon.findOne({ code: order.coupon.code });
+      order.totalAmount += order.coupon.discountTotal
+
+      if (couponData && Math.abs(order.totalAmount - refundedAmount) < couponData.minimumSpend) {
+        // If refund amount is below minimum spend, remove coupon discount
+        order.totalAmount = order.products.reduce((total, product) => {
+          if (product.product_Id._id.toString() !== productId && product.status !== 'Canceled') {
+            return total + product.total;
+          }
+          return total;
+        }, 0);
+       
+        refundedAmount  = ftotal - order.totalAmount
+        // Calculate coupon refund amount
+       } else{
+        const couponRefundPercentage = couponData.discountPercentage || 0;
+        couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
+        refundedAmount -= couponRefundAmount;
+        console.log("s2",refundedAmount)
+        order.totalAmount -= (refundedAmount + order.coupon.discountTotal)
+      }
+    }
+
+
     // Set the status of the product with the specified productId to 'Canceled' within the order
     for (const product of order.products) {
       if (product.product_Id._id.toString() === productId) {
@@ -455,7 +486,7 @@ const cancelOrder = async (req, res) => {
         });
 
         if (order.paymentOption === 'Online' || order.paymentOption === 'Wallet') {
-          order.totalAmount -= refundedAmount;
+          
 
           // Refund the amount to the user's wallet
           const userId = order.user;
@@ -512,6 +543,15 @@ const  load404 = async(req,res)=>{
 
 
 
+const load500 =async(req,res)=>{
+  try{
+    res.render('500error')
+  }catch(error){
+    console.log(error.message)
+  }
+}
+
+
 
 module.exports = {
     loadadlogin,
@@ -527,5 +567,6 @@ module.exports = {
     updateOrderStatus,
     adorderDetails,
     cancelOrder,
+    load500
 
 }   
