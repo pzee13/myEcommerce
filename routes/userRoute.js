@@ -124,4 +124,6 @@ user_route.post('/verify_wallet',auth.isLogin,userController.verifyWalletpayment
 
 user_route.post('/apply_coupon',auth.isLogin,orderController.couponCheck)
 
+user_route.post('/remove_coupon',auth.isLogin,orderController.removeCoupon)
+
 module.exports = user_route 

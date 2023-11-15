@@ -527,7 +527,7 @@ const searchProducts = async (req, res) => {
         { $unwind: "$walletHistory" },
         { $sort: { "walletHistory.date": -1 } }
       ]);
-      console.log(walletData);
+    //   console.log(walletData);
       const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
       res.render("walletHistory", { walletData,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (err) {
@@ -550,15 +550,15 @@ console.log(err.message);
         currency:'INR',
         receipt:""+id
     }
-    console.log('//',options);
+    // console.log('//',options);
     
     instance.orders.create(options, (err, order) => {
-        console.log('///orr',order);
+        // console.log('///orr',order);
         if(err){
-            console.log('err');
+            // console.log('err');
             res.json({status: false})
         }else{
-            console.log('stts');
+            // console.log('stts');
             res.json({ status: true, order:order })
         }
     

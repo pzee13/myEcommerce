@@ -396,33 +396,35 @@ const cancelOrder = async (req, res) => {
     if (!canCancel) {
       return res.status(400).json({ success: false, message: 'Order cannot be canceled' });
     }
-    let couponRefundAmount = 0
+    let couponRefundAmount = 0;
+
+    const ftotal = order.totalAmount
+
     if (order.coupon) {
+      console.log("s1",refundedAmount)
       const couponData = await Coupon.findOne({ code: order.coupon.code });
+      order.totalAmount += order.coupon.discountTotal
 
-      const couponRefundPercentage = couponData.discountPercentage || 0; // Default to 0 if not specified
-
-        // Calculate the refund amount after considering the coupon refund percentage
+      if (couponData && Math.abs(order.totalAmount - refundedAmount) < couponData.minimumSpend) {
+        // If refund amount is below minimum spend, remove coupon discount
+        order.totalAmount = order.products.reduce((total, product) => {
+          if (product.product_Id._id.toString() !== productId && product.status !== 'Canceled') {
+            return total + product.total;
+          }
+          return total;
+        }, 0);
+       
+        refundedAmount  = ftotal - order.totalAmount
+        // Calculate coupon refund amount
+       } else{
+        const couponRefundPercentage = couponData.discountPercentage || 0;
         couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
-
-        console.log( order.totalAmount - refundedAmount)
-
-        
-      if (couponData && order.totalAmount - refundedAmount > couponData.minimumSpend) {
-
-        refundedAmount -= couponRefundAmount
-        order.totalAmount -= refundedAmount;
-        // If the new totalAmount is below the coupon minimumSpend, remove the coupon applied
-       
-        
-        // Revert the discount applied by the coupon
-       
-      }else{
-        const totalAmount1 = order.totalAmount - refundedAmount
-        order.totalAmount +=totalAmount1
+        refundedAmount -= couponRefundAmount;
+        console.log("s2",refundedAmount)
+        order.totalAmount -= (refundedAmount + order.coupon.discountTotal)
       }
     }
-    console.log("total:",order.totalAmount)
+    console.log('total:', order.totalAmount);
 
     // Set the status of the product with the specified productId to 'Canceled' within the order
     for (const product of order.products) {
@@ -437,28 +439,27 @@ const cancelOrder = async (req, res) => {
 
         if(order.paymentOption=="Online"||order.paymentOption=="Wallet"){
           
-        if(!order.coupon){
-            order.totalAmount -= product.total
-          
+        
 
-          await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:product.total},$push: {
+          await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:refundedAmount},$push: {
            walletHistory: {
              date: new Date(),
-             amount: product.total,
+             amount: refundedAmount,
              description: `Refunded for Order cancel - Order ${order.orderID}`,
              transactionType:'Credit'
            },
          },})
-        } else{
-          await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:refundedAmount},$push: {
-            walletHistory: {
-              date: new Date(),
-              amount: refundedAmount,
-              description: `Refunded for Order cancel - Order ${order.orderID}`,
-              transactionType:'Credit'
-            },
-          },})
-        }
+        // } else{
+          
+        //   await User.findByIdAndUpdate({_id:userId},{$inc:{wallet:refundedAmount},$push: {
+        //     walletHistory: {
+        //       date: new Date(),
+        //       amount: refundedAmount,
+        //       description: `Refunded for Order cancel - Order ${order.orderID}`,
+        //       transactionType:'Credit'
+        //     },
+        //   },})
+        
             }
       }
     }
@@ -643,6 +644,32 @@ const couponCheck = async (req, res, next) => {
 };
 
 
+const removeCoupon = async (req, res, next) => {
+  try {
+    const userId = req.session.user_id;
+
+    // Assuming you have stored the applied coupon code in req.session.coupon.code
+    const appliedCouponCode = req.session.coupon ? req.session.coupon.code : null;
+
+    if (!appliedCouponCode) {
+      return res.json({ failed: true, message: 'No coupon applied.' });
+    }
+
+    // Remove the applied coupon from the user's list
+    await Coupon.findOneAndUpdate({ code: appliedCouponCode }, { $pull: { user: userId } });
+
+    // Clear coupon-related data from the session
+    req.session.coupon = null;
+
+    // Get the updated cart total after removing the coupon
+    const updatedCart = await Cart.findOne({ user_id: userId });
+    const updatedTotal = updatedCart ? updatedCart.totalPrice : 0;
+
+    res.json({ success: true, updatedTotal: updatedTotal });
+  } catch (err) {
+    next(err);
+  }
+};
 // const couponCheck = async (req, res, next) => {
 //   try {
 //     const userId = req.session.user_id;
@@ -712,6 +739,7 @@ module.exports ={
     orderDetails,
     cancelOrder,
     validatePaymentVerification,
-    couponCheck
+    couponCheck,
+    removeCoupon
     
 }

@@ -133,7 +133,7 @@
                                         <input class="text-center stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5 align-items-center"id="couponCodeInput" placeholder="Coupon Code" type="text" name="coupon" placeholder="Coupon Code">
                                     </div>
                                     <div>
-                                        <div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10" onclick="ApplyCoupon()">
+                                        <div id="applyCouponBtn"  class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10" onclick="applyOrRemoveCoupon()">
                                             Apply coupon
                                         </div>
                                     </div>
@@ -356,15 +356,33 @@
    }
 </script>
 
-  <script>
-    function ApplyCoupon() {
-        // Get the coupon code from the input field
+<script>
+  let isCouponApplied = false;
+
+    function applyOrRemoveCoupon() {
+        const couponCodeInput = document.getElementById('couponCodeInput');
+        const applyCouponBtn = document.getElementById('applyCouponBtn');
+
+        if (isCouponApplied) {
+            // Remove coupon logic here
+            removeCoupon();
+            applyCouponBtn.textContent = 'Apply coupon';
+        } else {
+            // Apply coupon logic here
+            applyCoupon();
+            applyCouponBtn.textContent = 'Remove Coupon';
+        }
+
+        isCouponApplied = !isCouponApplied;
+    }
+
+    function applyCoupon() {
         const couponCode = document.getElementById('couponCodeInput').value;
-    
+
         // Get the total value from the UI
         const totalElement = document.getElementById('cartPrice');
         const total = parseFloat(totalElement.textContent.trim());
-    
+
         // Send a request to apply the coupon
         fetch('/apply_coupon', {
             method: 'POST',
@@ -378,12 +396,12 @@
             if (data.success) {
                 // Coupon applied successfully
                 const totalPriceElement = document.getElementById('cartPrice');
-    
+
                 // Update the total price on the UI
                 if (data.newTotal !== undefined) {
                     totalPriceElement.textContent = data.newTotal;
                 }
-    
+
                 Swal.fire('Coupon applied successfully!');
             } else {
                 Swal.fire(data.message);
@@ -394,7 +412,28 @@
             Swal.fire('An error occurred while applying the coupon.');
         });
     }
-    </script>
+
+    function removeCoupon() {
+        // Remove coupon logic here
+        fetch('/remove_coupon', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const totalPriceElement = document.getElementById('cartPrice');
+                totalPriceElement.textContent = data.updatedTotal;
+                Swal.fire('Coupon removed successfully!');
+            } else {
+                Swal.fire(data.message);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            Swal.fire('An error occurred while removing the coupon.');
+        });
+    }
+</script>
     
 
 <script>
