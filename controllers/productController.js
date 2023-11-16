@@ -2,6 +2,7 @@ const Admin = require("../models/adminModels/adminModel")
 const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
+const Offer = require("../models/offerModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
@@ -71,7 +72,7 @@ const viewProducts = async(req,res) =>{
 
     const skip = (page - 1) * pageSize;
         
-        const products = await Product.find().populate('category').skip(skip)
+        const products = await Product.find().populate('category').populate('offer').skip(skip)
         .limit(pageSize);
         
         const totalProducts = await Product.countDocuments();
@@ -79,10 +80,12 @@ const viewProducts = async(req,res) =>{
      
         
  // Populate the category field
+ const availableOffers = await Offer.find({ status : true, expiryDate : { $gte : new Date() }})
     const categories = await Category.find({is_listed:true}); // Assuming you want to retrieve all categories from the database
     res.render('viewProduct', { data:products , category: categories ,
       currentPage: page,
-      totalPages: totalPages });
+      totalPages: totalPages,
+      availableOffers:availableOffers });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -254,6 +257,43 @@ const searchProducts = async (req, res) => {
   }
 };
 
+const applyProductOffer = async ( req, res ) => {
+  try {
+      const productId= req.body.productId
+      const offerId=req.body.offerId
+      console.log(offerId)
+      console.log(productId)
+      await Product.updateOne({ _id : productId },{
+          $set : {
+              offer : offerId
+          }
+      })
+
+      const offer = await Product.findOne({ _id : productId }).populate('offer')
+      res.json({ success : true,offer})
+  } catch (error) {
+    console.log(error.message)
+      res.redirect('/500')
+
+  }
+}
+
+const removeProductOffer = async ( req, res ) => {
+  try {
+      const { productId } = req.body
+      const remove = await Product.updateOne({ _id : productId },{
+          $unset : {
+              offer : ""
+          }
+      })
+      res.json({ success : true })
+  } catch (error) {
+    console.log(error)
+      res.redirect('/500')
+
+  }
+}
+
 module.exports = {
     loadaddProducts,
     addProduct,
@@ -261,5 +301,7 @@ module.exports = {
     loadeditProducts,
     editProduct,
     unlistProduct,
-    searchProducts
+    searchProducts,
+    applyProductOffer,
+    removeProductOffer
 }

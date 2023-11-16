@@ -6,6 +6,8 @@ const couponController = require("../controllers/couponController")
 const salesController = require("../controllers/salesController")
 const dashboardController = require("../controllers/dasboardController")
 const bannerController = require("../controllers/bannerController")
+const offerController = require("../controllers/offerController")
+
 const session = require('express-session');
 const config = require('../config/config');
 const mult = require('../middleware/multer')
@@ -109,6 +111,26 @@ admin_route.get('/add_banner',auth.isLogin,bannerController.loadAddbanner)
 admin_route.post('/add_banner',mult.upload.single('image'),auth.isLogin,bannerController.addBanners)
 
 admin_route.get('/banners',auth.isLogin,bannerController.loadBanners)
+
+admin_route.get('/add_offer',auth.isLogin,offerController.loadAddOffer)
+
+admin_route.post('/add_offer',auth.isLogin,offerController.addOffer)
+
+admin_route.get('/offers',auth.isLogin,offerController.loadOffers)
+
+admin_route.get('/edit_offer/:id',auth.isLogin,offerController.loadEditOffer)
+
+admin_route.post('/edit_offer',auth.isLogin,offerController.editOffer)
+
+admin_route.patch('/cancel_offer',auth.isLogin,offerController.cancelOffer)
+
+admin_route.patch('/apply_offer',auth.isLogin,productController.applyProductOffer)
+
+admin_route.patch('/remove_offer',auth.isLogin,productController.removeProductOffer)
+
+admin_route.patch('/apply_Offer-category',auth.isLogin,categoryController.applyCategoryOffer)
+
+admin_route.patch('/remove_Offer-category',auth.isLogin,categoryController.removeCategoryOffer)
 
 admin_route.get('/500',adminController.load500)
 

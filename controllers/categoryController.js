@@ -1,6 +1,7 @@
 const Admin = require("../models/adminModels/adminModel")
 const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
+const Offer = require("../models/offerModel")
 const Product = require("../models/productModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
@@ -49,15 +50,15 @@ const addCategory = async (req,res)=>{
         const pageSize = 5; // Set your desired page size
 
         const skip = (page - 1) * pageSize;
-        const categories = await Category.find()
+        const categories = await Category.find().populate('offer')
             .skip(skip)
             .limit(pageSize);
 
         // Calculate the total number of pages
         const totalCategories = await Category.countDocuments();
         const totalPages = Math.ceil(totalCategories / pageSize);
-
-      res.render('viewCategory', { Category: categories ,currentPage: page, totalPages });
+        const availableOffers = await Offer.find({ status : true, expiryDate : { $gte : new Date() }})
+      res.render('viewCategory', { Category: categories ,currentPage: page, totalPages,availableOffers:availableOffers });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');
@@ -125,11 +126,47 @@ const addCategory = async (req,res)=>{
     }
   }
 
+ const applyCategoryOffer =  async ( req, res ) => {
+    try {
+        const { offerId, categoryId } = req.body
+        await Category.updateOne({ _id : categoryId },{
+            $set : {
+                offer : offerId 
+            }
+        })
+        res.json({ success : true })
+    } catch (error) {
+      console.log(error.message);
+        res.redirect('/500')
+
+    }
+  }
+
+  const removeCategoryOffer = async ( req, res ) => {
+    try {
+        const { categoryId } = req.body
+        await Category.updateOne({ _id : categoryId}, {
+            $unset : {
+                offer : ""
+            }
+        })
+        res.json({ success : true })
+      } catch (error) {
+        console.log(error.message);
+          res.redirect('/500')
+
+      }
+  }
+
+
+
   module.exports = {
     loadaddCategory,
     addCategory,
     loadviewCategory,
     unlistCategory,
     loadEditCatogories,
-    adeditCategory
+    adeditCategory,
+    applyCategoryOffer,
+    removeCategoryOffer
   }
