@@ -52,7 +52,8 @@
                 <tr data-product-id="<%= data._id %>">
                   <td><%= data.productName %></td>
                   <td><%= data.category.categoryName %></td>
-                  <td><%= data.price %></td>
+                  <td><div><%= data.price %> <br>
+                  offerPrice:<%= data.discountedPrice %></div></td>
                   <td><%= data.quantity %></td>
                   <td class="description-cell">
                     <div class="description-content">
@@ -271,6 +272,8 @@ padding: 0;
           Swal.fire('Offer applied')
           updateOfferContent(productId, response.data.offer)
           window.location.reload()
+        }else{
+          Swal.fire('Category offer has greater discount')
         }
     }
 
@@ -290,6 +293,7 @@ padding: 0;
       if (response.data.success) {
         updateOfferContent(productId, null);
         Swal.fire('Offer Removed', '', 'success');
+        window.location.reload()
       }
     }
   } catch (error) {
@@ -308,6 +312,10 @@ padding: 0;
     offerCell.text('No offers');
     actionCell.html(`<button class="btn btn-info" onclick="showModal('${productId}')">Apply offer</button>`);
   }
+
+  // const offerPriceCell = $(`tr[data-product-id="${productId}"] td:nth-child(3)`); // Update to the correct column index
+  // const originalPrice = parseFloat($(`tr[data-product-id="${productId}"] td:nth-child(2)`).text().trim());
+  // offerPriceCell.html(originalPrice);
 }
 </script>
 

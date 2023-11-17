@@ -8,6 +8,7 @@ const profileController  = require("../controllers/profileController")
 const checkoutController = require("../controllers/checkoutController")
 const orderController = require("../controllers/orderController")
 
+
 const session = require("express-session")
 
 const config = require("../config/config")
@@ -125,5 +126,7 @@ user_route.post('/verify_wallet',auth.isLogin,userController.verifyWalletpayment
 user_route.post('/apply_coupon',auth.isLogin,orderController.couponCheck)
 
 user_route.post('/remove_coupon',auth.isLogin,orderController.removeCoupon)
+
+user_route.post('/submit_review',auth.isLogin,userController.submitReview)
 
 module.exports = user_route 

@@ -257,42 +257,175 @@ const searchProducts = async (req, res) => {
   }
 };
 
-const applyProductOffer = async ( req, res ) => {
+// const applyProductOffer = async ( req, res ) => {
+//   try {
+//       const productId= req.body.productId
+//       const offerId=req.body.offerId
+//       console.log(offerId)
+//       console.log(productId)
+//       await Product.updateOne({ _id : productId },{
+//           $set : {
+//               offer : offerId
+//           }
+//       })
+
+//       const offer = await Product.findOne({ _id : productId }).populate('offer')
+//       res.json({ success : true,offer})
+//   } catch (error) {
+//     console.log(error.message)
+//       res.redirect('/500')
+
+//   }
+// }
+
+// const applyProductOffer = async (req, res) => {
+//   try {
+//     const productId = req.body.productId;
+//     const offerId = req.body.offerId;
+
+//     const offer = await Offer.findOne({ _id: offerId });
+
+//     if (!offer) {
+//       return res.json({ success: false, message: 'Offer not found' });
+//     }
+
+//     const product = await Product.findOne({ _id: productId });
+
+//     if (!product) {
+//       return res.json({ success: false, message: 'Product not found' });
+//     }
+
+//     const discountPercentage = parseFloat(offer.percentage);
+//     console.log("discountPercentage:",discountPercentage)
+//     const cleanedPrice = product.price.replace(/[^\d.]/g, ''); // Remove non-numeric characters
+//     console.log("cp:",cleanedPrice)
+//     console.log("product.price:",product.price)
+
+//     // Check if the cleaned price is a valid number
+//     if (isNaN(cleanedPrice)) {
+//       return res.json({ success: false, message: 'Invalid price format' });
+//     }
+
+//     const originalPrice = parseFloat(cleanedPrice);
+//     console.log("originalPrice:",originalPrice) // Use parseFloat for better handling of decimal values
+//     const discountedPrice = originalPrice - (originalPrice * discountPercentage) / 100;
+//     console.log("discountedPrice:",discountedPrice)
+
+//     // Update product with offer details
+//     await Product.updateOne(
+//       { _id: productId },
+//       {
+//         $set: {
+//           offer: offerId,
+//           discountedPrice: discountedPrice,
+//         },
+//       }
+//     );
+
+//     const updatedProduct = await Product.findOne({ _id: productId }).populate('offer');
+//     res.json({ success: true, data: updatedProduct });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.redirect('/500');
+//   }
+// };
+
+const applyProductOffer = async (req, res) => {
   try {
-      const productId= req.body.productId
-      const offerId=req.body.offerId
-      console.log(offerId)
-      console.log(productId)
-      await Product.updateOne({ _id : productId },{
-          $set : {
-              offer : offerId
-          }
-      })
+    const productId = req.body.productId;
+    const offerId = req.body.offerId;
 
-      const offer = await Product.findOne({ _id : productId }).populate('offer')
-      res.json({ success : true,offer})
+    // Assuming you have an Offer model with fields: discountPercentage
+    const offer = await Offer.findOne({ _id: offerId });
+
+    if (!offer) {
+      return res.json({ success: false, message: 'Offer not found' });
+    }
+
+    const product = await Product.findOne({ _id: productId }).populate('category')
+
+    if (!product) {
+      return res.json({ success: false, message: 'Product not found' });
+    }
+
+    // Get the category discount, if available
+    const categoryDiscount = product.category && product.category.offer
+      ? await Offer.findOne({ _id: product.category.offer })
+      : 0;
+      console.log("categoryDiscount",categoryDiscount)
+
+    // Calculate real price and discounted price for the product
+    const discountPercentage = offer.percentage;
+    const originalPrice = parseFloat(product.price);
+    const discountedPrice = originalPrice - (originalPrice * discountPercentage) / 100;
+
+    console.log("categoryDiscount.percentage :",categoryDiscount.percentage )
+    // Check if category offer is available and its discount is greater than product offer
+    if (categoryDiscount && categoryDiscount.percentage > discountPercentage) {
+      console.log("Category offer has greater discount");
+      // You can handle this case as needed, e.g., not applying the product offer
+      return res.json({ success: false, message: 'Category offer has greater discount' });
+    }
+
+    // Update product with offer details
+    await Product.updateOne(
+      { _id: productId },
+      {
+        $set: {
+          offer: offerId,
+          discountedPrice: discountedPrice,
+        },
+      }
+    );
+
+    const updatedProduct = await Product.findOne({ _id: productId }).populate('offer');
+    res.json({ success: true, data: updatedProduct });
   } catch (error) {
-    console.log(error.message)
-      res.redirect('/500')
-
+    console.log(error.message);
+    res.redirect('/500');
   }
-}
+};
 
-const removeProductOffer = async ( req, res ) => {
+// const removeProductOffer = async ( req, res ) => {
+//   try {
+//       const { productId } = req.body
+//       const remove = await Product.updateOne({ _id : productId },{
+//           $unset : {
+//               offer : ""
+//           }
+//       })
+//       res.json({ success : true })
+//   } catch (error) {
+//     console.log(error)
+//       res.redirect('/500')
+
+//   }
+// }
+
+const removeProductOffer = async (req, res) => {
   try {
-      const { productId } = req.body
-      const remove = await Product.updateOne({ _id : productId },{
-          $unset : {
-              offer : ""
-          }
-      })
-      res.json({ success : true })
-  } catch (error) {
-    console.log(error)
-      res.redirect('/500')
+    const { productId } = req.body;
 
+    const remove = await Product.updateOne(
+      { _id: productId },
+      {
+        $unset: {
+          offer: '',
+          discountedPrice: '',
+          realPrice: '',
+        },
+      }
+    );
+
+    res.json({ success: true ,data:remove });
+  } catch (error) {
+    console.log(error);
+    res.redirect('/500');
   }
-}
+};
+
+
+
 
 module.exports = {
     loadaddProducts,
@@ -303,5 +436,6 @@ module.exports = {
     unlistProduct,
     searchProducts,
     applyProductOffer,
-    removeProductOffer
+    removeProductOffer,
+  
 }

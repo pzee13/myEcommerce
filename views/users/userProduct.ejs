@@ -207,6 +207,20 @@
                 <!-- Block2 -->
                 <div class="block2">
                     <div class="block2-pic hov-img0">
+                        <% if(product.offer && product.offer.percentage > 0) { %>
+                            <div class="discount-badge" style="background-color: #ff5733;
+                           color: #f8f8f8;
+                            padding: 5px;
+                             position: absolute;
+                             z-index: 1;
+                            width: 74px;">
+                               
+                                    <span class="stext-103 size-102">
+                                        <%= product.offer.percentage %> % OFF
+                                    </span>
+                                
+                            </div>
+                            <% } %>
                         <a href="/productDetails?id=<%= product._id %>">
                             <img class="product-image fixed-size" src="/public/adminAssets/assets/images/products/<%= product.images[0] %>" alt="Product Image">
                             <a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
@@ -220,10 +234,20 @@
                             <a href="/productDetails?id=<%= product._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6" style="color: #222;">
                                 <%= product.productName %>
                             </a>
-
-                            <span class="stext-105 cl3">
-                                <%= product.price %>
+                            <% if(product.offer && product.offer.percentage>0){%>
+                                <div class="d-flex">
+                                <span class="stext-105 cl3 ">
+                                    <del>$<%= product.price %> </del>  
+                                </span>
+                                <span class="stext-105 cl3 " style="margin-left: 130px;">
+                                 <p class="text-danger">   $<%= product.discountedPrice %>   </p>
+                                </span>
+                            </div>
+                           <% }else{%>
+                            <span class="stext-105 cl3 ">
+                                $<%= product.price %>  
                             </span>
+                          <% }%>
                         </div>
 
                         <div class="block2-txt-child2 flex-r p-t-3">

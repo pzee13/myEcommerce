@@ -45,11 +45,23 @@
 
                     <!-- Product Price -->
                     <p class="stext-102 cl3 p-t-23">
-                        Price: $<%= product.price %>
-                    </p>
-
-                    <!-- Product Quantity -->
+                    <% if(product.offer && product.offer.percentage>0){%>
+                       
+                        <span class="stext-105 cl3 ">
+                          Price:<del>₹<%= product.price %> </del>  
+                        </span>
+                        <span class="stext-105 cl3 ">
+                        <p> Offer Price: <p class="text-danger">  ₹<%= product.discountedPrice %>   </p></p>
+                        </span>
+                    </div>
+                   <% }else{%>
                     <p class="stext-102 cl3 p-t-23">
+                        Price: ₹<%= product.price %>
+                    </p>
+                  <% }%>
+                </p>
+                    <!-- Product Quantity -->
+                    <p class="stext-102 cl3 p-t-15">
                         Quantity: <%= product.quantity %>
                     </p>
 
@@ -132,8 +144,205 @@
         </div>
     </div>
 </section>
-<!-- Rest of your code... -->
+<div class="bor10 m-t-50 p-t-43 p-b-40">
+    <!-- Tab01 -->
+    <div class="tab01">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item p-b-10">
+                <% if (reviews) { %>
+                <a class="nav-link" data-toggle="tab" href="#reviews" role="tab">Reviews <%= reviews.length %></a>
+                <% } %>
+            </li>
+        </ul>
 
+    
+            <!-- - -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                <div class="row">
+                    <div class="col-sm-10 col-md-8 col-lg-6 m-lr-auto">
+                        <div class="p-b-30 m-lr-15-sm">
+                            <!-- Review -->
+                            <div class="product-reviews">
+                                <% if (reviews && reviews.length > 0) { %>
+                                    <% reviews.forEach(review => { %>
+                                        <div class="flex-w flex-t p-b-68">
+                                            <div class="wrap-pic-s size-109 bor0 of-hidden m-r-18 m-t-6">
+												<img src="/public/userAssets/images/avatar-2.jpg" alt="AVATAR">
+											</div>
+                            
+                                            <div class="size-207">
+                                                <div class="flex-w flex-sb-m p-b-17">
+                                                    <!-- Display user name -->
+                                                    <span class="mtext-107 cl2 p-r-20">
+                                                        <%= review.user.firstName %>&nbsp;<%= review.user.lastName %>
+                                                    </span>
+                            
+                                                    <!-- Display star rating -->
+                                                    <span class="fs-18 cl11">
+                                                        <% for (let i = 1; i <= 5; i++) { %>
+                                                            <% if (i <= review.rating) { %>
+                                                                <i class="zmdi zmdi-star"></i>
+                                                            <% } else { %>
+                                                                <i class="zmdi zmdi-star-outline"></i>
+                                                            <% } %>
+                                                        <% } %>
+                                                    </span>
+                                                </div>
+                            
+                                                <!-- Display review text -->
+                                                <p class="stext-102 cl6">
+                                                    <%= review.comment %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <p class="text-center">No reviews for this product.</p>
+                                <% } %>
+                                <% if (userReviews && userReviews.length > 0) { %>
+                                    <div class="tab01">
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li class="nav-item p-b-10">
+                                                <a class="nav-link" data-toggle="tab1" href="#reviews" role="tab"> My Reviews </a>
+                                            </li>
+                                        </ul>
+                                    
+                                    <ul>
+                                        <% userReviews.forEach(userReview => { %>
+                                            <li>
+                                                <div class="flex-w flex-t p-b-68">
+                                                    <div class="wrap-pic-s size-109 bor0 of-hidden m-r-18 m-t-6">
+                                                        <img src="/public/userAssets/images/avatar-2.jpg" alt="AVATAR">
+                                                    </div>
+                                
+                                                    <div class="size-207">
+                                                        <div class="flex-w flex-sb-m p-b-17">
+                                                            <!-- Display user name -->
+                                                            <span class="mtext-107 cl2 p-r-20">
+                                                                <%= userReview.user.firstName %>&nbsp;<%= userReview.user.lastName %>
+                                                            </span>
+                                
+                                                            <!-- Display star rating -->
+                                                            <span class="fs-18 cl11">
+                                                                <% for (let i = 1; i <= 5; i++) { %>
+                                                                    <% if (i <= userReview.rating) { %>
+                                                                        <i class="zmdi zmdi-star"></i>
+                                                                    <% } else { %>
+                                                                        <i class="zmdi zmdi-star-outline"></i>
+                                                                    <% } %>
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+                                
+                                                        <!-- Display review text -->
+                                                        <p class="stext-102 cl6">
+                                                            <%= userReview.comment %>
+                                                        </p>
+                                                    </div>
+                                                    <a href="javascript:void(0);" class="edit-link" onclick="openEditReviewModal('<%= userReview._id %>', '<%= userReview.rating %>', '<%= userReview.comment %>')">Edit</a>
+                                                </div>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
+                                    </div>
+                                <% } else { %>
+                                    <p>No reviews submitted by you.</p>
+                                <% } %>
+                            </div>
+                            
+                            <!-- Add review -->
+                            <form class="w-full" id="reviewForm">
+                                <h5 class="mtext-108 cl2 p-b-7">
+                                    Add a review
+                                </h5>
+                                <input type="hidden" id="productId" name="productId" value="<%= product._id %>">
+                                <input type="hidden" id="userId" name="userId" value="<%= userId %>">
+                                <p class="stext-102 cl6">
+                                    Your email address will not be published. Required fields are marked *
+                                </p>
+                                    <div class="flex-w flex-m p-t-5 p-b-23">
+                                        <span class="stext-102 cl3 m-r-16">
+                                            Your Rating
+                                        </span>
+
+                                        <span class="wrap-rating fs-18 cl11 pointer">
+                                            <i class="item-rating pointer zmdi zmdi-star-outline"></i>
+                                            <i class="item-rating pointer zmdi zmdi-star-outline"></i>
+                                            <i class="item-rating pointer zmdi zmdi-star-outline"></i>
+                                            <i class="item-rating pointer zmdi zmdi-star-outline"></i>
+                                            <i class="item-rating pointer zmdi zmdi-star-outline"></i>
+                                            <input class="dis-none" type="number" name="rating">
+                                        </span>
+                                </div>
+
+                                <div class="row p-b-25">
+                                    <div class="col-12 p-b-5">
+                                        <label class="stext-102 cl3" for="review">Your review</label>
+                                        <textarea class="size-110 bor8 stext-102 cl2 p-lr-20 p-tb-10" id="review" name="review"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="flex-c-m stext-101 cl0 size-112 bg7 bor11 hov-btn3 p-lr-15 trans-04 m-b-10 submit-review-button">
+                                        Submit
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Rest of your code... -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" role="dialog" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="w-full" id="editReviewForm">
+                    <!-- Add hidden input fields for review ID and product ID -->
+                    <input type="hidden" id="editReviewId" name="reviewId">
+                    <input type="hidden" id="editProductId" name="productId" value="<%= product._id %>">
+                    <input type="hidden" id="editUserId" name="userId" value="<%= userId %>">
+                    
+                    <!-- Rating -->
+                    <div class="flex-w flex-m p-t-5 p-b-23">
+                        <span class="stext-102 cl3 m-r-16">
+                            Your Rating
+                        </span>
+                        <span class="wrap-rating fs-18 cl11 pointer" id="editRatingStars">
+                            <!-- Rating stars will be dynamically generated here -->
+                        </span>
+                        <input class="dis-none" type="number" name="rating" id="editRatingInput">
+                    </div>
+
+                    <!-- Review Textarea -->
+                    <div class="row p-b-25">
+                        <div class="col-12 p-b-5">
+                            <label class="stext-102 cl3" for="editReview">Your review</label>
+                            <textarea class="size-110 bor8 stext-102 cl2 p-lr-20 p-tb-10" id="editReview" name="editReview"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-12">
+                        <button type="button" class="flex-c-m stext-101 cl0 size-112 bg7 bor11 hov-btn3 p-lr-15 trans-04 m-b-10 submit-review-button" onclick="submitEditReview()">
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Add this script to your HTML, preferably right before the closing </body> tag -->
 <script>
     $(function () {
@@ -260,6 +469,162 @@
         }
     });
 </script>
+
+<script>
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     document.body.addEventListener('click', (event) => {
+    //         if (event.target.matches('.submit-review-button')) {
+    //             const rating = document.querySelector('input[name="rating"]:checked');
+    //             const comment = document.getElementById('review').value;
+    //             const name = document.getElementById('name').value;
+    //             const email = document.getElementById('email').value;
+
+    //             if (!rating || rating.value < 1 || rating.value > 5) {
+    //                 // Show an error message for invalid rating
+    //                 Swal.fire('Invalid rating. Please select a rating between 1 and 5.');
+    //                 return;
+    //             }
+
+    //             // You can proceed with submitting the review
+    //             const formData = {
+    //                 productId: '<%= product._id %>',
+    //                 rating: rating.value,
+    //                 comment: comment,
+    //                 name: name,
+    //                 email: email
+    //             };
+
+    //             // Use Axios to send the data to the server
+    //             axios.post('/submit_review', formData)
+    //                 .then((response) => {
+    //                     if (response.data.success) {
+    //                         // Show a success message or update UI
+    //                         Swal.fire('Review submitted successfully!');
+    //                     } else {
+    //                         // Show an error message
+    //                         Swal.fire('Error submitting the review. Please try again.');
+    //                     }
+    //                 })
+    //                 .catch((error) => {
+    //                     console.error('Error submitting the review:', error);
+    //                     // Show an error message
+    //                     Swal.fire('An error occurred while submitting the review.');
+    //                 });
+    //         }
+    //     });
+    // });
+</script>
+
+<script>
+    // Wait for the DOM to be ready
+    $(document).ready(function () {
+        // Variable to store the selected rating
+        let selectedRating;
+
+        // Add click event listeners to the star icons
+        $('.item-rating').click(function () {
+            // Set the value of the selected rating variable
+            selectedRating = $(this).index() + 1;
+
+            // Log the selected rating to the console for debugging
+            console.log('Selected Rating: ' + selectedRating);
+
+            // Remove the "zmdi-star-outline" class from all stars before the selected one
+            $('.item-rating:lt(' + selectedRating + ')').removeClass('zmdi-star-outline');
+
+            // Add the "zmdi-star-outline" class to all stars after the selected one
+            $('.item-rating:gt(' + (selectedRating - 1) + ')').addClass('zmdi-star-outline');
+        });
+
+        // Add an event listener to the form submission
+        $('#reviewForm').submit(function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Validate the rating
+            if (!selectedRating) {
+                Swal.fire('Please select a rating.');
+                return;
+            }
+
+            // Get other form data
+            const reviewText = $('#review').val();
+          
+
+            // Validate other fields if needed
+            const userId = $('#userId').val();
+            // Get the product ID dynamically (replace this with the actual way you retrieve the product ID)
+            const productId = $('#productId').val(); // Assuming you have an input with id "productId"
+
+            // Prepare data for submission
+            const formData = {
+                productId: productId,
+                rating: selectedRating,
+                comment: reviewText,
+                userId: userId,
+            };
+
+            // Log the form data to the console for debugging
+            console.log(formData);
+
+            // Uncomment the following line to make sure the rating is being set correctly
+            // alert('Selected Rating: ' + selectedRating);
+
+            // Send the data to the server using AJAX (Assuming you have included jQuery)
+            $.ajax({
+                type: 'POST',
+                url: '/submit_review', // Replace with your actual endpoint
+                data: formData,
+                success: function (response) {
+                    // Handle the success response
+                    if (response.success) {
+                        Swal.fire('Success', response.message, 'success');
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response
+                    console.error(xhr.responseText);
+                    Swal.fire('Error', 'Internal server error', 'error');
+                },
+            });
+        });
+    });
+</script>
+
+<!-- Add this script to your template -->
+<script>
+    function openEditReviewModal(reviewId, rating, comment) {
+        // Populate modal fields with existing review data
+        document.getElementById('editReviewId').value = reviewId;
+        document.getElementById('editRatingInput').value = rating;
+
+        // Set the rating stars
+        const starsContainer = document.getElementById('editRatingStars');
+        starsContainer.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('i');
+            star.className = `item-rating pointer zmdi ${i <= rating ? 'zmdi-star' : 'zmdi-star-outline'}`;
+            starsContainer.appendChild(star);
+        }
+
+        // Set the review text
+        document.getElementById('editReview').value = comment;
+
+        // Show the modal
+        $('#editReviewModal').modal('show');
+    }
+
+    // Example function to handle edit review submission
+    function submitEditReview() {
+        // Implement your logic to handle the submission, e.g., AJAX request to update the review on the server
+
+        // After successful submission, close the modal
+        $('#editReviewModal').modal('hide');
+    }
+</script>
+
 
 <script src="/public/userAssets/js/zoom.js"></script>
 

@@ -38,7 +38,35 @@ const productSchema = mongoose.Schema({
       offer : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'offer'
-    }
+    },
+    discountedPrice:{
+      type:Number
+    },
+    reviews: [
+      {
+        user: {
+          userId:{
+            type:String
+          },
+          firstName: {
+            type: String,
+          },
+          lastName: {
+            type: String,
+          },
+        },
+        rating: {
+          type: Number,
+        },
+        comment: {
+          type: String,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     })
 
 module.exports = mongoose.model('product',productSchema)

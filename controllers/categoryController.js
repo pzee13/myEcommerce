@@ -126,37 +126,159 @@ const addCategory = async (req,res)=>{
     }
   }
 
- const applyCategoryOffer =  async ( req, res ) => {
+//  const applyCategoryOffer =  async ( req, res ) => {
+//     try {
+//         const { offerId, categoryId } = req.body
+//         await Category.updateOne({ _id : categoryId },{
+//             $set : {
+//                 offer : offerId 
+//             }
+//         })
+//         res.json({ success : true })
+//     } catch (error) {
+//       console.log(error.message);
+//         res.redirect('/500')
+
+//     }
+//   }
+
+  const applyCategoryOffer = async (req, res) => {
     try {
-        const { offerId, categoryId } = req.body
-        await Category.updateOne({ _id : categoryId },{
-            $set : {
-                offer : offerId 
+      const { offerId, categoryId } = req.body;
+  
+      // Get the category discount
+      const categoryOffer = await Offer.findOne({ _id: offerId });
+  
+      if (!categoryOffer) {
+        return res.json({ success: false, message: 'Category Offer not found' });
+      }
+  
+      // Update the category with the offer
+      await Category.updateOne({ _id: categoryId }, { $set: { offer: offerId } });
+  
+      // Update discounted prices for all products in the category
+      const productsInCategory = await Product.find({ category: categoryId });
+  
+      for (const product of productsInCategory) {
+        const productOffer = product.offer ? await Offer.findOne({ _id: product.offer }) : null;
+  
+        // Check if the product has no offer or the category offer has a greater discount
+        if (!product.offer || (productOffer && productOffer.percentage < categoryOffer.percentage)) {
+          const originalPrice = parseFloat(product.price);
+          const discountedPrice = originalPrice - (originalPrice * categoryOffer.percentage) / 100;
+  
+          // Update the product with the category offer details
+          await Product.updateOne(
+            { _id: product._id },
+            {
+              $set: {
+                offer: offerId,
+                discountedPrice: discountedPrice,
+              },
             }
-        })
-        res.json({ success : true })
+          );
+        }
+      }
+  
+      res.json({ success: true });
     } catch (error) {
       console.log(error.message);
-        res.redirect('/500')
-
+      res.redirect('/500');
     }
-  }
+  };
 
-  const removeCategoryOffer = async ( req, res ) => {
+  // const removeCategoryOffer = async ( req, res ) => {
+  //   try {
+  //       const { categoryId } = req.body
+  //       await Category.updateOne({ _id : categoryId}, {
+  //           $unset : {
+  //               offer : ""
+  //           }
+  //       })
+  //       res.json({ success : true })
+  //     } catch (error) {
+  //       console.log(error.message);
+  //         res.redirect('/500')
+
+  //     }
+  // }
+
+  // const removeCategoryOffer = async (req, res) => {
+  //   try {
+  //     const { categoryId } = req.body;
+  
+  //     // Update category to remove the offer
+  //     await Category.updateOne({ _id: categoryId }, { $unset: { offer: '' } });
+  
+  //     // Update all products in the category to remove offer details and reset discounted prices
+  //     const productsInCategory = await Product.find({ category: categoryId });
+  
+  //     for (const product of productsInCategory) {
+  //       await Product.updateOne(
+  //         { _id: product._id },
+  //         {
+  //           $unset: {
+  //             offer: '',
+  //             discountedPrice: '',
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     res.json({ success: true });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //     res.redirect('/500');
+  //   }
+  // };
+  
+
+  const removeCategoryOffer = async (req, res) => {
     try {
-        const { categoryId } = req.body
-        await Category.updateOne({ _id : categoryId}, {
-            $unset : {
-                offer : ""
-            }
-        })
-        res.json({ success : true })
-      } catch (error) {
-        console.log(error.message);
-          res.redirect('/500')
-
+      const { categoryId } = req.body;
+  
+      // Get the category offer
+      const category = await Category.findById(categoryId).populate('offer');
+  
+      if (!category) {
+        return res.json({ success: false, message: 'Category not found' });
       }
-  }
+  
+      // Update category to remove the offer
+      await Category.updateOne({ _id: categoryId }, { $unset: { offer: '' } });
+  
+      // Update all products in the category to remove offer details and reset discounted prices
+      const productsInCategory = await Product.find({ category: categoryId });
+  
+      for (const product of productsInCategory) {
+        if (product.offer) {
+          const productOffer = await Offer.findById(product.offer);
+  
+          // Check if the product has a greater discount than the category's offer
+          if (productOffer && productOffer.percentage > category.offer.percentage) {
+            continue; // Skip this product, as it has a greater discount
+          }
+        }
+  
+        // Remove the offer and reset discounted prices for the product
+        await Product.updateOne(
+          { _id: product._id },
+          {
+            $unset: {
+              offer: '',
+              discountedPrice: '',
+            },
+          }
+        );
+      }
+  
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error.message);
+      res.redirect('/500');
+    }
+  };
+  
 
 
 

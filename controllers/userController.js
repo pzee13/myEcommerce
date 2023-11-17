@@ -414,7 +414,7 @@ const viewProducts = async (req, res) => {
         const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
     
         const skip = (page - 1) * pageSize;
-      const products = await Product.find({ status: 1 }).populate('category') .skip(skip)
+      const products = await Product.find({ status: 1 }).populate('category').populate('offer').skip(skip)
       .limit(pageSize);
 
       const totalProducts = await Product.countDocuments();
@@ -435,7 +435,7 @@ const viewProducts = async (req, res) => {
   const getProductDetails = async (req, res) => {
     try {
         const id = req.query.id; // You should adjust this based on your route structure
-        const product = await Product.findById({_id:id}).populate('category');
+        const product = await Product.findById({_id:id}).populate('category').populate('offer');
         const userId = req.session.user_id 
         const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
 
@@ -443,7 +443,11 @@ const viewProducts = async (req, res) => {
             return res.status(404).render('404-error', { message: 'Product not found' });
         }
 
-        res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+        const reviews = product.reviews
+
+        const userReviews = reviews.filter(review => review.user.userId === userId)
+
+        res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false,userId:userId,reviews:reviews,userReviews:userReviews});
     } catch (error) {
         console.error(error);
         res.status(404).render('404-error', { message: 'Internal Server Error' });
@@ -624,6 +628,181 @@ const verifyWalletpayment = async(req,res)=>{
     }
   }
 
+//   const submitReview =  async (req, res) => {
+//     try {
+//         console.log("hii")
+//         const { productId, rating, comment, name } = req.body;
+  
+//         // Validate rating
+//         if (rating < 1 || rating > 5) {
+//             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
+//         }
+  
+//         // Find the product by ID
+//         const product = await Product.findById(productId);
+  
+//         if (!product) {
+//             return res.json({ success: false, message: 'Product not found.' });
+//         }
+
+//         const user = await User.findOne({ name: name });
+
+//         if (!user) {
+//             return res.json({ success: false, message: 'User not found.' });
+//         }
+
+  
+//         // Add the review to the product's reviews array
+//         product.reviews.push({
+//             user: user._id, // Assuming you want to store the user's name as the reviewer
+//             rating,
+//             comment,
+//             date: new Date(),
+//         });
+
+//         console.log(product)
+  
+//         // Save the updated product with the new review
+//         await product.save();
+  
+//         res.json({ success: true, message: 'Review submitted successfully!' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ success: false, message: 'Internal server error' });
+//     }
+//   };
+
+// const submitReview = async (req, res) => {
+//     try {
+//         console.log("Start of submitReview function");
+
+//         const { productId, rating, comment, userId } = req.body;
+//         console.log("Destructured variables:", { productId, rating, comment, userId });
+
+//         // Validate rating
+//         console.log("Validating rating");
+//         if (rating < 1 || rating > 5) {
+//             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
+//         }
+
+//         // Find the product by ID
+//         console.log("Finding product by ID");
+//         const product = await Product.findById(productId);
+
+//         if (!product) {
+//             console.log("Product not found");
+//             return res.json({ success: false, message: 'Product not found.' });
+//         }
+
+//         // Check if the user with the provided userId exists
+//         const user = await User.findById(userId);
+
+//         if (!user) {
+//             console.log("User not found");
+//             return res.json({ success: false, message: 'User not found.' });
+//         }
+
+//         // Add the review to the product's reviews array
+//         console.log("Adding review to product's reviews array");
+//         product.reviews.push({
+//             user: userId, // Assuming you want to store the user's ID as the reviewer
+//             rating,
+//             comment,
+//             date: new Date(),
+//         });
+
+//         console.log("Updated product with review:", product);
+
+//         // Save the updated product with the new review
+//         console.log("Saving updated product");
+//         await product.save();
+
+//         console.log("Review submitted successfully!");
+//         res.json({ success: true, message: 'Review submitted successfully!' });
+//     } catch (error) {
+//         console.error("Error:", error);
+//         res.status(500).json({ success: false, message: 'Internal server error' });
+//     }
+// };
+
+
+const submitReview = async (req, res) => {
+    try {
+        console.log("Start of submitReview function");
+
+        const { productId, rating, comment, userId } = req.body;
+        console.log("Destructured variables:", { productId, rating, comment, userId });
+
+        // Validate rating
+        console.log("Validating rating");
+        if (rating < 1 || rating > 5) {
+            return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
+        }
+
+        // Find the product by ID
+        console.log("Finding product by ID");
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            console.log("Product not found");
+            return res.json({ success: false, message: 'Product not found.' });
+        }
+
+        // Check if the user with the provided userId exists
+        const user = await User.findById(userId);
+
+        if (!user) {
+            console.log("User not found");
+            return res.json({ success: false, message: 'User not found.' });
+        }
+
+        const existingReview = product.reviews.find(review => review.user.userId === userId);
+
+        if (existingReview) {
+            console.log("User has already reviewed the product");
+            return res.json({ success: false, message: 'You have already reviewed this product.' });
+        }
+
+        // Check if the user has a delivered order for the product
+        const deliveredOrder = await Order.findOne({
+            user: userId,
+            'products.product_Id': productId,
+            'products.status': 'Delivered',
+        });
+
+        if (!deliveredOrder) {
+            console.log("User has not received the product yet");
+            return res.json({ success: false, message: 'You can only review or rate a product after receiving it.' });
+        }
+        console.log(deliveredOrder)
+
+        // Add the review to the product's reviews array
+        console.log("Adding review to product's reviews array");
+        product.reviews.push({
+            
+            user: {
+                userId: userId,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            },
+            rating,
+            comment,
+            date: new Date(),
+        });
+
+        console.log("Updated product with review:", product);
+
+        // Save the updated product with the new review
+        console.log("Saving updated product");
+        await product.save();
+
+        console.log("Review submitted successfully!");
+        res.json({ success: true, message: 'Review submitted successfully!' });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
 
 
   
@@ -649,7 +828,8 @@ module.exports = {
     searchProducts,
     walletHistory,
     addMoneyWallet,
-    verifyWalletpayment
+    verifyWalletpayment,
     // sendVerificationEmail
+    submitReview
 }
 
