@@ -298,15 +298,15 @@
     </div>
 <!-- Rest of your code... -->
 <div class="modal fade" id="editReviewModal" tabindex="-1" role="dialog" aria-labelledby="editReviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-content-centered">
             <div class="modal-header">
                 <h5 class="modal-title" id="editReviewModalLabel">Edit Review</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-t-27">
                 <form class="w-full" id="editReviewForm">
                     <!-- Add hidden input fields for review ID and product ID -->
                     <input type="hidden" id="editReviewId" name="reviewId">
@@ -337,12 +337,32 @@
                         <button type="button" class="flex-c-m stext-101 cl0 size-112 bg7 bor11 hov-btn3 p-lr-15 trans-04 m-b-10 submit-review-button" onclick="submitEditReview()">
                             Submit
                         </button>
+                        
+                        
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+    }
+
+    .modal-content-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        overflow: auto;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <!-- Add this script to your HTML, preferably right before the closing </body> tag -->
 <script>
     $(function () {
@@ -593,38 +613,107 @@
     });
 </script>
 
-<!-- Add this script to your template -->
+
+
+
+<!-- Add this script to your HTML, preferably right before the closing </body> tag -->
+<script>
+  window.submitEditReview = function () {
+    const reviewId = $('#editReviewId').val();
+    const rating = $('#editRatingInput').val();
+    const comment = $('#editReview').val();
+    const userId = $('#editUserId').val();
+    const productId = $('#editProductId').val();
+
+    const formData = {
+        reviewId: reviewId,
+        productId: productId,
+        rating: rating,
+        comment: comment,
+        userId: userId,
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/edit_review',
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Success', response.message, 'success');
+                
+                // Update the review in the DOM
+                const reviewContainer = $(`#reviews .product-reviews`);
+                const editedReview = reviewContainer.find(`[data-review-id="${reviewId}"]`);
+
+                if (editedReview.length > 0) {
+                    // Update the rating and comment in the existing review
+                    editedReview.find('.fs-18.cl11').html(generateStarIcons(rating));
+                    editedReview.find('.stext-102.cl6').html(comment);
+                }
+                
+                // Close the modal
+                $('#editReviewModal').modal('hide');
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+            Swal.fire('Error', 'Internal server error', 'error');
+        },
+    });
+};
+
+// Function to generate star icons based on the rating
+function generateStarIcons(rating) {
+    let starIcons = '';
+    for (let i = 1; i <= 5; i++) {
+        starIcons += `<i class="zmdi ${i <= rating ? 'zmdi-star' : 'zmdi-star-outline'}"></i>`;
+    }
+    return starIcons;
+}
+
+</script>
+
 <script>
     function openEditReviewModal(reviewId, rating, comment) {
         // Populate modal fields with existing review data
-        document.getElementById('editReviewId').value = reviewId;
-        document.getElementById('editRatingInput').value = rating;
+        $('#editReviewId').val(reviewId);
+        $('#editRatingInput').val(rating);
 
-        // Set the rating stars
-        const starsContainer = document.getElementById('editRatingStars');
-        starsContainer.innerHTML = '';
+        const starsContainer = $('#editRatingStars');
+        starsContainer.html('');
+
         for (let i = 1; i <= 5; i++) {
-            const star = document.createElement('i');
-            star.className = `item-rating pointer zmdi ${i <= rating ? 'zmdi-star' : 'zmdi-star-outline'}`;
-            starsContainer.appendChild(star);
+            const star = $(`<i class="item-rating pointer zmdi ${i <= rating ? 'zmdi-star' : 'zmdi-star-outline'}"></i>`);
+
+            // Add a click event listener to each star
+            star.click(() => {
+                $('#editRatingInput').val(i);
+                updateStars(i, starsContainer);
+            });
+
+            starsContainer.append(star);
         }
 
-        // Set the review text
-        document.getElementById('editReview').value = comment;
+        $('#editReview').val(comment);
 
-        // Show the modal
         $('#editReviewModal').modal('show');
     }
 
-    // Example function to handle edit review submission
-    function submitEditReview() {
-        // Implement your logic to handle the submission, e.g., AJAX request to update the review on the server
+    function updateStars(selectedRating, starsContainer) {
+        starsContainer.children().each((index, starIcon) => {
+            starIcon = $(starIcon);
+            starIcon.removeClass('zmdi-star-outline zmdi-star');
 
-        // After successful submission, close the modal
-        $('#editReviewModal').modal('hide');
+            if (index + 1 <= selectedRating) {
+                starIcon.addClass('zmdi-star');
+            } else {
+                starIcon.addClass('zmdi-star-outline');
+            }
+        });
     }
 </script>
-
 
 <script src="/public/userAssets/js/zoom.js"></script>
 

@@ -214,20 +214,61 @@ $(document).ready(function () {
           statusCell.find('.product-status').addClass('text-danger'); // Optional: Add a different color for canceled status
           button.text('Canceled'); // Update the button text
           // Update other UI elements as needed
-        } else {
+        } else if(data.success == false){
           // Handle error
+          Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to cancel the product',
+              });
+            
           console.log(data.error);
+          
+        }
+        else{
+          Swal.fire({
+            
+                text: 'Failed to cancel the product',
+              });
         }
       },
       error: function (err) {
         // Handle AJAX error
         console.error(err);
+        
       },
     });
   }})
   });
 });
 
+
+// $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+//     if (settings.url.startsWith(`/cancel_order/${orderId}/${productId}`) && jqxhr.status === 202) {
+//       const response = JSON.parse(jqxhr.responseText);
+//       if (response.message && response.message.includes('Refunded amount is less than zero')) {
+//         Swal.fire({
+//           icon: 'warning',
+//           title: 'Remaining Balance',
+//           text: 'Refunded amount is less than zero. Do you want to pay the remaining balance?',
+//           showCancelButton: true,
+//           confirmButtonText: 'Yes, pay now',
+//           cancelButtonText: 'No, cancel',
+//         }).then((result) => {
+//           if (result.isConfirmed) {
+//             // Handle payment logic here
+//             // For example, redirect the user to a payment page
+//             // and update the order status once payment is successful
+
+//             // Placeholder code, replace with actual payment logic
+//             console.log('Redirecting to payment page...');
+//           } else {
+//             Swal.fire('Payment canceled. Product not canceled.');
+//           }
+//         });
+//       }
+//     }
+//   });
   </script>
   
 

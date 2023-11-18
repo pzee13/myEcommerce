@@ -50,8 +50,14 @@ const addCart = async (req, res, next) => {
         const result = await Promise.all(promises);
         const cartdata = result[0];
         const productData = result[1];
-        const total = quantity * productData.price;
+        let total = 0;
+        if(!productData.offer){
+        total = quantity * productData.price;
+        }else{
+           total =  quantity * productData.discountedPrice
+        }
 
+        if(!productData.offer){
         if (cartdata) {
             const findProduct = await Cart.findOne({
                 user_id: userid,
@@ -113,6 +119,69 @@ const addCart = async (req, res, next) => {
             await NewCart.save();
 
             res.json({ count: 'ADDED' });
+        }}else{
+            if (cartdata) {
+                const findProduct = await Cart.findOne({
+                    user_id: userid,
+                    "items.product_Id": new mongoose.Types.ObjectId(product_Id),
+                });
+    
+                if (findProduct) {
+                    const cartProduct = cartdata.items.find(
+                        (product) => product.product_Id.toString() === product_Id
+                    );
+    
+                    if (cartProduct.quantity < productData.quantity) {
+                        await Cart.findOneAndUpdate({
+                            user_id: userid,
+                            'items.product_Id': new mongoose.Types.ObjectId(product_Id)
+                        }, {
+                            $inc: {
+                                'items.$.quantity': quantity,
+                                'items.$.total': total,
+                                totalPrice: cartdata.totalPrice + total
+                            }
+                        });
+    
+                        res.json({ count: 'ADDED' });
+                    } else {
+                        res.json({ limit: 'Limit exceeded' });
+                    }
+                } else {
+                    await Cart.updateOne(
+                        { user_id: userid },
+                        {
+                            $push: {
+                                items: {
+                                    product_Id: new mongoose.Types.ObjectId(product_Id),
+                                    quantity: quantity,
+                                    total: total,
+                                    price: productData.discountedPrice
+                                },
+                            },
+                            $inc: { count: 1, totalPrice: total },
+                        }
+                    );
+    
+                    res.json({ count: 'ADDED' });
+                }
+            } else {
+                const NewCart = new Cart({
+                    user_id: userid,
+                    items: [{
+                        product_Id: new mongoose.Types.ObjectId(product_Id),
+                        quantity: quantity,
+                        total: total,
+                        price: productData.discountedPrice
+                    }],
+                    totalPrice: total,
+                    count: 1
+                });
+    
+                await NewCart.save();
+    
+                res.json({ count: 'ADDED' });
+            }
         }
     }
     else{

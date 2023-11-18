@@ -129,4 +129,6 @@ user_route.post('/remove_coupon',auth.isLogin,orderController.removeCoupon)
 
 user_route.post('/submit_review',auth.isLogin,userController.submitReview)
 
+user_route.post('/edit_review',auth.isLogin,userController.editReview)
+
 module.exports = user_route 

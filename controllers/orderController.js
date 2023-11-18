@@ -507,6 +507,14 @@ const cancelOrder = async (req, res) => {
         order.totalAmount -= (refundedAmount + order.coupon.discountTotal)
       }
     }
+
+    if (refundedAmount < 0) {
+      // const errorMessage = 'Refunded amount is less than zero. Please pay the remaining balance to cancel the product';
+      // console.error(errorMessage);
+      // return res.status(202).json({ success: false, message: errorMessage });
+      order.totalAmount -= Math.abs(refundedAmount)
+      refundedAmount = 0;
+    }
     console.log('total:', order.totalAmount);
 
     // Set the status of the product with the specified productId to 'Canceled' within the order

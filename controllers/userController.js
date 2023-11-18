@@ -804,6 +804,66 @@ const submitReview = async (req, res) => {
     }
 };
 
+const editReview = async (req, res) => {
+    try {
+        console.log("Start of editReview function");
+
+        const { reviewId, productId, rating, comment, userId } = req.body;
+        console.log("Destructured variables:", { reviewId, productId, rating, comment, userId });
+
+        // Validate rating
+        console.log("Validating rating");
+        if (rating < 1 || rating > 5) {
+            return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
+        }
+
+        // Find the product by ID
+        console.log("Finding product by ID");
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            console.log("Product not found");
+            return res.json({ success: false, message: 'Product not found.' });
+        }
+
+        // Check if the user with the provided userId exists
+        const user = await User.findById(userId);
+
+        if (!user) {
+            console.log("User not found");
+            return res.json({ success: false, message: 'User not found.' });
+        }
+
+        // Check if the review with the provided reviewId exists in the product's reviews array
+        const existingReviewIndex = product.reviews.findIndex(review => review._id.toString() === reviewId);
+
+        if (existingReviewIndex === -1) {
+            console.log("Review not found");
+            return res.json({ success: false, message: 'Review not found.' });
+        }
+
+        // Update the existing review in the product's reviews array
+        const existingReview = product.reviews[existingReviewIndex];
+        existingReview.rating = rating;
+        existingReview.comment = comment;
+        existingReview.date = new Date();
+
+        console.log("Updated product with edited review:", product);
+
+        // Save the updated product with the edited review
+        console.log("Saving updated product");
+        await product.save();
+
+        console.log("Review edited successfully!");
+        res.json({ success: true, message: 'Review edited successfully!' });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+// Add the route for handling edit review requests
+
 
   
 
@@ -830,6 +890,7 @@ module.exports = {
     addMoneyWallet,
     verifyWalletpayment,
     // sendVerificationEmail
-    submitReview
+    submitReview,
+    editReview
 }
 
