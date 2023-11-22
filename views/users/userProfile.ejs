@@ -440,43 +440,190 @@
 <!-- Inside your HTML file -->
 <script>
     // Add an event listener to handle deleting addresses
-    document.addEventListener('DOMContentLoaded', function () {
-    const deleteButtons = document.querySelectorAll('.delete-address');
+//     document.addEventListener('DOMContentLoaded', function () {
+//     const deleteButtons = document.querySelectorAll('.delete-address');
 
-    deleteButtons.forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            event.preventDefault();
-            const addressId = event.target.getAttribute('data-address-id');
-            const addressDiv = document.getElementById(`address${addressId}`);
+//     deleteButtons.forEach(function (button) {
+//         button.addEventListener('click', function (event) {
+//             event.preventDefault();
+//             const addressId = event.target.getAttribute('data-address-id');
+//             const addressDiv = document.getElementById(`address${addressId}`);
+//             console.log('Address ID:', addressId);
+//             console.log('Address Div:', addressDiv);
 
-            // Send an AJAX request to the server to delete the address
-            fetch(`/delete_address/${addressId}`, {
-                method: 'DELETE',
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (addressDiv) {
-                        addressDiv.remove();// Remove the div from the DOM
-                        window.reload()
-                        // Close the modal
-                      
-                    } else {
-                        console.error('Address card not found in the DOM');
-                    }
-                } else {
-                    console.error('Failed to delete the address');
-                }
-            })
-            .catch(error => {
-                console.error('An error occurred while deleting the address', error);
-            });
-        });
-    });
-});
+//             // Send an AJAX request to the server to delete the address
+//             fetch(`/delete_address/${addressId}`, {
+//                 method: 'DELETE',
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 console.log('Server Response:', data);
+
+//                 if (data.success) {
+//                     if (addressDiv) {
+//                         addressDiv.remove(); // Remove the div from the DOM
+//                         console.log('Address div removed successfully.');
+//                     } else {
+//                         console.error('Address card not found in the DOM');
+//                     }
+//                 } else {
+//                     console.error('Failed to delete the address. Server response:', data);
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('An error occurred while deleting the address', error);
+//             });
+//         });
+//     });
+// });
 
 </script>
 
+<script>
+    //  function handleAddressDeletion(addressId, addressDiv) {
+    //     // Show SweetAlert confirmation dialog
+    //     Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: 'You won\'t be able to revert this!',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Yes, delete it!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             // User confirmed, send AJAX request to delete the address
+    //             fetch(`/delete_address/${addressId}`, {
+    //                 method: 'DELETE',
+    //             })
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 console.log('Server Response:', data);
+
+    //                 if (data.success) {
+    //                     if (addressDiv) {
+    //                         addressDiv.remove(); // Remove the div from the DOM
+    //                         Swal.fire('Address div removed successfully.');
+    //                     } else {
+    //                         Swal.fire('Address card not found in the DOM');
+    //                     }
+    //                 } else {
+    //                     console.error('Failed to delete the address. Server response:', data);
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error('An error occurred while deleting the address', error);
+    //             });
+    //         }
+    //     });
+    // }
+
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     // Add an event listener for the "Delete" buttons
+    //     document.addEventListener('click', function (event) {
+    //         if (event.target.classList.contains('delete-address')) {
+    //             event.preventDefault();
+    //             const addressId = event.target.getAttribute('data-address-id');
+    //             const addressDiv = document.getElementById(`address${addressId}`);
+    //             console.log('Address ID:', addressId);
+    //             console.log('Address Div:', addressDiv);
+
+    //             // Call the function to handle address deletion
+    //             handleAddressDeletion(addressId, addressDiv);
+    //         }
+    //     });
+    // });
+
+//     document.addEventListener('DOMContentLoaded', function () {
+//     // Select all delete buttons
+//     var deleteButtons = document.querySelectorAll('.delete-address');
+
+//     // Add event listener to each delete button
+//     deleteButtons.forEach(function (button) {
+//         button.addEventListener('click', function (event) {
+//             event.preventDefault(); // Prevent the default behavior of the button
+
+//             // Get the address ID from the data attribute
+//             var addressId = button.getAttribute('data-address-id');
+
+//             // Make an AJAX request to delete the address
+//             fetch(`/delete_address/${addressId}`, {
+//                 method: 'DELETE',
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 // Check if the address was successfully deleted
+//                 if (data.success) {
+//                     // Find and remove the corresponding address div
+//                     var addressDiv = document.getElementById(`address${addressId}`);
+//                     if (addressDiv) {
+//                         addressDiv.parentNode.removeChild(addressDiv);
+//                     } else {
+//                         console.error('Address div not found');
+//                     }
+//                 } else {
+//                     console.error('Failed to delete the address');
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('An error occurred while deleting the address', error);
+//             });
+//         });
+//     });
+// });
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-address');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const addressId = event.target.getAttribute('data-address-id');
+                const addressDiv = document.getElementById(`address${addressId}`);
+                console.log('Address ID:', addressId);
+                console.log('Address Div:', addressDiv);
+
+                // Show SweetAlert confirmation dialog
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You won\'t be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, send AJAX request to delete the address
+                        fetch(`/delete_address/${addressId}`, {
+                            method: 'DELETE',
+                        })
+                        .then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.success) {
+        var addressDiv = document.getElementById('address' + addressId);
+        if (addressDiv) {
+            addressDiv.parentNode.removeChild(addressDiv);
+        } else {
+            console.error('Address div not found');
+        }
+    } else {
+        console.error('Failed to delete the address');
+    }
+})
+.catch(error => {
+    console.error('Error during fetch operation:', error);
+});
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 
 <script>

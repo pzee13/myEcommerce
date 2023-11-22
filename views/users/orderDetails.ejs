@@ -12,6 +12,9 @@
             <p class="order-id">Your order ID is: <strong>
                 <%=order.orderID%>
               </strong></p>
+              <p class="order-id">Your Total Amount: <strong>
+                ₹<%=order.totalAmount%>
+              </strong></p>
           </div>
         </div>
         <div class="card mt-4 border-0 shadow">
@@ -53,11 +56,19 @@
                       </td>
                       
                       <td class="align-middle">
-                        <button class="btn btn-danger cancel-product" data-product-id="<%= products.product_Id._id %>"> <% if (products.status === 'Canceled') { %>
-                            Canceled
+                       
+                          <% if (products.status === 'Canceled') { %>
+                           
+                              Canceled
+                          <% } else if (products.status === 'Delivered') { %>
+                              <button class="btn btn-danger" onclick="orderReturn('<%= products.product_Id._id %>', 'return')">Return</button>
                           <% } else { %>
-                            Cancel
-                          <% } %></button>
+                            <button class="btn btn-danger cancel-product" data-product-id="<%= products.product_Id._id %>">
+                              Cancel
+                            </button>
+                          <% } %>
+                     
+                      
                       </td>
 
                   </tr>
@@ -122,6 +133,9 @@
         </div>
         <div class="text-center mt-4">
           <a href="/" class="btn btn-primary continue-btn mb-4"><i class="bi bi-house-door"></i> Continue Shopping</a>
+          <a href="/download-invoice/<%= order._id %>" class="btn btn-success download-invoice-btn" target="_blank">
+            <i class="bi bi-file-earmark-text"></i> Download Invoice
+          </a>
         </div>
       </div>
     </div>
@@ -179,7 +193,15 @@
     }
 
     
+    .download-invoice-btn {
+   background-color: #28a745; /* Green color */
+   border-color: #28a745; /* Green color */
+}
 
+.download-invoice-btn:hover {
+   background-color: #218838; /* Slightly darker green color on hover */
+   border-color: #218838; /* Slightly darker green color on hover */
+}
     
   </style>
 
@@ -271,7 +293,54 @@ $(document).ready(function () {
 //   });
   </script>
   
-
+  <script>
+    // Define the function to handle the return order
+    function orderReturn(productId) {
+      const orderId = '<%= order._id %>'; // Retrieve the order ID
+  
+      // Display a confirmation dialog
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, return it!',
+        cancelButtonText: 'No, keep it',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Perform the AJAX request
+          $.ajax({
+            type: 'POST',
+            url: `/return_order/${orderId}/${productId}`, // Replace with your actual route
+            success: function (data) {
+              if (data.success) {
+                // Product returned successfully, update the UI
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: 'Product will be returned within few days!',
+                }).then(() => {
+                  // Reload or redirect to update the UI as needed
+                  location.reload();
+                });
+              } else {
+                // Handle error
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: data.message || 'Failed to return the product',
+                });
+              }
+            },
+            error: function (err) {
+              // Handle AJAX error
+              console.error(err);
+            },
+          });
+        }
+      });
+    }
+  </script>
   
 
     <%- include('../userMainlayouts/mainfooter.ejs') %>

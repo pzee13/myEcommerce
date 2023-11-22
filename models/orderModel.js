@@ -74,6 +74,9 @@ const orderSchema = new mongoose.Schema({
     StatusLevel:{
       type:Number,
       default: 1
+    },
+    returnDate:{
+      type: Date,
     }
 
 }],

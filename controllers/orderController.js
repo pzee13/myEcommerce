@@ -10,6 +10,8 @@ const Razorpay = require("razorpay")
 const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
+const cron = require('node-cron');
+const PDFDocument = require('pdfkit')
 var crypto = require("crypto");
 
 
@@ -467,7 +469,7 @@ const cancelOrder = async (req, res) => {
       if(product.product_Id._id.toString() === productId)
       {
         console.log(product.status)
-      if (product.status === 'Delivered' || product.status === 'Canceled') {
+      if (product.status === 'Delivered' || product.status === 'Canceled' || product.status==='Returned') {
         canCancel = false;
         break; // Exit the loop if any product cannot be canceled
       } else {
@@ -480,33 +482,38 @@ const cancelOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Order cannot be canceled' });
     }
     let couponRefundAmount = 0;
-
+  
     const ftotal = order.totalAmount
 
     if (order.coupon) {
       console.log("s1",refundedAmount)
       const couponData = await Coupon.findOne({ code: order.coupon.code });
-      order.totalAmount += order.coupon.discountTotal
+      if (!couponData) {
+        // Handle the case where no coupon data is found
+        console.log("Coupon not found");
+        order.totalAmount = ftotal - refundedAmount; // Update the totalAmount without coupon
+      } else {
+        order.totalAmount += order.coupon.discountTotal;
 
-      if (couponData && Math.abs(order.totalAmount - refundedAmount) < couponData.minimumSpend) {
-        // If refund amount is below minimum spend, remove coupon discount
-        order.totalAmount = order.products.reduce((total, product) => {
-          if (product.product_Id._id.toString() !== productId && product.status !== 'Canceled') {
-            return total + product.total;
-          }
-          return total;
-        }, 0);
-       
-        refundedAmount  = ftotal - order.totalAmount
-        // Calculate coupon refund amount
-       } else{
-        const couponRefundPercentage = couponData.discountPercentage || 0;
-        couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
-        refundedAmount -= couponRefundAmount;
-        console.log("s2",refundedAmount)
-        order.totalAmount -= (refundedAmount + order.coupon.discountTotal)
+        if (Math.abs(order.totalAmount - refundedAmount) < couponData.minimumSpend) {
+          // If refund amount is below minimum spend, remove coupon discount
+          order.totalAmount = order.products.reduce((total, product) => {
+            if (product.product_Id._id.toString() !== productId && product.status !== 'Canceled') {
+              return total + product.total;
+            }
+            return total;
+          }, 0);
+          refundedAmount = ftotal - order.totalAmount; // Update refundedAmount
+        } else {
+          const couponRefundPercentage = couponData.discountPercentage;
+          couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
+          refundedAmount -= couponRefundAmount;
+          console.log("s2", refundedAmount);
+          order.totalAmount -= refundedAmount + order.coupon.discountTotal;
+        }
       }
     }
+
 
     if (refundedAmount < 0) {
       // const errorMessage = 'Refunded amount is less than zero. Please pay the remaining balance to cancel the product';
@@ -731,6 +738,7 @@ const couponCheck = async (req, res, next) => {
     }
   } catch (err) {
     next(err);
+    res.status(500).render('505-error');
   }
 };
 
@@ -759,6 +767,7 @@ const removeCoupon = async (req, res, next) => {
     res.json({ success: true, updatedTotal: updatedTotal });
   } catch (err) {
     next(err);
+    res.status(500).render('505-error');
   }
 };
 // const couponCheck = async (req, res, next) => {
@@ -823,6 +832,160 @@ const removeCoupon = async (req, res, next) => {
 //   }
 // };
 
+
+
+// const returnJobSchedule = '0 0 * * *'; // Runs at midnight every day
+
+// cron.schedule(returnJobSchedule, async () => {
+//   try {
+//     // Get orders that are eligible for return based on your criteria
+//     console.log("hii")
+//     const eligibleOrders = await getEligibleOrders();
+
+//     // Process returns for each eligible order
+//     for (const order of eligibleOrders) {
+//       await processReturnOrder(order);
+//     }
+
+//     console.log('Return processing complete');
+//   } catch (error) {
+//     console.error('Error processing returns:', error);
+//   }
+// });
+
+
+const orderReturn = async (req, res, next) => {
+  try {
+    const userId = req.session.user_id;
+    const orderId = req.params.orderId;
+    const productId = req.params.productId;
+
+    // Get the current date
+    const currentDate = new Date();
+
+    // Check if the product was delivered within the last seven days
+    const orderData = await Order.findOneAndUpdate(
+      { _id: orderId, 'products.product_Id': productId },
+      { $set: { 'products.$.status': 'Returned' } }
+    );
+
+    // Validate if the orderData is found
+    if (!orderData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order or product not found',
+      });
+    }
+
+    const productData = orderData.products.find(
+      (product) => product.product_Id._id.toString() === productId
+    );
+
+    const deliveryDate = productData.deliveryDate;
+
+    const daysDifference = Math.floor(
+      (currentDate - new Date(deliveryDate)) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysDifference > 7) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product can only be returned within seven days of delivery',
+      });
+    }
+
+    // Calculate the return date (current date + 4 days)
+    const returnDate = new Date();
+    returnDate.setDate(currentDate.getDate() + 4);
+
+    // Apply coupon condition and calculate refund amount
+    let refundAmount = productData.total;
+
+    if (orderData.coupon) {
+      const couponData = await Coupon.findOne({ code: orderData.coupon.code });
+
+      if (couponData) {
+        const couponRefundPercentage = couponData.discountPercentage;
+        const couponRefundAmount = (couponRefundPercentage / 100) * productData.total;
+        refundAmount -= couponRefundAmount;
+      }
+    }
+
+    // Update product status to 'returning within few days'
+    await Order.findOneAndUpdate(
+      { _id: orderId, 'products.product_Id': productId },
+      {
+        $set: {
+          'products.$.status': 'Returned',
+          'products.$.returnDate': returnDate,
+        },
+      } 
+    );
+
+    // Update product stock in the inventory
+    await Product.findByIdAndUpdate({ _id: product.product_Id._id }, { $inc: { quantity: product.quantity } });
+
+    // Update the user's wallet with the calculated refund amount
+    await User.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $inc: { wallet: refundAmount },
+        $push: {
+          walletHistory: {
+            date: currentDate,
+            amount: refundAmount,
+            description: `Refunded for order Return - Order ${orderData.orderID}`,
+          },
+        },
+      }
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+    res.status(500).render('505-error');
+  }
+};
+
+
+// const getEligibleOrders = async () => {
+//   console.log('Fetching eligible orders for return...');
+
+//   // Implement logic to retrieve orders eligible for return (e.g., within 7 days)
+//   const currentDate = new Date();
+
+//   const eligibleOrders = await Order.find({
+//     'products.status': 'Delivered',
+//     'products.returnDate': { $lte: currentDate },
+//   });
+//   console.log('Eligible orders for return:', eligibleOrders);
+//   return eligibleOrders;
+// };
+
+// const processReturnOrder = async (order) => {
+//   // Implement logic to process return for the order
+//   console.log('Processing return for Order:', order.orderID);
+
+//   for (const product of order.products) {
+//     if (product.status === 'Returning within few days') {
+//       // Update product status to 'Returned'
+//       product.status = 'Returned';
+
+//       // Update product stock in the inventory
+//       await Product.findByIdAndUpdate({ _id: product.product_Id._id }, { $inc: { quantity: product.quantity } });
+
+//       // Additional logic for processing returns (if needed)
+//       // ...
+
+//       console.log(`Return processed for Product ${product.product_Id._id} in Order ${order.orderID}`);
+//     }
+//   }
+
+//   // Save the updated order with returned products
+//   await order.save();
+//   console.log('Return processing complete for Order:', order.orderID);
+// };
+
 module.exports ={
     placeOrder,
     loadOrderPlaced,
@@ -831,6 +994,6 @@ module.exports ={
     cancelOrder,
     validatePaymentVerification,
     couponCheck,
-    removeCoupon
-    
+    removeCoupon,
+    orderReturn
 }

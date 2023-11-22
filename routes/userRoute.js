@@ -113,6 +113,8 @@ user_route.get('/order_details',auth.isLogin,orderController.orderDetails)
 
 user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder);
 
+user_route.post('/return_order/:orderId/:productId', orderController.orderReturn);
+
 user_route.post('/verify_payment',auth.isLogin,orderController.validatePaymentVerification)
 
 user_route.get('/wallet_history',auth.isLogin,userController.walletHistory)
@@ -130,5 +132,7 @@ user_route.post('/remove_coupon',auth.isLogin,orderController.removeCoupon)
 user_route.post('/submit_review',auth.isLogin,userController.submitReview)
 
 user_route.post('/edit_review',auth.isLogin,userController.editReview)
+
+user_route.get('/download-invoice/:orderId',auth.isLogin,userController.getInvoice)
 
 module.exports = user_route 

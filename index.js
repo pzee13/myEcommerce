@@ -45,8 +45,8 @@ app.set('views','./views/users')
 
 app.use("/", disableBackButton, userRoute);
  
-
 app.use("/admin", disableBackButton, adminRoute);
+
 
 app.use('*',(req,res)=>{
   res.render('404-error')

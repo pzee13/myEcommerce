@@ -37,6 +37,7 @@ const loadCheckout0 = async (req, res,next) => {
 
   } catch (err) {
      next(err)
+     res.status(500).render('505-error');
   }
 }
 
@@ -156,6 +157,7 @@ const addAddressForCheckout = async (req, res, next) => {
         }
       );
     } else {
+      // Include the user_id field when creating a new address
       newAddress = await Address.create({
         user_id: userId,
         address: [
@@ -176,10 +178,11 @@ const addAddressForCheckout = async (req, res, next) => {
 
     // Redirect back to the checkout page after adding the address
     // You can also include a success message if needed
-    res.redirect('/checkout0');
+    res.redirect('/checkout');
   } catch (err) {
     // Handle errors and respond with an error message
     console.error(err); // Log the error for debugging
+    res.status(500).render('505-error');
   }
 };
 

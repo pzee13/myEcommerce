@@ -7,7 +7,7 @@ const isLogin = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).render('505-error');
     }
 }
 
@@ -20,7 +20,7 @@ const isLogout = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).render('505-error');
     }
 }
 

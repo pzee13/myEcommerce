@@ -59,7 +59,7 @@ const loadDashboard = async( req, res ) => {
         const todayIncome = results[3]
         const yesterdayIncome = results[4]
         const totalRevenue = results[5]
-        const ordersToShip = results[6]
+        const ordersToShip = results[6] 
         const completedOrders = results[7]
         const userCount = results[8]
         const productCount = results[9] 

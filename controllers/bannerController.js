@@ -15,6 +15,7 @@ const loadAddbanner = async(req,res)=>{
         res.render('addbanner')
     }catch(error){
         console.log(error.message)
+        res.status(500).render('500error');
     }
 }
 

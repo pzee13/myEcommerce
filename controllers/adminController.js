@@ -17,6 +17,7 @@ const securePassword = async(password)=>{
     catch (error)
     {
         console.log(error.message)
+        res.status(500).render('500error');
     }
 }
 
@@ -27,6 +28,7 @@ const loadadlogin = async(req,res)=>{
     }
     catch(error){
         console.log(error.message)
+        res.status(500).render('500error');
     }
 }
 
@@ -56,6 +58,7 @@ const verifyadlogin = async (req, res) => {
     
       }catch(error){
         console.log(error.message);
+        res.status(500).render('500error');
   }
 }
 
@@ -78,6 +81,7 @@ const verifyadlogin = async (req, res) => {
     catch(error)
     {
         console.log(error.message)
+        res.status(500).render('500error');
     }
   }
 
@@ -100,7 +104,7 @@ const verifyadlogin = async (req, res) => {
   //     res.render('users', { users: user, page, itemsPerPage, totalPages });
   //   } catch (error) {
   //     console.error(error);
-  //     res.status(500).send('Internal Server Error'); 
+  //     res.status(500).send('500error'); 
   //  }
   // };
 
@@ -120,7 +124,7 @@ const verifyadlogin = async (req, res) => {
   //     res.render('users', { users, currentPage: parseInt(page), totalPages });
   //   } catch (error) {
   //     console.error(error);
-  //     res.status(500).send('Internal Server Error');
+  //     res.status(500).send('500error');
   //   }
   // };
   
@@ -140,7 +144,7 @@ const verifyadlogin = async (req, res) => {
       res.render('users', { users, page,totalPages });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('500error');
     }
   };
   
@@ -169,7 +173,7 @@ const verifyadlogin = async (req, res) => {
       res.render('users', { users, page,totalPages });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('500error');
     }
   };
 
@@ -201,7 +205,8 @@ const verifyadlogin = async (req, res) => {
       res.redirect('/admin/view_users')
 
     } catch (error) {   
-      console.log(error);   
+      console.log(error);
+      res.status(500).render('500error');   
     }
   };
 
@@ -219,11 +224,12 @@ const verifyadlogin = async (req, res) => {
     catch(error)
     {
       console.log(error.message)
+      res.status(500).render('500error');
     }
   }
 
 
-  const adorderDetails = async (req, res, next) => {
+  const adorderDetails = async (req, res) => {
     try{
     
     const orderId = req.query.id;
@@ -248,7 +254,8 @@ const verifyadlogin = async (req, res) => {
   
       res.render("adorderDetails", { order:orders });
     } catch (err) {
-      next(err);
+      console.log(err.message);
+      res.status(500).render('500error');
     }
   };
   
@@ -526,6 +533,7 @@ const adLogout = async(req,res)=>{
   catch (error)
       {
           console.log(error.message)
+          res.status(500).render('500error');
       }
 }
 
@@ -538,6 +546,7 @@ const  load404 = async(req,res)=>{
   catch (error)
       {
           console.log(error.message)
+          res.status(500).render('500error');
      }
 }
 

@@ -45,7 +45,7 @@
                                 <% }); %>
                             <% } else { %>
                                 <tr class="table_row">
-                                    <td class="column-1" colspan="6">
+                                    <td class="column-1" colspan="6"> 
                                         <h1>Your Cart is Empty</h1>
                                         <p>Add items to your cart to see them here.</p>
                                     </td>
@@ -109,7 +109,7 @@
 
     function updateQuantity(productId, change, index) {
         const quantityInput = document.querySelector(`[name="num-product${productId}"]`);
-        const updateButton = document.querySelector(`.fs-16.zmdi.zmdi-plus[onclick="updateQuantity('${productId}', 1, '${index}')"]`);
+        const updateButton = document.querySelector(`.fs-16.zmdi[onclick="updateQuantity('${productId}', 1, '${index}')"]`);
         const productTotalElement = document.querySelector(`.product-total[data-productid="${productId}"]`);
 
         quantityInput.disabled = true;

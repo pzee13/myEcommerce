@@ -72,7 +72,7 @@
                                 <div class="description-content">
                                   <%= banner.bannerURL%>
                                 </div>
-                                <button class="toggle-url">Show More</button>
+                                <button class="toggle-description">Show More</button>
                               </td>
                                 
                               <td> <%= banner.mainHead %> </td>
@@ -120,4 +120,57 @@
   </div>
 
 
+
+
+  <style>
+    .description-cell .description-content {
+  max-width: 200px; /* Adjust the value as per your preference */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  }
+  
+  .description-cell.collapsed .description-content {
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  }
+  
+  .description-cell .toggle-description {
+  background: none;
+  border: none;
+  margin-top: 8px;
+  color: rgb(97, 255, 108);
+  cursor: pointer;
+  padding: 0;
+  }
+  
+  </style>
+
+  <script>
+    // Get all toggle buttons
+  const toggleButtons = document.querySelectorAll('.toggle-description');
+
+  
+  // Add event listener to each toggle button
+  toggleButtons.forEach((button) => {
+  button.addEventListener('click', function () {
+    // Find the parent description cell
+    const descriptionCell = this.closest('.description-cell');
+  
+    // Toggle the 'collapsed' class on the description cell
+    descriptionCell.classList.toggle('collapsed');
+  
+    // Update the button text
+    if (descriptionCell.classList.contains('collapsed')) {
+      this.textContent = 'Show less';
+    } else {
+      this.textContent = 'Show more';
+    }
+  });
+  });
+  
+  </script>
+  
   <%-include('../admin/layouts/footer.ejs') %>

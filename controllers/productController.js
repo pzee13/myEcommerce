@@ -16,7 +16,7 @@ const loadaddProducts = async (req, res) => {
       res.render('addProduct', { Category: categories });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('500error');
     }
   };
 
@@ -56,7 +56,7 @@ const loadaddProducts = async (req, res) => {
 
   }catch(error){
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('500error');
   }
 }
 
@@ -71,7 +71,6 @@ const viewProducts = async(req,res) =>{
     const pageSize = 5; // Set your desired page size
 
     const skip = (page - 1) * pageSize;
-        
         const products = await Product.find().populate('category').populate('offer').skip(skip)
         .limit(pageSize);
         
@@ -88,7 +87,7 @@ const viewProducts = async(req,res) =>{
       availableOffers:availableOffers });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('500error');
   }
 }
 
@@ -107,7 +106,7 @@ const loadeditProducts = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('500error');
   }
 }
 
@@ -181,7 +180,7 @@ const editProduct = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('500error');
   }
 };
 
@@ -214,6 +213,7 @@ const unlistProduct = async (req, res) => {
 
   } catch (error) {   
     console.log(error);   
+    res.status(500).render('500error');
   }
 }
 
@@ -253,7 +253,7 @@ const searchProducts = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).render('500error');
   }
 };
 
@@ -412,7 +412,6 @@ const removeProductOffer = async (req, res) => {
         $unset: {
           offer: '',
           discountedPrice: '',
-          realPrice: '',
         },
       }
     );

@@ -12,6 +12,7 @@ const randomstring = require('randomstring')
 const path = require("path")
 const otpGenerator = require("otp-generator")
 const Cart = require('../models/cartModel')
+const PDFDocument = require('pdfkit')
 const dotenv = require("dotenv").config()
 
 const Order = require("../models/orderModel")
@@ -32,6 +33,7 @@ const securePassword = async(password)=>{
     catch (error)
     {
         console.log(error.message)
+        res.status(500).render('505-error');
     }
 }
 
@@ -59,6 +61,7 @@ const sendVerificationEmail = async (email, otp) => {
         await transporter.sendMail(mailOptions);
     } catch (error) {
         console.log(error.message);
+        res.status(500).render('505-error');
     }
 }
 
@@ -95,6 +98,7 @@ const resetPasswordMail = async(firstName,lastName,email, token)=>{
     catch (error)
         {
             console.log(error.message)
+            res.status(500).render('505-error');
         }
 }
 
@@ -107,6 +111,7 @@ const loginLoad = async(req,res)=>{
     }
     catch(error){
         console.log(error.message)
+        res.status(500).render('505-error');
     }
 }
 
@@ -125,6 +130,7 @@ const loadRegister = async(req,res)=>{
     catch (error)
     {
         console.log(error.message)
+        res.status(500).render('505-error');
     }
 }
 
@@ -134,6 +140,7 @@ const showverifyOTPPage = async (req, res) => {
       res.render('user-otp');
     } catch (error) {
       console.log(error.message);
+      res.status(500).render('505-error');
     }
   }
 
@@ -186,6 +193,7 @@ const insertUser = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
+        res.status(500).render('505-error');
     }
 }
 
@@ -211,6 +219,7 @@ const verifyOTP = async (req, res)=>{
         }
     } catch (error) {
         console.log(error.message);
+        res.status(500).render('505-error');
     }
 }
 
@@ -245,6 +254,7 @@ const resendOTP = async (req,res)=>{
     catch (error)
     {
         console.log(error.message)
+        res.status(500).render('505-error');
     }
 }
 
@@ -292,18 +302,22 @@ const verifyLogin = async (req, res,next) => {
     catch (err) {
 
         next(err)
+        res.status(500).render('505-error');
     }
 }
 
 const loaduserHome = async (req, res) => {
     try {
         const userId = req.session.user_id 
-      const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+      const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
       const banners = await Banner.find()
-      res.render('userHome',{products,userIsLoggedIn: req.session.user_id ? true : false,banners:banners});
+      const products = await Product.find({ status: 1 }).populate('category').populate('offer')
+      const categories = await Category.find()
+      res.render('userHome',{product:products,userIsLoggedIn: req.session.user_id ? true : false,banners:banners,products:products1,category:categories});
         
     } catch (error) {
       console.log(error.message);
+      res.status(500).render('505-error');
     }
   }
 
@@ -323,6 +337,7 @@ const loaduserHome = async (req, res) => {
     catch(error)
     {
         console.log(error.message);
+        res.status(500).render('505-error');
     }
   }
   
@@ -349,6 +364,7 @@ const loaduserHome = async (req, res) => {
     catch(error)
     {
         console.log(error.message);
+        res.status(500).render('505-error');
     }
   }
 
@@ -368,6 +384,7 @@ const loaduserHome = async (req, res) => {
     catch(error)
     {
         console.log(error.message)
+        res.status(500).render('505-error');
     }
   }
 
@@ -385,6 +402,7 @@ const loaduserHome = async (req, res) => {
     }
     catch(error){
         console.log(error.message);
+        res.status(500).render('505-error');
     }
     
   }
@@ -450,7 +468,7 @@ const viewProducts = async (req, res) => {
         res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false,userId:userId,reviews:reviews,userReviews:userReviews});
     } catch (error) {
         console.error(error);
-        res.status(404).render('404-error', { message: 'Internal Server Error' });
+        res.status(500).render('505-error');
         
     }
 };
@@ -520,7 +538,7 @@ const searchProducts = async (req, res) => {
   
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('505-error');
     }
   };
 
@@ -540,6 +558,7 @@ const searchProducts = async (req, res) => {
     } catch (err) {
 console.log(err.message);
      next(err)
+     res.status(500).render('505-error');
     }
   };
 
@@ -573,6 +592,7 @@ console.log(err.message);
     
     } catch (error) {
         console.log(error);
+        res.status(500).render('505-error');
     }
 }
 
@@ -625,6 +645,7 @@ const verifyWalletpayment = async(req,res)=>{
   
     }catch(error){
       console.log(error);
+      res.status(500).render('505-error');
     }
   }
 
@@ -864,7 +885,60 @@ const editReview = async (req, res) => {
 
 // Add the route for handling edit review requests
 
-
+const getInvoice = async (req, res) => {
+    try {
+      const orderId = req.params.orderId;
+      console.log("aa:",orderId)
+  
+      // Retrieve order details from the database or any other data source
+      const order = await Order.findOne({ _id: orderId })
+        .populate({
+          path: 'products.product_Id',
+        })
+        .sort({ orderDate: -1 });
+  
+      // Generate the PDF document
+      const doc = new PDFDocument();
+      doc.pipe(res);
+  
+      // Add content to the PDF, including the custom heading
+      doc.text(`Invoice of Order ${order.orderID}`, { align: 'center', fontSize: 16, underline: true });
+      doc.moveDown();
+  
+      // Add product details
+      doc.fontSize(12).text('Product Details:', { underline: true });
+      doc.moveDown();
+      order.products.forEach((product) => {
+        doc.text(`Product Name: ${product.product_Id.productName}`);
+        doc.text(`Quantity: ${product.quantity}`);
+        doc.text(`Total: $${product.total}`);
+        doc.moveDown();
+      });
+  
+      // Add additional order details
+      doc.fontSize(12).text('Additional Order Details:', { underline: true });
+      doc.moveDown();
+      doc.text(`Order Total Amount: $${order.totalAmount}`);
+      doc.text(`Order Date: ${order.orderDate.toLocaleDateString()}`);
+      // Add more order details as needed...
+  
+      // End and finalize the PDF
+      const pdfBuffer = await new Promise((resolve) => {
+        doc.on('end', () => {
+          resolve(doc);
+        });
+        doc.end();
+      });
+  
+      // Set response headers for download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
+      res.status(200).send(pdfBuffer);
+    } catch (err) {
+      console.error(err);
+      res.status(500).render('505-error');
+    }
+  };
   
 
 module.exports = {
@@ -891,6 +965,7 @@ module.exports = {
     verifyWalletpayment,
     // sendVerificationEmail
     submitReview,
-    editReview
+    editReview,
+    getInvoice
 }
 

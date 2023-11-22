@@ -17,6 +17,7 @@ const couponAdmin = async (req, res,next) => {
       res.render('adcoupon')
     } catch (err) {
     next(err)
+    res.status(500).render('500error');
     }
   }
 
@@ -52,6 +53,7 @@ const couponAdmin = async (req, res,next) => {
       }
     } catch (err) {
       next(err);
+      res.status(500).render('500error');
     }
   };
   
@@ -62,6 +64,7 @@ const couponAdmin = async (req, res,next) => {
       res.render('viewCoupon', { couponData })
     } catch (err) {
     next(err)
+    res.status(500).render('500error');
     }
   }
 
@@ -94,6 +97,7 @@ const couponAdmin = async (req, res,next) => {
       res.json({ success: true });
     } catch (err) {
       next(err);
+      res.status(500).render('500error');
     }
   };
 
@@ -112,6 +116,7 @@ const couponAdmin = async (req, res,next) => {
       res.render('editCoupon', { data: couponData[0] }); 
     } catch (err) {
       next(err);
+      res.status(500).render('500error');
     }
   };
 
@@ -142,6 +147,7 @@ const couponAdmin = async (req, res,next) => {
       res.redirect('/admin/coupon');
     } catch (err) {
       next(err);
+      res.status(500).render('500error');
     }
   };
   

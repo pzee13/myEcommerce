@@ -15,6 +15,7 @@ const loadaddCategory = async(req,res)=>{
     catch(error)
     {
         console.log(error.message)
+        res.status(500).render('500error');
     }
 }
 
@@ -41,6 +42,7 @@ const addCategory = async (req,res)=>{
       res.redirect('/admin/add_category')
     }} catch (error) {
       console.log(error);
+      res.status(500).render('500error');
     }
   }
 
@@ -61,7 +63,7 @@ const addCategory = async (req,res)=>{
       res.render('viewCategory', { Category: categories ,currentPage: page, totalPages,availableOffers:availableOffers });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('500error');
    }
   };
 
@@ -88,7 +90,8 @@ const addCategory = async (req,res)=>{
         res.redirect('/admin/view_category');
 
     } catch (error) {   
-      console.log(error);   
+      console.log(error);  
+      res.status(500).render('500error'); 
     }
   };
 
@@ -108,7 +111,7 @@ const addCategory = async (req,res)=>{
       }
     } catch (error) {
       console.log(error.message);
-      res.status(500).send('Internal Server Error');
+      res.status(500).render('500error');
     }
   }
   
@@ -123,6 +126,7 @@ const addCategory = async (req,res)=>{
   
     }catch(error){
       console.log(error.message);
+      res.status(500).render('500error');
     }
   }
 

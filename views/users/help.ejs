@@ -1,0 +1,29 @@
+<%- include('../userMainlayouts/mainheader.ejs') %>
+
+<ul id="messages"></ul>
+<form id="form" action="">
+  <input id="m" autocomplete="off" /><button>Send</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  $(function () {
+    var socket = io();
+
+    // Listen for incoming chat messages
+    socket.on('chat message', function (msg) {
+      $('#messages').append($('<li>').text(msg));
+    });
+
+    // Handle form submission
+    $('form').submit(function () {
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+  });
+</script>
+
+
+<%- include('../userMainlayouts/mainfooter.ejs') %>

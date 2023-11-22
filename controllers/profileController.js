@@ -27,8 +27,30 @@ const loadProfile = async (req, res) => {
 
         if (user) {
             const address = await Address.findOne({ user_id: id })
+
+            
+            const user1 = await User.aggregate([
+                { $match: { _id:new mongoose.Types.ObjectId(userId)} },
+                {
+                    $project: {
+                        _id: 1,
+                        wallet: 1,
+                        walletHistory: {
+                            $map: {
+                                input: '$walletHistory',
+                                as: 'transaction',
+                                in: {
+                                    date: '$$transaction.date',
+                                    amount: '$$transaction.amount',
+                                    description: '$$transaction.description',
+                                },
+                            },
+                        },
+                    },
+                },
+            ]);
            
-            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false});
+            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false,wallet:user1.wallet});
         } else {
             res.redirect('/login');
         }
@@ -152,6 +174,7 @@ const updateProfile = async (req, res, next) => {
         res.redirect('/profile');
     } catch (err) {
         next(err);
+        res.status(500).render('505-error');
     }
 };
 
@@ -241,6 +264,7 @@ const addAddress = async (req,res,next) => {
         res.redirect('/profile');
     } catch (err) {
         next(err);
+        res.status(500).render('505-error');
     }
 }
 
@@ -282,9 +306,11 @@ const EditAddress = async (req, res, next) => {
         );
 
         res.redirect('/profile');
+        
     } catch (err) {
         console.error(err);
         next(err);
+        res.status(500).render('505-error');
     }
 };
 
@@ -346,7 +372,9 @@ const deleteAddress = async (req, res) => {
         );
             console.log(result)
         if (result.ok === 1) {
+            res.redirect('/profile#tab-address')
             return res.status(200).json({ message: 'Address deleted successfully' });
+            
         } else {
             return res.status(404).json({ message: 'Address not found' });
         }
@@ -390,7 +418,7 @@ const loadWallet = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send('Internal server error');
+        res.status(500).render('505-error');
     }
 };
 
