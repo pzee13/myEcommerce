@@ -52,38 +52,22 @@
                         <div class="mtext-102 cl2 p-b-15">
                             Sort By
                         </div>
-
                         <ul>
                             <li class="p-b-6">
                                 <a href="#" class="filter-link stext-106 trans-04">
                                     Default
                                 </a>
                             </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Popularity
-                                </a>
-                            </li>
-
                             <li class="p-b-6">
                                 <a href="#" class="filter-link stext-106 trans-04">
                                     Average rating
                                 </a>
                             </li>
-
-                            <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-                                    Newness
-                                </a>
-                            </li>
-
                             <li class="p-b-6">
                                 <a href="#" class="filter-link stext-106 trans-04">
                                     Price: Low to High
                                 </a>
                             </li>
-
                             <li class="p-b-6">
                                 <a href="#" class="filter-link stext-106 trans-04">
                                     Price: High to Low
@@ -91,114 +75,59 @@
                             </li>
                         </ul>
                     </div>
-
                     <div class="filter-col2 p-r-15 p-b-27">
                         <div class="mtext-102 cl2 p-b-15">
                             Price
                         </div>
-
                         <ul>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active">
+                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active" data-minprice="0" data-maxprice="Infinity">
                                     All
                                 </a>
                             </li>
-
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $0.00 - $50.00
+                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="0" data-maxprice="500">
+                                    ₹0.00 - ₹500.00
                                 </a>
                             </li>
-
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $50.00 - $100.00
+                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="500" data-maxprice="1000">
+                                    ₹500.00 - ₹1000.00
                                 </a>
                             </li>
-
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $100.00 - $150.00
+                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="1000" data-maxprice="1500">
+                                    ₹1000.00 - ₹1500.00
                                 </a>
                             </li>
-
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $150.00 - $200.00
+                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="1500" data-maxprice="2000">
+                                    ₹1500.00 - ₹2000.00
                                 </a>
                             </li>
-
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    $200.00+
+                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="2000" data-maxprice="Infinity">
+                                    ₹2000.00+
                                 </a>
                             </li>
                         </ul>
                     </div>
-
-                    <div class="filter-col3 p-r-15 p-b-27">
-                        <div class="mtext-102 cl2 p-b-15">
-                            Color
-                        </div>
-
-                        <ul>
-                            <li class="p-b-6">
-                                <span class="fs-15 lh-12 m-r-6" style="color: #222;">
-                                    <i class="zmdi zmdi-circle"></i>
-                                </span>
-
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Black
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <span class="fs-15 lh-12 m-r-6" style="color: #4272d7;">
-                                    <i class="zmdi zmdi-circle"></i>
-                                </span>
-
-                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-                                    Blue
-                                </a>
-                            </li>
-
-                            <li class="p-b-6">
-                                <span class="fs-15 lh-12 m-r-6" style="color: #b3b3b3;">
-                                    <i class="zmdi zmdi-circle"></i>
-                                </span>
-
-                                <a href="#" class="filter-link stext-106 trans-04">
-                                    Grey
-                                </a>
-                            </li>
-
-                            <!-- Add more color filters here -->
-
-                        </ul>
-                    </div>
-
                     <div class="filter-col4 p-b-27">
                         <div class="mtext-102 cl2 p-b-15">
-                            Tags
+                            Categories
                         </div>
-
                         <div class="flex-w p-t-4 m-r--5">
-                            <a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-                                Fashion
-                            </a>
-
-                            <a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-                                Lifestyle
-                            </a>
-
-                            <!-- Add more tag filters here -->
-
+                            <% category.forEach(function(cat) { %>
+                                <a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5 category-link" data-category="<%= cat.categoryName %>">
+                                    <%= cat.categoryName %>
+                                </a>
+                            <% }); %>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         
        
         <div class="row isotope-grid">
@@ -345,6 +274,46 @@
         item.style.display = "block";
     });
 });
+
+document.querySelectorAll('.filter-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                const minPrice = this.getAttribute('data-minprice');
+                const maxPrice = this.getAttribute('data-maxprice');
+
+                // Perform the AJAX request with the selected price range
+                fetch(`/filter_products?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response and update the product items accordingly
+                    updateProductItems(data.products);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+
+        // Add an event listener for each category filter link
+        document.querySelectorAll('.category-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                const category = link.getAttribute('data-category');
+
+                // Perform the AJAX request with the selected category
+                fetch(`/filter_by_category?category=${category}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response and update the product items accordingly
+                    updateProductItems(data.products);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
     });
 </script>
 <script>
@@ -411,6 +380,8 @@
     });
 </script>
 
-    
+
+
+
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

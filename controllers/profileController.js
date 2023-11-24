@@ -20,44 +20,27 @@ const loadProfile = async (req, res) => {
         const id = req.session.user_id;
         const products = await Cart.findOne({user_id:id}).populate('items.product_Id')
         const user = await User.findById(id);
-        const orders = await Order.find({ user: id}).populate(
-            "products.product_Id"
-        ).sort({orderDate:-1})
+        const orders = await Order.find({ user: id}).populate({
+            path: 'products.product_Id',
+            model: 'product', // Replace with your actual product model name
+            select: 'productName', // Include the field(s) you want to populate
+          }).sort({ orderDate: -1 }).limit(10)
         console.log(orders)
 
         if (user) {
             const address = await Address.findOne({ user_id: id })
-
-            
-            const user1 = await User.aggregate([
-                { $match: { _id:new mongoose.Types.ObjectId(userId)} },
-                {
-                    $project: {
-                        _id: 1,
-                        wallet: 1,
-                        walletHistory: {
-                            $map: {
-                                input: '$walletHistory',
-                                as: 'transaction',
-                                in: {
-                                    date: '$$transaction.date',
-                                    amount: '$$transaction.amount',
-                                    description: '$$transaction.description',
-                                },
-                            },
-                        },
-                    },
-                },
-            ]);
            
-            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false,wallet:user1.wallet});
+          
+            console.log("Wallet Balance:", user.wallet)
+            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false,wallet:user.wallet});
+           
         } else {
             res.redirect('/login');
         }
     }
     } catch (error) {
         console.log(error.message);
-        res.redirect('/login'); // Handle any errors by redirecting to the login page
+        res.status(500).render('505-error') // Handle any errors by redirecting to the login page
     }
 } 
 

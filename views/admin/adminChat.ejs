@@ -1,0 +1,46 @@
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
+
+
+
+<div>
+    <h2>Admin Chat</h2>
+    <ul id="userList">
+      <% onlineUsers.forEach(user => { %>
+        <li><%= user %></li>
+      <% }) %>
+    </ul>
+  </div>
+
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+  
+    socket.on('updateUserList', (onlineUsers) => {
+      // Update the user list in the UI
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+  
+      onlineUsers.forEach((user) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = user;
+        userList.appendChild(listItem);
+      });
+    });
+  
+    socket.on('userOnline', (userId) => {
+      // Notify when a user comes online
+      console.log(`${userId} is online`);
+    });
+  
+    socket.on('userOffline', (userId) => {
+      // Notify when a user goes offline
+      console.log(`${userId} is offline`);
+    });
+  </script>
+
+
+
+<%-include('../admin/layouts/footer.ejs') %>

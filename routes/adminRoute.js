@@ -7,6 +7,7 @@ const salesController = require("../controllers/salesController")
 const dashboardController = require("../controllers/dasboardController")
 const bannerController = require("../controllers/bannerController")
 const offerController = require("../controllers/offerController")
+const chatController = require("../controllers/chatController")
 
 const session = require('express-session');
 const config = require('../config/config');
@@ -112,6 +113,12 @@ admin_route.post('/add_banner',mult.upload.single('image'),auth.isLogin,bannerCo
 
 admin_route.get('/banners',auth.isLogin,bannerController.loadBanners)
 
+admin_route.get('/edit_banner/:id',auth.isLogin,bannerController.loadEditBanner)
+
+admin_route.post('/edit_banner/:id',mult.upload.single('image'),auth.isLogin,bannerController.editBanner) 
+
+admin_route.get('/delete_banner/:id', auth.isLogin, bannerController.deleteBanner);
+
 admin_route.get('/add_offer',auth.isLogin,offerController.loadAddOffer)
 
 admin_route.post('/add_offer',auth.isLogin,offerController.addOffer)
@@ -132,8 +139,13 @@ admin_route.patch('/apply_Offer-category',auth.isLogin,categoryController.applyC
 
 admin_route.patch('/remove_Offer-category',auth.isLogin,categoryController.removeCategoryOffer)
 
+// admin_route.get('/chat',auth.isLogin,chatController.loadAdChat)
+
 admin_route.get('/500',adminController.load500)
 
-admin_route.get('/*',adminController.load404)
+admin_route.get('*', (req, res) => {
+  console.log(req.url)
+  res.render('404error');
+});
 
 module.exports = admin_route;   

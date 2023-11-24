@@ -71,6 +71,10 @@ user_route.get('/product',userController.viewProducts)
 
 user_route.get('/search_product',userController.searchProducts)
 
+user_route.get('/filter_by_category',userController.filterByCategory)
+
+user_route.get('/filter_products',userController.filterByprice)
+
 user_route.get('/productDetails', userController.getProductDetails)
 
 user_route.get('/cart',auth.isLogin,cartController.loadCart)
@@ -129,10 +133,21 @@ user_route.post('/apply_coupon',auth.isLogin,orderController.couponCheck)
 
 user_route.post('/remove_coupon',auth.isLogin,orderController.removeCoupon)
 
+// user_route.post('/persist_coupon',auth.isLogin,orderController.persistCoupon)
+
+// user_route.post('/remove_persisted_coupon',auth.isLogin,orderController.removePersistCoupon)
+
 user_route.post('/submit_review',auth.isLogin,userController.submitReview)
 
 user_route.post('/edit_review',auth.isLogin,userController.editReview)
 
 user_route.get('/download-invoice/:orderId',auth.isLogin,userController.getInvoice)
+
+
+user_route.get('*',(req,res)=>{
+    console.log(req.url)
+    res.render('404-error')
+  })
+
 
 module.exports = user_route 

@@ -1,6 +1,6 @@
 <%- include('../userMainlayouts/mainheader.ejs') %>
 
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
 
 <main class="main">
@@ -24,7 +24,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        <table class="table table-cart table-mobile">
+                        <table id="ordersTable" class="table table-cart table-mobile">
                             <thead>
                                 <tr>
                                     <th>No.</th>
@@ -108,5 +108,11 @@
 </main><!-- End .main -->
 
 
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+<script>
+    new DataTable('#ordersTable');
+</script>
 <%- include('../userMainlayouts/mainfooter.ejs') %>

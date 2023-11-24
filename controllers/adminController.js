@@ -537,7 +537,7 @@ const adLogout = async(req,res)=>{
       }
 }
 
-const  load404 = async(req,res)=>{
+const load404 = async(req,res)=>{
 
   try{
       
@@ -559,6 +559,19 @@ const load500 =async(req,res)=>{
     console.log(error.message)
   }
 }
+
+// const loadAdChat = async(req,res)=>{
+//   try {
+//     // Assuming you have a function to get online users from your data
+//     const onlineUsers = getOnlineUsers(req.session.user_id);
+
+//     res.render('adminChat', { onlineUsers });
+//   } catch (error) {
+//     res.status(500).render('500error');
+//   }
+// };
+
+
 
 
 

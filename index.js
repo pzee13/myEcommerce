@@ -3,11 +3,7 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const config = require("./config/config");
-const multer = require("multer");
 const dotenv = require("dotenv")
-
-
-
 
 const app = express();
 
@@ -43,15 +39,11 @@ app.set('view engine','ejs')
 app.set('views','./views/users')
 
 
-app.use("/", disableBackButton, userRoute);
- 
+
 app.use("/admin", disableBackButton, adminRoute);
 
-
-app.use('*',(req,res)=>{
-  res.render('404-error')
-})
-
+app.use("/", disableBackButton, userRoute);
+ 
 app.listen(PORT, function () {
   console.log(`Server is running on Port http://localhost:${PORT}`);  
 });

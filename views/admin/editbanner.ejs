@@ -1,0 +1,60 @@
+<!-- editbanner.ejs -->
+
+<%- include('../admin/layouts/header.ejs') %>
+<%- include('../admin/layouts/sidebar.ejs') %>
+<%- include('../admin/layouts/navbar.ejs') %>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Edit Banner</h4>
+                    <div id="errorContainer" class="alert alert-danger" style="display: none;"></div> <!-- Error container -->
+
+                    <form id="productForm" class="forms-sample" action="/admin/edit_banner/<%= banner._id %>" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="exampleInputName1">Banner Head</label>
+                            <input type="text" class="form-control" id="mainHead" name="mainHead" placeholder="Banner Head" value="<%= banner.mainHead %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">Description</label>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Description" value="<%= banner.description %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">Type</label>
+                            <input type="text" class="form-control" id="type" name="type" placeholder="Type" value="<%= banner.typeHead %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div class="input-group col-xs-12">
+                                <input id="images" type="file" name="image" class="form-control btn btn-primary" placeholder="Upload Image">
+                                <span class="input-group-append"></span>
+                            </div>
+                            <div id="selectedImagesContainer" class="selected-images-container">
+                                <!-- Display existing image -->
+                                <img src="/public/adminAssets/assets/images/products/<%= banner.image %>" alt="Existing Image" style="max-width: 100%;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputURL">Banner URL</label>
+                            <input type="url" class="form-control" id="bannerURL" name="bannerURL" placeholder="https://example.com" value="<%= banner.bannerURL %>" required>
+                        </div>
+                        <div id="openImagePopupDiv"></div>
+
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                        <a href="/admin/banners"><button type="button" class="btn  mr-2">Cancel</button></a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+<script type="module" src="/public/adminAssets/scripts/cropper1.js"></script>
+
+
+<%-include('../admin/layouts/footer.ejs') %>

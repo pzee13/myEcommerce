@@ -770,6 +770,33 @@ const removeCoupon = async (req, res, next) => {
     res.status(500).render('505-error');
   }
 };
+
+// const persistCoupon =async(req, res) => {
+//   try{
+//   const coupon = req.body.coupon;
+
+//   // Assuming you are using express-session middleware
+//   req.session.coupon = coupon;
+
+//   res.json({ success: true, message: 'Coupon information persisted successfully.' });
+
+// }catch(error)
+// {
+//   res.status(500).render('505-error')
+// }};
+
+// // Example route to remove persisted coupon information from session
+// const removePersistCoupon =async(req, res) => {
+//   try{
+//   // Assuming you are using express-session middleware
+//   req.session.coupon = null;
+
+//   res.json({ success: true, message: 'Persisted coupon information removed successfully.' });
+// }catch(error)
+// {
+//   res.status(500).render('505-error')
+// }};
+
 // const couponCheck = async (req, res, next) => {
 //   try {
 //     const userId = req.session.user_id;
@@ -995,5 +1022,7 @@ module.exports ={
     validatePaymentVerification,
     couponCheck,
     removeCoupon,
-    orderReturn
+    orderReturn,
+    // persistCoupon,
+    // removePersistCoupon
 }

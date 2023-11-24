@@ -3,6 +3,7 @@ const Admin = require("../models/adminModels/adminModel")
 const User = require("../models/userModels/userModel")
 const Cart = require("../models/cartModel")
 const Category = require("../models/categoryModel")
+const Coupon =require("../models/couponModel")
 const Address = require("../models/addressModel")
 const Wishlist = require("../models/wishlistModel")
 const Product = require("../models/productModel")
@@ -22,12 +23,16 @@ const loadCheckout0 = async (req, res,next) => {
       {
       if(address)
       {
-      res.render('checkout', { products,address,UserData,userIsLoggedIn: req.session.user_id ? true : false })
+        const unusedCoupons = await Coupon.find({// Coupons with no associated user ID
+          expireDate: { $gt: new Date() } // Coupons that are not expired
+        });
+      res.render('checkout', { products,address,UserData,userIsLoggedIn: req.session.user_id ? true : false,unusedCoupons })
       }else{
           res.render('checkout',{
               UserData,
               products,
               address:0,
+              unusedCoupons,
               userIsLoggedIn: req.session.user_id ? true : false
           })
       }

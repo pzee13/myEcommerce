@@ -309,6 +309,7 @@ const verifyLogin = async (req, res,next) => {
 const loaduserHome = async (req, res) => {
     try {
         const userId = req.session.user_id 
+        
       const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
       const banners = await Banner.find()
       const products = await Product.find({ status: 1 }).populate('category').populate('offer')
@@ -448,6 +449,39 @@ const viewProducts = async (req, res) => {
     }
   }
 
+
+  const filterByCategory = async (req, res) => {
+    const category = req.query.category;
+
+    try {
+        // Update your query to filter by category
+        const products = await Product.find({
+            status: 1,
+            'category.categoryName': category
+        }).populate('category').populate('offer');
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+}
+
+const filterByprice = async (req, res) => {
+    try {
+        const minPrice = req.query.minPrice || 0;
+    const maxPrice = req.query.maxPrice || Infinity;
+        const products = await Product.find({
+            status: 1,
+            price: { $gte: minPrice, $lte: maxPrice }
+        }).populate('category').populate('offer');
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+}
 
 
   const getProductDetails = async (req, res) => {
@@ -941,6 +975,8 @@ const getInvoice = async (req, res) => {
   };
   
 
+
+
 module.exports = {
     loginLoad,
     loadRegister,
@@ -966,6 +1002,9 @@ module.exports = {
     // sendVerificationEmail
     submitReview,
     editReview,
-    getInvoice
+    getInvoice,
+    filterByCategory,
+    filterByprice
+
 }
 

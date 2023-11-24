@@ -70,8 +70,60 @@ const loadBanners = async(req,res)=>{
     }
 }
 
+const loadEditBanner = async (req, res) => {
+    try {
+      const bannerId = req.params.id;
+      const banner = await Banner.findById(bannerId);
+  
+      res.render('editbanner', { banner: banner });
+    } catch (error) {
+      console.error(error);
+      res.status(500).render('500error');
+    }
+  };
+  
+  // Edit banner
+  const editBanner = async (req, res) => {
+    try {
+      const bannerId = req.params.id;
+      console.log("Banner ID:", bannerId);
+      console.log("Received Form Data:", req.body);
+  
+      const updatedBannerData = {
+        mainHead: req.body.mainHead,
+        typeHead: req.body.type,
+        description: req.body.description,
+        bannerURL: req.body.bannerURL,
+      };
+      console.log("Updated Banner Data:", updatedBannerData);
+  
+      const result = await Banner.findByIdAndUpdate(bannerId, updatedBannerData);
+      console.log("MongoDB Update Result:", result);
+  
+      res.redirect('/admin/banners'); // Redirect to the banners page after editing
+    } catch (error) {
+      console.error(error);
+      res.status(500).render('500error');
+    }
+  };
+  
+  const deleteBanner = async (req, res) => {
+    try {
+      const bannerId = req.params.id;
+      await Banner.findByIdAndDelete(bannerId)
+      res.redirect('/admin/banners'); // Redirect to the banners page after deleting
+    } catch (error) {
+      console.error(error);
+      res.status(500).render('500error');
+    }
+  };
+
+
 module.exports = {
     loadAddbanner,
     addBanners,
-    loadBanners
+    loadBanners,
+    loadEditBanner,
+    editBanner,
+    deleteBanner
 }
