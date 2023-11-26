@@ -7,64 +7,72 @@ const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
 
-const loadaddProducts = async (req, res) => {
+const loadaddProducts = async (req, res,next) => {
     try {
       // Fetch categories from the database
       const categories = await Category.find({is_listed:true});
   
       // Render the addProducts.ejs template with the Category variable
       res.render('addProduct', { Category: categories });
+      
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+   
+     next(error)
     }
   };
 
 
-  const addProduct = async(req,res)=>{
-    try{
-
+  const addProduct = async (req, res, next) => {
+    try {
       const productname = req.body.productname;
       const category = req.body.category;
-      const size = req.body.size
+      const size = req.body.size;
       const description = req.body.description;
       const price = req.body.price;
       const quantity = req.body.quantity;
-      const images = []
-      for(let i=0;i<req.files.length;i++)
-      {
-        images[i]=req.files[i].filename
+      const images = [];
+  
+      for (let i = 0; i < req.files.length; i++) {
+        const croppedImageData = req.body['croppedImageData' + (i + 1)];
+        const imageBuffer = Buffer.from(croppedImageData.replace(/^data:image\/jpeg;base64,/, ''), 'base64');
+        const filename = `image_${Date.now()}_${i + 1}.jpg`;
+        const imagePath = path.join(__dirname, '../public/adminAssets/assets/images/products/', filename);
+  
+        // Write the image buffer to the file
+        fs.writeFileSync(imagePath, imageBuffer);
+  
+        // Store the filename or path in the images array
+        images.push(filename);
       }
   
-      console.log("kjhgffg");
       const newProduct = new Product({
-        productName:productname,
-        category:category,
-        size:size,
-        description:description,
-        price:price,
-        images:images,
-        quantity:quantity,
-      })
+        productName: productname,
+        category: category,
+        size: size,
+        description: description,
+        price: price,
+        images: images,
+        quantity: quantity,
+      });
+  
       const productData = await newProduct.save();
-    console.log(productData);
-    if(productData){
-      res.redirect('/admin/view_products');
-    }else{
-      res.render('add_product',{message:"Something went wrong"});
+      console.log(productData);
+  
+      if (productData) {
+        res.redirect('/admin/view_products');
+      } else {
+        res.render('add_product', { message: 'Something went wrong' });
+      }
+    } catch (error) {
+      next(error);
     }
-
-  }catch(error){
-    console.error(error);
-    res.status(500).render('500error');
-  }
-}
+  };
+  
 
 
 
 
-
-const viewProducts = async(req,res) =>{
+const viewProducts = async(req,res,next) =>{
 
   try {
     const page = req.query.page || 1; // Get the current page from query parameters
@@ -86,12 +94,12 @@ const viewProducts = async(req,res) =>{
       totalPages: totalPages,
       availableOffers:availableOffers });
   } catch (error) {
-    console.error(error);
-    res.status(500).render('500error');
+ 
+    next(error)
   }
 }
 
-const loadeditProducts = async (req, res) => {
+const loadeditProducts = async (req, res,next) => {
   try {
     const id = req.query.id;
     console.log("ID:", id);
@@ -105,13 +113,13 @@ const loadeditProducts = async (req, res) => {
       res.redirect('/admin/view_product');
     }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).render('500error');
+
+    next(error)
   }
 }
 
 
-const editProduct = async (req, res) => {
+const editProduct = async (req, res,next) => {
   try {
     const id = req.body.id;
     const productname = req.body.productname;
@@ -179,13 +187,13 @@ const editProduct = async (req, res) => {
       res.redirect('/admin/view_products');
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).render('500error');
+ 
+    next(error)
   }
 };
 
   
-const unlistProduct = async (req, res) => {
+const unlistProduct = async (req, res,next) => {
   try {
     const page = req.query.page || 1; // Get the current page from query parameters
     const pageSize = 5; // Set your desired page size
@@ -212,12 +220,12 @@ const unlistProduct = async (req, res) => {
     res.redirect('/admin/view_products')
 
   } catch (error) {   
-    console.log(error);   
-    res.status(500).render('500error');
+      
+    next(error)
   }
 }
 
-const searchProducts = async (req, res) => {
+const searchProducts = async (req, res,next) => {
   try {
     const keyword = req.query.keyword; // Get the search keyword from the query string
     const page = req.query.page || 1; // Get the current page from query parameters
@@ -252,8 +260,8 @@ const searchProducts = async (req, res) => {
       totalPages: totalPages,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).render('500error');
+ 
+    next(error)
   }
 };
 
@@ -325,12 +333,12 @@ const searchProducts = async (req, res) => {
 //     const updatedProduct = await Product.findOne({ _id: productId }).populate('offer');
 //     res.json({ success: true, data: updatedProduct });
 //   } catch (error) {
-//     console.log(error.message);
-//     res.redirect('/500');
+// 
+//    next(error)
 //   }
 // };
 
-const applyProductOffer = async (req, res) => {
+const applyProductOffer = async (req, res,next) => {
   try {
     const productId = req.body.productId;
     const offerId = req.body.offerId;
@@ -381,8 +389,8 @@ const applyProductOffer = async (req, res) => {
     const updatedProduct = await Product.findOne({ _id: productId }).populate('offer');
     res.json({ success: true, data: updatedProduct });
   } catch (error) {
-    console.log(error.message);
-    res.redirect('/500');
+
+   next(error)
   }
 };
 
@@ -402,7 +410,7 @@ const applyProductOffer = async (req, res) => {
 //   }
 // }
 
-const removeProductOffer = async (req, res) => {
+const removeProductOffer = async (req, res,next) => {
   try {
     const { productId } = req.body;
 
@@ -418,8 +426,8 @@ const removeProductOffer = async (req, res) => {
 
     res.json({ success: true ,data:remove });
   } catch (error) {
-    console.log(error);
-    res.redirect('/500');
+   
+   next(error)
   }
 };
 

@@ -8,18 +8,18 @@ const path = require("path")
 const fs = require("fs")
 
 
-const loadaddCategory = async(req,res)=>{
+const loadaddCategory = async(req,res,next)=>{
     try{
         res.render('addCategory')
     }
     catch(error)
     {
-        console.log(error.message)
-        res.status(500).render('500error');
+        
+        next(error)
     }
 }
 
-const addCategory = async (req,res)=>{
+const addCategory = async (req,res,next)=>{
     try {
       const categoryname=req.body.category_name
         const already=await Category.findOne({categoryName:{$regex:categoryname,'$options':'i'}})
@@ -42,11 +42,11 @@ const addCategory = async (req,res)=>{
       res.redirect('/admin/add_category')
     }} catch (error) {
       console.log(error);
-      res.status(500).render('500error');
+      next(error)
     }
   }
 
-  const loadviewCategory =  async (req, res) => {
+  const loadviewCategory =  async (req,res,next) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
         const pageSize = 5; // Set your desired page size
@@ -63,11 +63,11 @@ const addCategory = async (req,res)=>{
       res.render('viewCategory', { Category: categories ,currentPage: page, totalPages,availableOffers:availableOffers });
     } catch (error) {
       console.error(error);
-      res.status(500).render('500error');
+      next(error)
    }
   };
 
-  const unlistCategory = async (req, res) => {
+  const unlistCategory = async (req,res,next) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
         const pageSize = 5; // Set your desired page size
@@ -91,12 +91,12 @@ const addCategory = async (req,res)=>{
 
     } catch (error) {   
       console.log(error);  
-      res.status(500).render('500error'); 
+      next(error) 
     }
   };
 
 
-  const loadEditCatogories = async (req, res) => {
+  const loadEditCatogories = async (req,res,next) => {
     try {
       const id = req.query.id;
       console.log("ID:", id);
@@ -110,13 +110,13 @@ const addCategory = async (req,res)=>{
         res.redirect('/admin/view_category');
       }
     } catch (error) {
-      console.log(error.message);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   }
   
 
-  const adeditCategory = async(req,res) => {
+  const adeditCategory = async(req,res,next) => {
 
     try{
   
@@ -125,12 +125,12 @@ const addCategory = async (req,res)=>{
       res.redirect('/admin/view_category');
   
     }catch(error){
-      console.log(error.message);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   }
 
-//  const applyCategoryOffer =  async ( req, res ) => {
+//  const applyCategoryOffer =  async ( req,res,next ) => {
 //     try {
 //         const { offerId, categoryId } = req.body
 //         await Category.updateOne({ _id : categoryId },{
@@ -140,13 +140,13 @@ const addCategory = async (req,res)=>{
 //         })
 //         res.json({ success : true })
 //     } catch (error) {
-//       console.log(error.message);
+//       
 //         res.redirect('/500')
 
 //     }
 //   }
 
-  const applyCategoryOffer = async (req, res) => {
+  const applyCategoryOffer = async (req,res,next) => {
     try {
       const { offerId, categoryId } = req.body;
   
@@ -186,12 +186,12 @@ const addCategory = async (req,res)=>{
   
       res.json({ success: true });
     } catch (error) {
-      console.log(error.message);
-      res.redirect('/500');
+      
+      next(error)
     }
   };
 
-  // const removeCategoryOffer = async ( req, res ) => {
+  // const removeCategoryOffer = async ( req,res,next ) => {
   //   try {
   //       const { categoryId } = req.body
   //       await Category.updateOne({ _id : categoryId}, {
@@ -201,13 +201,13 @@ const addCategory = async (req,res)=>{
   //       })
   //       res.json({ success : true })
   //     } catch (error) {
-  //       console.log(error.message);
+  //       
   //         res.redirect('/500')
 
   //     }
   // }
 
-  // const removeCategoryOffer = async (req, res) => {
+  // const removeCategoryOffer = async (req,res,next) => {
   //   try {
   //     const { categoryId } = req.body;
   
@@ -231,13 +231,13 @@ const addCategory = async (req,res)=>{
   
   //     res.json({ success: true });
   //   } catch (error) {
-  //     console.log(error.message);
-  //     res.redirect('/500');
+  //     
+  //     next(error)
   //   }
   // };
   
 
-  const removeCategoryOffer = async (req, res) => {
+  const removeCategoryOffer = async (req,res,next) => {
     try {
       const { categoryId } = req.body;
   
@@ -278,8 +278,8 @@ const addCategory = async (req,res)=>{
   
       res.json({ success: true });
     } catch (error) {
-      console.log(error.message);
-      res.redirect('/500');
+      
+      next(error)
     }
   };
   

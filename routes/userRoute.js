@@ -8,6 +8,8 @@ const profileController  = require("../controllers/profileController")
 const checkoutController = require("../controllers/checkoutController")
 const orderController = require("../controllers/orderController")
 
+const errorHandler =require('../middleware/errHandler')
+
 
 const session = require("express-session")
 
@@ -71,9 +73,9 @@ user_route.get('/product',userController.viewProducts)
 
 user_route.get('/search_product',userController.searchProducts)
 
-user_route.get('/filter_by_category',userController.filterByCategory)
+user_route.get('/filter_by_price',userController.filterPrice)
 
-user_route.get('/filter_products',userController.filterByprice)
+user_route.get('/filter_by_category',userController.filterCategory)
 
 user_route.get('/productDetails', userController.getProductDetails)
 
@@ -144,9 +146,11 @@ user_route.post('/edit_review',auth.isLogin,userController.editReview)
 user_route.get('/download-invoice/:orderId',auth.isLogin,userController.getInvoice)
 
 
+user_route.use(errorHandler); 
+
 user_route.get('*',(req,res)=>{
     console.log(req.url)
-    res.render('404-error')
+    res.render('404error')
   })
 
 

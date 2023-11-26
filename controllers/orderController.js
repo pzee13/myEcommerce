@@ -393,7 +393,7 @@ const loadOrderPlaced = async (req, res, next) => {
 };
 
 
-const loadOrder = async(req,res)=>{
+const loadOrder = async(req,res,next)=>{
   try{
     const userId = req.session.user_id;
     const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
@@ -406,7 +406,7 @@ const loadOrder = async(req,res)=>{
   }
   catch(error)
   {
-    console.log(error.message)
+   next(error)
   }
 }
 
@@ -527,9 +527,16 @@ const cancelOrder = async (req, res) => {
     // Set the status of the product with the specified productId to 'Canceled' within the order
     for (const product of order.products) {
       if (product.product_Id._id.toString() === productId) {
+        
         product.status = 'Canceled';
 
-        product.paymentStatus = 'Canceled'
+      
+          if(refundedAmount>0){
+          product.paymentStatus = 'Refunded'
+          }else{
+            product.paymentStatus = 'Canceled'
+          }
+        
          // Save the product status
         await Product.findByIdAndUpdate(product.product_Id._id, {
           $inc: { quantity: product.quantity },
@@ -738,7 +745,7 @@ const couponCheck = async (req, res, next) => {
     }
   } catch (err) {
     next(err);
-    res.status(500).render('505-error');
+   
   }
 };
 
@@ -767,7 +774,7 @@ const removeCoupon = async (req, res, next) => {
     res.json({ success: true, updatedTotal: updatedTotal });
   } catch (err) {
     next(err);
-    res.status(500).render('505-error');
+   
   }
 };
 
@@ -891,9 +898,12 @@ const orderReturn = async (req, res, next) => {
     const currentDate = new Date();
 
     // Check if the product was delivered within the last seven days
-    const orderData = await Order.findOneAndUpdate(
-      { _id: orderId, 'products.product_Id': productId },
-      { $set: { 'products.$.status': 'Returned' } }
+    const orderData = await Order.findOne(
+      {
+        _id: orderId,
+        'products.product_Id': productId,
+        'products.status': 'Delivered', // Check if the product is delivered
+      }
     );
 
     // Validate if the orderData is found
@@ -950,7 +960,15 @@ const orderReturn = async (req, res, next) => {
     );
 
     // Update product stock in the inventory
-    await Product.findByIdAndUpdate({ _id: product.product_Id._id }, { $inc: { quantity: product.quantity } });
+    for (const product of orderData.products) {
+      if (product.product_Id._id.toString() === productId) {
+        product.status = 'Returned';
+
+        product.paymentStatus = 'Refunded'
+         // Save the product status
+        await Product.findByIdAndUpdate(product.product_Id._id, {
+          $inc: { quantity: product.quantity },
+        });
 
     // Update the user's wallet with the calculated refund amount
     await User.findByIdAndUpdate(
@@ -962,15 +980,18 @@ const orderReturn = async (req, res, next) => {
             date: currentDate,
             amount: refundAmount,
             description: `Refunded for order Return - Order ${orderData.orderID}`,
+            transactionType:'Credit'
           },
         },
       }
     );
+      
 
     res.json({ success: true });
+      }}
   } catch (err) {
     next(err);
-    res.status(500).render('505-error');
+    
   }
 };
 

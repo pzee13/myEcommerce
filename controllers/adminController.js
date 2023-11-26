@@ -16,23 +16,23 @@ const securePassword = async(password)=>{
     }
     catch (error)
     {
-        console.log(error.message)
-        res.status(500).render('500error');
+        
+        next(error)
     }
 }
 
-const loadadlogin = async(req,res)=>{
+const loadadlogin = async(req,res,next)=>{
 
     try{
         res.render('adlogin')
     }
     catch(error){
-        console.log(error.message)
-        res.status(500).render('500error');
+        
+        next(error)
     }
 }
 
-const verifyadlogin = async (req, res) => {
+const verifyadlogin = async (req, res,next) => {
     try {
         
         const email = req.body.email;
@@ -57,8 +57,8 @@ const verifyadlogin = async (req, res) => {
           }
     
       }catch(error){
-        console.log(error.message);
-        res.status(500).render('500error');
+        
+        next(error)
   }
 }
 
@@ -69,25 +69,25 @@ const verifyadlogin = async (req, res) => {
 //     }
 //     catch(error)
 //     {
-//         console.log(error.message)
+//         
 //     }
 // }
 
 
-  const loadusers = async(req,res)=>{
+  const loadusers = async(req,res,next)=>{
     try{
         res.render("users")
     }
     catch(error)
     {
-        console.log(error.message)
-        res.status(500).render('500error');
+        
+        next(error)
     }
   }
 
 
 
-  // const loadviewUsers =  async (req, res) => {
+  // const loadviewUsers =  async (req, res,next) => {
 
   //   const page = parseInt(req.query.page) || 1; // Default to page 1
   //   const itemsPerPage = parseInt(req.query.itemsPerPage) || 10; // Default to 10 items per page
@@ -103,12 +103,12 @@ const verifyadlogin = async (req, res) => {
 
   //     res.render('users', { users: user, page, itemsPerPage, totalPages });
   //   } catch (error) {
-  //     console.error(error);
+  //     
   //     res.status(500).send('500error'); 
   //  }
   // };
 
-  // const loadviewUsers = async (req, res) => {
+  // const loadviewUsers = async (req, res,next) => {
   //   try {
   //     const page = req.query.page || 1; // Get the current page from query parameters or default to 1
   //     const itemsPerPage = 10; // Set your desired page size
@@ -123,12 +123,12 @@ const verifyadlogin = async (req, res) => {
   
   //     res.render('users', { users, currentPage: parseInt(page), totalPages });
   //   } catch (error) {
-  //     console.error(error);
+  //     
   //     res.status(500).send('500error');
   //   }
   // };
   
-  const loadviewUsers = async (req, res) => {
+  const loadviewUsers = async (req, res,next) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
       const pageSize = 10; // Set your desired page size
@@ -143,12 +143,12 @@ const verifyadlogin = async (req, res) => {
   
       res.render('users', { users, page,totalPages });
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   };
   
-  const searchUsers = async (req, res) => {
+  const searchUsers = async (req, res,next) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
       const pageSize = 10;
@@ -172,13 +172,13 @@ const verifyadlogin = async (req, res) => {
   
       res.render('users', { users, page,totalPages });
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   };
 
 
-  const blockUser = async (req, res) => {
+  const blockUser = async (req, res,next) => {
     try {
       const page = req.query.page || 1; // Get the current page from query parameters
       const pageSize = 10; // Set your desired page size
@@ -205,13 +205,13 @@ const verifyadlogin = async (req, res) => {
       res.redirect('/admin/view_users')
 
     } catch (error) {   
-      console.log(error);
-      res.status(500).render('500error');   
+      
+      next(error)   
     }
   };
 
 
-  const loadorders = async(req,res)=>{
+  const loadorders = async(req,res,next)=>{
     try{
       
       const orders = await Order.find().populate('user').populate({
@@ -223,13 +223,13 @@ const verifyadlogin = async (req, res) => {
     }
     catch(error)
     {
-      console.log(error.message)
-      res.status(500).render('500error');
+      
+      next(error)
     }
   }
 
 
-  const adorderDetails = async (req, res) => {
+  const adorderDetails = async (req, res,next) => {
     try{
     
     const orderId = req.query.id;
@@ -254,14 +254,14 @@ const verifyadlogin = async (req, res) => {
   
       res.render("adorderDetails", { order:orders });
     } catch (err) {
-      console.log(err.message);
-      res.status(500).render('500error');
+      
+      next(err)
     }
   };
   
 
 
-  // const loadorders = async (req, res) => {
+  // const loadorders = async (req, res,next) => {
   //   try {
   //     const orders = await Order.find().populate('user');
   
@@ -297,16 +297,13 @@ const verifyadlogin = async (req, res) => {
   
   //     res.render('addorder', { orders: productWiseOrdersArray });
   //   } catch (error) {
-  //     console.log(error.message);
+  //     ;
   //   }
   // };
 
-  const updateOrderStatus = async (req, res) => {
+  const updateOrderStatus = async (req, res,next) => {
     try {
-     
-  
-
-
+      
         const { productId, orderId, value } = req.body;
         console.log(value);
         console.log(orderId);
@@ -362,7 +359,7 @@ const verifyadlogin = async (req, res) => {
 
         res.json({ success: true, message: 'Order status updated successfully' });
     } catch (error) {
-        console.error(error);
+        
         res.status(500).json({ success: false, message: 'Failed to update order status' });
     }
 };
@@ -370,7 +367,7 @@ const verifyadlogin = async (req, res) => {
 
 
 
-// const cancelOrder = async (req, res) => {
+// const cancelOrder = async (req, res,next) => {
 //   try {
   
 //     const orderId = req.params.orderId;
@@ -416,13 +413,13 @@ const verifyadlogin = async (req, res) => {
 
 //     res.json({ success: true, message: 'Order has been canceled' });
 //   } catch (error) {
-//     console.error(error);
+//     
 //     res.status(500).json({ success: false, message: 'Failed to cancel the order' });
 //   }
 // };
 
 
-const cancelOrder = async (req, res) => {
+const cancelOrder = async (req, res,next) => {
   try {
     const orderId = req.params.orderId;
     const productId = req.params.productId;
@@ -516,7 +513,7 @@ const cancelOrder = async (req, res) => {
 
     res.json({ success: true, message: 'Order has been canceled' });
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({ success: false, message: 'Failed to cancel the order' });
   }
 };
@@ -524,7 +521,7 @@ const cancelOrder = async (req, res) => {
 
 
 
-const adLogout = async(req,res)=>{
+const adLogout = async(req,res,next)=>{
 
   try{
       req.session.destroy()
@@ -532,12 +529,12 @@ const adLogout = async(req,res)=>{
   }
   catch (error)
       {
-          console.log(error.message)
-          res.status(500).render('500error');
+          
+          next(error)
       }
 }
 
-const load404 = async(req,res)=>{
+const load404 = async(req,res,next)=>{
 
   try{
       
@@ -545,31 +542,16 @@ const load404 = async(req,res)=>{
   }
   catch (error)
       {
-          console.log(error.message)
-          res.status(500).render('500error');
+          
+          next(error)
      }
 }
 
 
 
-const load500 =async(req,res)=>{
-  try{
-    res.render('500error')
-  }catch(error){
-    console.log(error.message)
-  }
-}
 
-// const loadAdChat = async(req,res)=>{
-//   try {
-//     // Assuming you have a function to get online users from your data
-//     const onlineUsers = getOnlineUsers(req.session.user_id);
 
-//     res.render('adminChat', { onlineUsers });
-//   } catch (error) {
-//     res.status(500).render('500error');
-//   }
-// };
+
 
 
 
@@ -589,6 +571,5 @@ module.exports = {
     updateOrderStatus,
     adorderDetails,
     cancelOrder,
-    load500
 
 }   

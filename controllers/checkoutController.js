@@ -42,7 +42,7 @@ const loadCheckout0 = async (req, res,next) => {
 
   } catch (err) {
      next(err)
-     res.status(500).render('505-error');
+     
   }
 }
 
@@ -186,8 +186,8 @@ const addAddressForCheckout = async (req, res, next) => {
     res.redirect('/checkout');
   } catch (err) {
     // Handle errors and respond with an error message
-    console.error(err); // Log the error for debugging
-    res.status(500).render('505-error');
+    next(err); // Log the error for debugging
+
   }
 };
 

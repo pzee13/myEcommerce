@@ -25,20 +25,19 @@ var instance = new Razorpay({
   });
   
 
-const securePassword = async(password)=>{
+const securePassword = async(password,next)=>{
     try {
         const passwordHash = await bcrypt.hash(password, 10)
         return passwordHash
     }
     catch (error)
     {
-        console.log(error.message)
-        res.status(500).render('505-error');
+       next(error)
     }
 }
 
 
-const sendVerificationEmail = async (email, otp) => {
+const sendVerificationEmail = async (email, otp,next) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -60,12 +59,11 @@ const sendVerificationEmail = async (email, otp) => {
 
         await transporter.sendMail(mailOptions);
     } catch (error) {
-        console.log(error.message);
-        res.status(500).render('505-error');
+      next(error)
     }
 }
 
-const resetPasswordMail = async(firstName,lastName,email, token)=>{
+const resetPasswordMail = async(firstName,lastName,email, token,next)=>{
     try 
         {
             const transporter = nodemailer.createTransport({
@@ -84,10 +82,10 @@ const resetPasswordMail = async(firstName,lastName,email, token)=>{
                 subject:'For Reset Password',
                 html: `<p> Hi, ${firstName} ${lastName}, please click here to <a href="http://127.0.0.1:4000/forget-password?token=${token}"> Reset </a> your password</p>`
             }
-            transporter.sendMail(mailOptions,function(error,info){
+            transporter.sendMail(mailOptions,function(error,info,next){
                 if(error)
                     {
-                        console.log(error)
+                       next(error)
                     }
                 else
                     {
@@ -97,21 +95,20 @@ const resetPasswordMail = async(firstName,lastName,email, token)=>{
         }
     catch (error)
         {
-            console.log(error.message)
-            res.status(500).render('505-error');
+            next(error)
         }
 }
 
 
-const loginLoad = async(req,res)=>{
+const loginLoad = async(req,res,next)=>{
 
     try{
         
         res.render('login')
     }
     catch(error){
-        console.log(error.message)
-        res.status(500).render('505-error');
+        
+        next(error)
     }
 }
 
@@ -119,18 +116,18 @@ const loginLoad = async(req,res)=>{
 //     try {
 //       res.redirect('/');
 //     } catch (error) {
-//       console.log(error.message);
+//       ;
 //     }
 //   }
 
-const loadRegister = async(req,res)=>{
+const loadRegister = async(req,res,next)=>{
     try {
         res.render('registration')
     }
     catch (error)
     {
-        console.log(error.message)
-        res.status(500).render('505-error');
+        
+        next(error)
     }
 }
 
@@ -139,8 +136,8 @@ const showverifyOTPPage = async (req, res) => {
     try {
       res.render('user-otp');
     } catch (error) {
-      console.log(error.message);
-      res.status(500).render('505-error');
+      ;
+      next(error)
     }
   }
 
@@ -192,8 +189,8 @@ const insertUser = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
-        res.status(500).render('505-error');
+        ;
+        next(error)
     }
 }
 
@@ -218,13 +215,13 @@ const verifyOTP = async (req, res)=>{
             res.render('user-otp',{message:"invalid OTP"});
         }
     } catch (error) {
-        console.log(error.message);
-        res.status(500).render('505-error');
+        ;
+        next(error)
     }
 }
 
 
-const resendOTP = async (req,res)=>{
+const resendOTP = async (req,res,next)=>{
     try{
         const currentTime = Date.now()/1000;
         console.log("current",currentTime)
@@ -253,8 +250,8 @@ const resendOTP = async (req,res)=>{
     }
     catch (error)
     {
-        console.log(error.message)
-        res.status(500).render('505-error');
+        
+        next(error)
     }
 }
 
@@ -302,7 +299,7 @@ const verifyLogin = async (req, res,next) => {
     catch (err) {
 
         next(err)
-        res.status(500).render('505-error');
+        next(err)
     }
 }
 
@@ -317,8 +314,8 @@ const loaduserHome = async (req, res) => {
       res.render('userHome',{product:products,userIsLoggedIn: req.session.user_id ? true : false,banners:banners,products:products1,category:categories});
         
     } catch (error) {
-      console.log(error.message);
-      res.status(500).render('505-error');
+      ;
+      next(error)
     }
   }
 
@@ -327,22 +324,22 @@ const loaduserHome = async (req, res) => {
 //     try {
 //       res.render('userProduct');
 //     } catch (error) {
-//       console.log(error.message);
+//       ;
 //     }
 //   }
 
-  const forgotLoad = async(req,res)=>{
+  const forgotLoad = async(req,res,next)=>{
     try{
         res.render('forgot')
     }
     catch(error)
     {
-        console.log(error.message);
-        res.status(500).render('505-error');
+        ;
+        next(error)
     }
   }
   
-  const forgotVerify = async(req,res)=>{
+  const forgotVerify = async(req,res,next)=>{
     try{
         const email = req.body.email
         const userData = await User.findOne({email:email})
@@ -364,13 +361,13 @@ const loaduserHome = async (req, res) => {
     }
     catch(error)
     {
-        console.log(error.message);
-        res.status(500).render('505-error');
+        ;
+        next(error)
     }
   }
 
 
-  const forgetPasswordLoad = async(req,res)=>{
+  const forgetPasswordLoad = async(req,res,next)=>{
 
     try{
         const token = req.query.token
@@ -384,12 +381,12 @@ const loaduserHome = async (req, res) => {
     }
     catch(error)
     {
-        console.log(error.message)
-        res.status(500).render('505-error');
+        
+        next(error)
     }
   }
 
-  const resetPassword = async(req,res)=>{
+  const resetPassword = async(req,res,next)=>{
     try{
         const password = req.body.password
         const user_id = req.body.user_id
@@ -402,14 +399,14 @@ const loaduserHome = async (req, res) => {
 
     }
     catch(error){
-        console.log(error.message);
-        res.status(500).render('505-error');
+        ;
+        next(error)
     }
     
   }
 
 
-  const userLogout = async(req,res)=>{
+  const userLogout = async(req,res,next)=>{
 
     try
     {
@@ -418,91 +415,112 @@ const loaduserHome = async (req, res) => {
     }
     catch (error)
     {
-        console.log(error.message)
-        res.status(500).render('505-error');
+        
+        next(error)
         return
     }
 }
 
-
 const viewProducts = async (req, res) => {
     try {
         const page = req.query.page || 1; // Get the current page from query parameters
-        const pageSize = 10; // Set your desired page size
-        const userId = req.session.user_id 
-        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-    
+        const pageSize = 12; // Set your desired page size
+        const userId = req.session.user_id;
+        
+        // Assuming Cart is a Mongoose model and the user_id is stored as a string
+        const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+
         const skip = (page - 1) * pageSize;
-      const products = await Product.find({ status: 1 }).populate('category').populate('offer').skip(skip)
-      .limit(pageSize);
+        const products = await Product.find({ status: 1 }).populate('category').populate('offer').skip(skip)
+            .limit(pageSize);
 
-      const totalProducts = await Product.countDocuments();
-      const totalPages = Math.ceil(totalProducts / pageSize);
+        const totalProducts = await Product.countDocuments({ status: 1 }); // Count only products with status 1
+        const totalPages = Math.ceil(totalProducts / pageSize);
 
-      const categories = await Category.find()
-      res.render('userProduct', { product: products , category:categories,
-        currentPage: page,
-        totalPages: totalPages,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+        const categories = await Category.find();
+
+        res.render('userProduct', {
+            product: products,
+            category: categories,
+            currentPage: page,
+            totalPages: totalPages,
+            products: products1,
+            userIsLoggedIn: req.session.user_id ? true : false
+        });
     } catch (error) {
-      console.error(error);
-      res.status(500).render('505-error');
+       
+        next(error)
     }
-  }
+};
 
 
-  const filterByCategory = async (req, res) => {
-    const category = req.query.category;
+
+
+
+const filterPrice = async (req, res) => {
+    const minPrice = parseFloat(req.query.minPrice);
+    const maxPrice = parseFloat(req.query.maxPrice);
+
+    // Check if minPrice and maxPrice are valid numbers
+    if (isNaN(minPrice) || isNaN(maxPrice)) {
+        return res.status(400).json({ error: "Invalid minPrice or maxPrice values." });
+    }
+
+    console.log("min:", minPrice);
+    console.log("max:", maxPrice);
 
     try {
-        // Update your query to filter by category
-        const products = await Product.find({
-            status: 1,
-            'category.categoryName': category
-        }).populate('category').populate('offer');
+        // Fetch products based on the min and max price and status 1 from your database
+        const filteredProducts = await Product.find({
+            status: 1, // Add the condition to filter only products with status 1
+            'price': { $gt: minPrice, $lte: maxPrice },
+        }).populate("category offer");
 
-        res.json({ success: true, products });
+        console.log('P:', filteredProducts);
+        res.json({ products: filteredProducts });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while fetching filtered products by price." });
     }
-}
+};
 
-const filterByprice = async (req, res) => {
+const filterCategory = async (req, res) => {
+    const categoryId = req.query.categoryId;
+
     try {
-        const minPrice = req.query.minPrice || 0;
-    const maxPrice = req.query.maxPrice || Infinity;
-        const products = await Product.find({
-            status: 1,
-            price: { $gte: minPrice, $lte: maxPrice }
-        }).populate('category').populate('offer');
+        // Fetch products based on the category and status 1 from your database
+        const filteredProducts = await Product.find({
+            status: 1, // Add the condition to filter only products with status 1
+            category: categoryId,
+        }).populate("category offer");
 
-        res.json({ success: true, products });
+        res.json({ products: filteredProducts });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: 'Internal Server Error' });
+        console.error("Error:", error);
+        res.status(500).json({ error: "An error occurred while fetching filtered products by category." });
     }
-}
+};
 
 
-  const getProductDetails = async (req, res) => {
+
+  const getProductDetails = async (req, res,next) => {
     try {
         const id = req.query.id; // You should adjust this based on your route structure
         const product = await Product.findById({_id:id}).populate('category').populate('offer');
         const userId = req.session.user_id 
         const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-
         if (!product) {
             return res.status(404).render('404-error', { message: 'Product not found' });
         }
-
+        
         const reviews = product.reviews
 
         const userReviews = reviews.filter(review => review.user.userId === userId)
 
         res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false,userId:userId,reviews:reviews,userReviews:userReviews});
     } catch (error) {
-        console.error(error);
-        res.status(500).render('505-error');
+       
+        next(error)
         
     }
 };
@@ -524,57 +542,73 @@ const filterByprice = async (req, res) => {
 
 //         res.render('productDetails', { product: product });
 //     } catch (error) {
-//         console.error(error);
+//        
 //         res.status(500).render('error', { message: 'Internal Server Error' });
 //     }
 // };
-
-
 const searchProducts = async (req, res) => {
     try {
-      const keyword = req.query.keyword; // Get the search keyword from the query string
-      const page = req.query.page || 1; // Get the current page from query parameters
-      const pageSize = 10; // Set your desired page size
-  
-      // Perform a case-insensitive search on product names and descriptions
-      const products = await Product.find({
-        $or: [
-          { productName: { $regex: keyword, $options: 'i' } },
-          { description: { $regex: keyword, $options: 'i' } },
-        ],
-      })
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
-        .populate('category'); // Populate the category field
-  
-      const totalProducts = await Product.countDocuments({
-        $or: [
-          { productName: { $regex: keyword, $options: 'i' } },
-          { description: { $regex: keyword, $options: 'i' } },
-        ],
-      });
-      const totalPages = Math.ceil(totalProducts / pageSize);
-  
-      // Fetch categories for the sidebar
-      const categories = await Category.find();
+        const keyword = req.query.keyword;
+        const page = req.query.page || 1;
+        const pageSize = 10;
 
-      const userId = req.session.user_id 
-        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-  
-      res.render('userProduct', {
-        product: products,
-        category: categories,
-        currentPage: page,
-        totalPages: totalPages,
-        products:products1,
-        userIsLoggedIn: req.session.user_id ? true : false
-      });
-  
+        // Check if the keyword is present for search or if it's a clear request
+        if (keyword && keyword.trim() !== '') {
+            // Perform a case-insensitive search on product names and descriptions
+            const products = await Product.find({
+                $and: [
+                    { status: 1 }, // Add the condition to search only products with status 1
+                    {
+                        $or: [
+                            { productName: { $regex: keyword, $options: 'i' } },
+                            { description: { $regex: keyword, $options: 'i' } },
+                        ],
+                    },
+                ],
+            })
+                .skip((page - 1) * pageSize)
+                .limit(pageSize)
+                .populate('category');
+
+            const totalProducts = await Product.countDocuments({
+                $and: [
+                    { status: 1 }, // Add the condition to count only products with status 1
+                    {
+                        $or: [
+                            { productName: { $regex: keyword, $options: 'i' } },
+                            { description: { $regex: keyword, $options: 'i' } },
+                        ],
+                    },
+                ],
+            });
+
+            const totalPages = Math.ceil(totalProducts / pageSize);
+
+            // Fetch categories for the sidebar
+            const categories = await Category.find();
+
+            const userId = req.session.user_id;
+            const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+
+            res.render('userProduct', {
+                product: products,
+                category: categories,
+                currentPage: page,
+                totalPages: totalPages,
+                products: products1,
+                userIsLoggedIn: req.session.user_id ? true : false,
+                keyword: keyword, // Pass the keyword to the view for display or further processing
+            });
+        } else {
+            // If there's no keyword or it's empty, redirect to the product listing route without search parameters
+            res.redirect('/product');
+        }
+
     } catch (error) {
-      console.error(error);
-      res.status(500).render('505-error');
+       
+        next(error)
     }
-  };
+};
 
 
   const walletHistory = async (req, res,next) => {
@@ -590,14 +624,14 @@ const searchProducts = async (req, res) => {
       const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
       res.render("walletHistory", { walletData,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
     } catch (err) {
-console.log(err.message);
+
      next(err)
-     res.status(500).render('505-error');
+    
     }
   };
 
 
-  const addMoneyWallet = async (req,res)=>{
+  const addMoneyWallet = async (req,res,next)=>{
     try {
         console.log("monry comong");
 
@@ -625,13 +659,13 @@ console.log(err.message);
     })
     
     } catch (error) {
-        console.log(error);
-        res.status(500).render('505-error');
+        
+        next(error)
     }
 }
 
 
-const verifyWalletpayment = async(req,res)=>{
+const verifyWalletpayment = async(req,res,next)=>{
     try{
   
       console.log("entered into post verify wallet payment");
@@ -678,8 +712,8 @@ const verifyWalletpayment = async(req,res)=>{
   
   
     }catch(error){
-      console.log(error);
-      res.status(500).render('505-error');
+      
+      next(error)
     }
   }
 
@@ -722,7 +756,7 @@ const verifyWalletpayment = async(req,res)=>{
   
 //         res.json({ success: true, message: 'Review submitted successfully!' });
 //     } catch (error) {
-//         console.error(error);
+//        
 //         res.status(500).json({ success: false, message: 'Internal server error' });
 //     }
 //   };
@@ -969,8 +1003,7 @@ const getInvoice = async (req, res) => {
       res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
       res.status(200).send(pdfBuffer);
     } catch (err) {
-      console.error(err);
-      res.status(500).render('505-error');
+      next(err)
     }
   };
   
@@ -1003,8 +1036,10 @@ module.exports = {
     submitReview,
     editReview,
     getInvoice,
-    filterByCategory,
-    filterByprice
+    filterPrice,
+    filterCategory
+
+
 
 }
 

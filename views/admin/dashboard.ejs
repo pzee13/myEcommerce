@@ -432,6 +432,11 @@
 
   const trimmeddays = JSON.parse(days).map(item => item.trim());
 
+  const mrevenue = `<%- JSON.stringify(monthlyChart.map(item => item.monthlyRevenue)) %>`;
+const months = `<%- JSON.stringify(monthlyChart.map(item => item._id)) %>`;
+
+const trimmedMonths = JSON.parse(months).map(item => item.trim());
+
   $(function() {
     
   'use strict';
@@ -627,34 +632,17 @@
     }
   }
 
-  var multiAreaData = {
+  var monthlyData= {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [{
-        label: 'Facebook',
-        data: [8, 11, 13, 15, 12, 13, 16, 15, 13, 19, 11, 14],
-        borderColor: ['rgba(255, 99, 132, 0.5)'],
-        backgroundColor: ['rgba(255, 99, 132, 0.5)'],
-        borderWidth: 1,
-        fill: true
-      },
-      {
-        label: 'Twitter',
-        data: [7, 17, 12, 16, 14, 18, 16, 12, 15, 11, 13, 9],
-        borderColor: ['rgba(54, 162, 235, 0.5)'],
-        backgroundColor: ['rgba(54, 162, 235, 0.5)'],
-        borderWidth: 1,
-        fill: true
-      },
-      {
-        label: 'Linkedin',
-        data: [6, 14, 16, 20, 12, 18, 15, 12, 17, 19, 15, 11],
-        borderColor: ['rgba(255, 206, 86, 0.5)'],
-        backgroundColor: ['rgba(255, 206, 86, 0.5)'],
-        borderWidth: 1,
-        fill: true
-      }
-    ]
-  };
+     label: 'Monthly Revenue',
+        data: [/* Monthly revenue data */],
+      borderColor: ['rgba(75, 192, 192, 1)'],
+      borderWidth: 2,
+      fill: false
+   }]
+};
+    
 
   var multiAreaOptions = {
     plugins: {

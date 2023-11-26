@@ -10,17 +10,17 @@ const Order = require("../models/orderModel")
 const fs = require("fs")
 
 
-const loadAddbanner = async(req,res)=>{
+const loadAddbanner = async(req,res,next)=>{
     try{
-        res.render('addbanner')
+       res.render('addbanner')
     }catch(error){
-        console.log(error.message)
-        res.status(500).render('500error');
+       
+        next(error)
     }
 }
 
 
-const addBanners = async (req, res) => {
+const addBanners = async (req,res,next) => {
     try {
       const banner = new Banner({
         mainHead: req.body.mainHead,
@@ -33,12 +33,12 @@ const addBanners = async (req, res) => {
   
       res.render('addbanner');
     } catch (error) {
-      console.error(error);
-      res.redirect('/500'); // Redirect to an error page or handle errors appropriately
+      
+      next(error) // Redirect to an error page or handle errors appropriately
     }
   };
 
-const loadBanners = async(req,res)=>{
+const loadBanners = async(req,res,next)=>{
     try {
         const search = req.query.search
             let page = Number(req.query.page);
@@ -66,24 +66,24 @@ const loadBanners = async(req,res)=>{
             
         })
     }catch(error){
-        res.status(500).render('500error')
+       next(error)
     }
 }
 
-const loadEditBanner = async (req, res) => {
+const loadEditBanner = async (req,res,next) => {
     try {
       const bannerId = req.params.id;
       const banner = await Banner.findById(bannerId);
   
       res.render('editbanner', { banner: banner });
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   };
   
   // Edit banner
-  const editBanner = async (req, res) => {
+  const editBanner = async (req,res,next) => {
     try {
       const bannerId = req.params.id;
       console.log("Banner ID:", bannerId);
@@ -98,23 +98,23 @@ const loadEditBanner = async (req, res) => {
       console.log("Updated Banner Data:", updatedBannerData);
   
       const result = await Banner.findByIdAndUpdate(bannerId, updatedBannerData);
-      console.log("MongoDB Update Result:", result);
+      console.log("MongoDB Update Result:",res,nextult);
   
       res.redirect('/admin/banners'); // Redirect to the banners page after editing
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   };
   
-  const deleteBanner = async (req, res) => {
+  const deleteBanner = async (req,res,next) => {
     try {
       const bannerId = req.params.id;
       await Banner.findByIdAndDelete(bannerId)
       res.redirect('/admin/banners'); // Redirect to the banners page after deleting
     } catch (error) {
-      console.error(error);
-      res.status(500).render('500error');
+      
+      next(error)
     }
   };
 

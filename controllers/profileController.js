@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
 
-const loadProfile = async (req, res) => {
+const loadProfile = async (req, res, next) => {
     try {
         if (!req.session.user_id) {
             return res.redirect('/login'); // Redirect to login if user_id is not in the session
@@ -39,8 +39,8 @@ const loadProfile = async (req, res) => {
         }
     }
     } catch (error) {
-        console.log(error.message);
-        res.status(500).render('505-error') // Handle any errors by redirecting to the login page
+        
+        next(error) // Handle any errors by redirecting to the login page
     }
 } 
 
@@ -157,7 +157,7 @@ const updateProfile = async (req, res, next) => {
         res.redirect('/profile');
     } catch (err) {
         next(err);
-        res.status(500).render('505-error');
+        
     }
 };
 
@@ -247,7 +247,7 @@ const addAddress = async (req,res,next) => {
         res.redirect('/profile');
     } catch (err) {
         next(err);
-        res.status(500).render('505-error');
+       
     }
 }
 
@@ -288,12 +288,12 @@ const EditAddress = async (req, res, next) => {
             }
         );
 
-        res.redirect('/profile');
+        res.redirect('/profile#tab-address');
         
     } catch (err) {
-        console.error(err);
+        
         next(err);
-        res.status(500).render('505-error');
+    
     }
 };
 
@@ -319,7 +319,7 @@ const EditAddress = async (req, res, next) => {
 //     }
 // }
 
-// const deleteAddress = async (req, res) => {
+// const deleteAddress = async (req, res, next) => {
 //     try {
 //         const addressId = req.params.addressId;
 //         console.log(addressId)
@@ -342,7 +342,7 @@ const EditAddress = async (req, res, next) => {
 //     }
 // };
 
-const deleteAddress = async (req, res) => {
+const deleteAddress = async (req, res, next) => {
     try {
         const addressId = req.params.addressId;
         console.log(addressId);
@@ -367,7 +367,7 @@ const deleteAddress = async (req, res) => {
     }
 };
 
-const loadWallet = async (req, res) => {
+const loadWallet = async (req, res, next) => {
     try {
         const userId = req.session.user_id;
         const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
@@ -400,8 +400,8 @@ const loadWallet = async (req, res) => {
             res.status(404).send('User not found');
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).render('505-error');
+        
+        next(error);
     }
 };
 

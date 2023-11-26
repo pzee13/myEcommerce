@@ -54,22 +54,22 @@
                         </div>
                         <ul>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
+                                <a href="/products?sort=default" class="stext-106 trans-04 sort-link">
                                     Default
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
+                                <a href="/products?sort=averageRating" class="stext-106 trans-04 sort-link">
                                     Average rating
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
+                                <a href="/products?sort=priceLowToHigh" class=" stext-106 trans-04 sort-link">
                                     Price: Low to High
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04">
+                                <a href="/products?sort=priceHighToLow" class=" stext-106 trans-04 sort-link">
                                     Price: High to Low
                                 </a>
                             </li>
@@ -81,48 +81,56 @@
                         </div>
                         <ul>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04 filter-link-active" data-minprice="0" data-maxprice="Infinity">
+                                <a href="/product" class=" stext-106 trans-04">
                                     All
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="0" data-maxprice="500">
+                                <a href="/product?minPrice=0&maxPrice=500" class="filter-link stext-106 trans-04" data-minprice="0" data-maxprice="500">
                                     ₹0.00 - ₹500.00
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="500" data-maxprice="1000">
+                                <a href="/product?minPrice=500&maxPrice=1000" class="filter-link stext-106 trans-04" data-minprice="500" data-maxprice="1000">
                                     ₹500.00 - ₹1000.00
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="1000" data-maxprice="1500">
+                                <a href="/product?minPrice=1000&maxPrice=1500" class="filter-link stext-106 trans-04" data-minprice="1000" data-maxprice="1500">
                                     ₹1000.00 - ₹1500.00
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="1500" data-maxprice="2000">
+                                <a href="/product?minPrice=1500&maxPrice=2000" class="filter-link stext-106 trans-04" data-minprice="1500" data-maxprice="2000">
                                     ₹1500.00 - ₹2000.00
                                 </a>
                             </li>
                             <li class="p-b-6">
-                                <a href="#" class="filter-link stext-106 trans-04" data-minprice="2000" data-maxprice="Infinity">
+                                <a href="/product?minPrice=2000&maxPrice=Infinity" class="filter-link stext-106 trans-04" data-minprice="2000" data-maxprice="Infinity">
                                     ₹2000.00+
                                 </a>
                             </li>
                         </ul>
                     </div>
                     <div class="filter-col4 p-b-27">
-                        <div class="mtext-102 cl2 p-b-15">
-                            Categories
+                       
+                        <div class="card-heading">
+                            <a data-toggle="collapse" data-target="#collapseTwo">Categories</a>
                         </div>
-                        <div class="flex-w p-t-4 m-r--5">
-                            <% category.forEach(function(cat) { %>
-                                <a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5 category-link" data-category="<%= cat.categoryName %>">
-                                    <%= cat.categoryName %>
-                                </a>
-                            <% }); %>
+                        <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div class="shop__sidebar__brand">
+                                    <ul>
+                                        <li><a href="/product" >All</a></li>
+                                        <% for (let item of category ) { %>
+                                            <li><a href="#" class="category-link" data-category-id="<%= item._id %>" data-category-name="<%= item.categoryName %>"><%= item.categoryName %></a></li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -191,15 +199,18 @@
         </div>
         <div class="pagination" style="display: flex; justify-content: center;">
             <% if (currentPage > 1) { %>
-              <a href="/product?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+                <a href="/product?page=<%= Number(currentPage) - 1 %>" class="page-link">Previous</a>
             <% } %>
+        
             <% for (let i = 1; i <= totalPages; i++) { %>
-              <a href="/product?page=<%= i %>" class="page-link"><%= i %></a>
+                <a href="/product?page=<%= i %>" class="page-link <%= i === currentPage ? 'active' : '' %>"><%= i %></a>
             <% } %>
+        
             <% if (currentPage < totalPages) { %>
-              <a href="/product?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+                <a href="/product?page=<%= Number(currentPage) + 1 %>" class="page-link">Next</a>
             <% } %>
-          </div>
+        </div>
+        
     </div>
     
 </section>
@@ -244,89 +255,151 @@
 
 <!-- Add this JavaScript code to your EJS template -->
 <!-- Add this JavaScript code to your EJS template -->
+
+<!-- ... (your existing code) ... -->
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const filterButtons = document.querySelectorAll(".filter-button");
-        const productItems = document.querySelectorAll(".isotope-item");
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterLinks = document.querySelectorAll(".filter-link");
+        const productContainer = document.querySelector(".isotope-grid");
 
-        filterButtons.forEach(function(button) {
-            button.addEventListener("click", function() {
-                const category = button.getAttribute("data-filter");
+        filterLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
 
-                productItems.forEach(function(item) {
-                    if (category === ".category-*" || item.classList.contains(category.slice(1))) {
-                        item.style.display = "block";
-                    } else {
-                        item.style.display = "none";
-                    }
-                });
+                const minPrice = link.getAttribute("data-minprice");
+                const maxPrice = link.getAttribute("data-maxprice");
+
+                fetch(`/filter_by_price?minPrice=${minPrice}&maxPrice=${maxPrice}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        productContainer.innerHTML = "";
+                        data.products.forEach((product) => {
+                            const productElement = createProductElement(product);
+                            productContainer.appendChild(productElement);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        Swal.fire('An error occurred while fetching filtered products by price.');
+                    });
             });
         });
 
-        // Add an event listener for the "All Products" button
-        document.querySelector('.filter-button[data-filter=".category-*"]').addEventListener("click", function() {
-    filterButtons.forEach(function(button) {
-        button.classList.remove('filter-link-active');
-    });
-    button.classList.add('filter-link-active');
+        function createProductElement(product) {
+  const productDiv = document.createElement("div");
+  productDiv.className = "col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item category-" + product.category.categoryName;
 
-    productItems.forEach(function(item) {
-        item.style.display = "block";
-    });
-});
+  const block2 = document.createElement("div");
+  block2.className = "block2";
+  productDiv.appendChild(block2);
 
-document.querySelectorAll('.filter-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                const minPrice = this.getAttribute('data-minprice');
-                const maxPrice = this.getAttribute('data-maxprice');
+  const block2Pic = document.createElement("div");
+  block2Pic.className = "block2-pic hov-img0";
+  block2.appendChild(block2Pic);
 
-                // Perform the AJAX request with the selected price range
-                fetch(`/filter_products?minPrice=${minPrice}&maxPrice=${maxPrice}`, {
-                    method: 'GET',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the response and update the product items accordingly
-                    updateProductItems(data.products);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
-        });
+  if (product.offer && product.offer.percentage > 0) {
+    const discountBadge = document.createElement("div");
+    discountBadge.className = "discount-badge";
+    discountBadge.style = "background-color: #ff5733; color: #f8f8f8; padding: 5px; position: absolute; z-index: 1; width: 74px;";
+    discountBadge.innerHTML = `<span class="stext-103 size-102">${product.offer.percentage} % OFF</span>`;
+    block2Pic.appendChild(discountBadge);
+  }
 
-        // Add an event listener for each category filter link
-        document.querySelectorAll('.category-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                const category = link.getAttribute('data-category');
+  const productLink = document.createElement("a");
+  productLink.href = `/productDetails?id=${product._id}`;
+  block2Pic.appendChild(productLink);
 
-                // Perform the AJAX request with the selected category
-                fetch(`/filter_by_category?category=${category}`, {
-                    method: 'GET',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the response and update the product items accordingly
-                    updateProductItems(data.products);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
-        });
+  const productImage = document.createElement("img");
+  productImage.className = "product-image fixed-size";
+  productImage.src = `/public/adminAssets/assets/images/products/${product.images[0]}`;
+  productImage.alt = "Product Image";
+  productLink.appendChild(productImage);
+
+  const quickViewLink = document.createElement("a");
+  quickViewLink.href = "#";
+  quickViewLink.className = "block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1";
+  quickViewLink.innerText = "Quick View";
+  productLink.appendChild(quickViewLink);
+
+  const block2Txt = document.createElement("div");
+  block2Txt.className = "block2-txt flex-w flex-t p-t-14";
+  productDiv.appendChild(block2Txt);
+
+  const block2TxtChild1 = document.createElement("div");
+  block2TxtChild1.className = "block2-txt-child1 flex-col-l";
+  block2Txt.appendChild(block2TxtChild1);
+
+  const productNameLink = document.createElement("a");
+  productNameLink.href = `/productDetails?id=${product._id}`;
+  productNameLink.className = "stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6";
+  productNameLink.style = "color: #222;";
+  productNameLink.innerText = product.productName;
+  block2TxtChild1.appendChild(productNameLink);
+
+  if (product.offer && product.offer.percentage > 0) {
+    const discountDiv = document.createElement("div");
+    discountDiv.className = "d-flex";
+    block2TxtChild1.appendChild(discountDiv);
+
+    const discountOriginalPrice = document.createElement("span");
+    discountOriginalPrice.className = "stext-105 cl3";
+    discountOriginalPrice.innerHTML = `<del>₹${product.price}</del>`;
+    discountDiv.appendChild(discountOriginalPrice);
+
+    const discountPrice = document.createElement("span");
+    discountPrice.className = "stext-105 cl3";
+    discountPrice.style = "margin-left: 130px;";
+    discountPrice.innerHTML = `<p class="text-danger">₹${product.discountedPrice}</p>`;
+    discountDiv.appendChild(discountPrice);
+  } else {
+    const productPrice = document.createElement("span");
+    productPrice.className = "stext-105 cl3";
+    productPrice.innerText = `₹${product.price}`;
+    block2TxtChild1.appendChild(productPrice);
+  }
+
+  const block2TxtChild2 = document.createElement("div");
+  block2TxtChild2.className = "block2-txt-child2 flex-r p-t-3";
+  block2Txt.appendChild(block2TxtChild2);
+
+  const addWishBtn = document.createElement("a");
+  addWishBtn.href = "#";
+  addWishBtn.className = "btn-addwish-b2 dis-block pos-relative";
+  addWishBtn.dataset.productId = product._id;
+  block2TxtChild2.appendChild(addWishBtn);
+
+  const heartIcon1 = document.createElement("img");
+  heartIcon1.className = "icon-heart1 dis-block trans-04";
+  heartIcon1.src = "/public/userAssets/images/icons/icon-heart-01.png";
+  heartIcon1.alt = "ICON";
+  addWishBtn.appendChild(heartIcon1);
+
+  const heartIcon2 = document.createElement("img");
+  heartIcon2.className = "icon-heart2 dis-block trans-04 ab-t-l";
+  heartIcon2.src = "/public/userAssets/images/icons/icon-heart-02.png";
+  heartIcon2.alt = "ICON";
+  addWishBtn.appendChild(heartIcon2);
+
+  return productDiv;
+}
     });
 </script>
+
+<!-- ... (your existing code) ... -->
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('input[name="search-product"]');
-    
+
         // Add an event listener for when the user presses Enter in the input field
         searchInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 search();
             }
         });
-    
+
         // Function to perform the search
         function search() {
             const keyword = searchInput.value;
@@ -334,9 +407,19 @@ document.querySelectorAll('.filter-link').forEach(function (link) {
                 // Redirect to the search_product route with the keyword
                 window.location.href = `/search_product?keyword=${keyword}`;
             }
+            else{
+                window.location.href='/product';
+            }
         }
+
+        // Function to clear the search
+        window.clearSearch = function() {
+            // Redirect to the product listing route without search parameters
+            window.location.href = '/product';
+        };
     });
-    </script>
+</script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -381,7 +464,170 @@ document.querySelectorAll('.filter-link').forEach(function (link) {
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterButtons = document.querySelectorAll(".filter-button");
+        const productItems = document.querySelectorAll(".isotope-item");
 
+        filterButtons.forEach(function(button) {
+            button.addEventListener("click", function() {
+                const category = button.getAttribute("data-filter");
+
+                productItems.forEach(function(item) {
+                    if (category === ".category-*" || item.classList.contains(category.slice(1))) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+            });
+        });
+
+        // Add an event listener for the "All Products" button
+        document.querySelector('.filter-button[data-filter=".category-*"]').addEventListener("click", function() {
+    filterButtons.forEach(function(button) {
+        button.classList.remove('filter-link-active');
+    });
+    button.classList.add('filter-link-active');
+
+    productItems.forEach(function(item) {
+        item.style.display = "block";
+    });
+});
+
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const categoryLinks = document.querySelectorAll(".category-link");
+
+        categoryLinks.forEach(function (link) {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const categoryId = this.getAttribute("data-category-id");
+
+            fetch(`/filter_by_category?categoryId=${categoryId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    const productContainer = document.querySelector(".isotope-grid");
+                    productContainer.innerHTML = "";
+
+                    data.products.forEach((product) => {
+                        const productElement = createProductElement(product);
+                        productContainer.appendChild(productElement);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    // Handle errors or show an error message
+                });
+        });
+    });
+
+        // Function to create product elements
+        function createProductElement(product) {
+  const productDiv = document.createElement("div");
+  productDiv.className = "col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item category-" + product.category.categoryName;
+
+  const block2 = document.createElement("div");
+  block2.className = "block2";
+  productDiv.appendChild(block2);
+
+  const block2Pic = document.createElement("div");
+  block2Pic.className = "block2-pic hov-img0";
+  block2.appendChild(block2Pic);
+
+  if (product.offer && product.offer.percentage > 0) {
+    const discountBadge = document.createElement("div");
+    discountBadge.className = "discount-badge";
+    discountBadge.style = "background-color: #ff5733; color: #f8f8f8; padding: 5px; position: absolute; z-index: 1; width: 74px;";
+    discountBadge.innerHTML = `<span class="stext-103 size-102">${product.offer.percentage} % OFF</span>`;
+    block2Pic.appendChild(discountBadge);
+  }
+
+  const productLink = document.createElement("a");
+  productLink.href = `/productDetails?id=${product._id}`;
+  block2Pic.appendChild(productLink);
+
+  const productImage = document.createElement("img");
+  productImage.className = "product-image fixed-size";
+  productImage.src = `/public/adminAssets/assets/images/products/${product.images[0]}`;
+  productImage.alt = "Product Image";
+  productLink.appendChild(productImage);
+
+  const quickViewLink = document.createElement("a");
+  quickViewLink.href = "#";
+  quickViewLink.className = "block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1";
+  quickViewLink.innerText = "Quick View";
+  productLink.appendChild(quickViewLink);
+
+  const block2Txt = document.createElement("div");
+  block2Txt.className = "block2-txt flex-w flex-t p-t-14";
+  productDiv.appendChild(block2Txt);
+
+  const block2TxtChild1 = document.createElement("div");
+  block2TxtChild1.className = "block2-txt-child1 flex-col-l";
+  block2Txt.appendChild(block2TxtChild1);
+
+  const productNameLink = document.createElement("a");
+  productNameLink.href = `/productDetails?id=${product._id}`;
+  productNameLink.className = "stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6";
+  productNameLink.style = "color: #222;";
+  productNameLink.innerText = product.productName;
+  block2TxtChild1.appendChild(productNameLink);
+
+  if (product.offer && product.offer.percentage > 0) {
+    const discountDiv = document.createElement("div");
+    discountDiv.className = "d-flex";
+    block2TxtChild1.appendChild(discountDiv);
+
+    const discountOriginalPrice = document.createElement("span");
+    discountOriginalPrice.className = "stext-105 cl3";
+    discountOriginalPrice.innerHTML = `<del>₹${product.price}</del>`;
+    discountDiv.appendChild(discountOriginalPrice);
+
+    const discountPrice = document.createElement("span");
+    discountPrice.className = "stext-105 cl3";
+    discountPrice.style = "margin-left: 130px;";
+    discountPrice.innerHTML = `<p class="text-danger">₹${product.discountedPrice}</p>`;
+    discountDiv.appendChild(discountPrice);
+  } else {
+    const productPrice = document.createElement("span");
+    productPrice.className = "stext-105 cl3";
+    productPrice.innerText = `₹${product.price}`;
+    block2TxtChild1.appendChild(productPrice);
+  }
+
+  const block2TxtChild2 = document.createElement("div");
+  block2TxtChild2.className = "block2-txt-child2 flex-r p-t-3";
+  block2Txt.appendChild(block2TxtChild2);
+
+  const addWishBtn = document.createElement("a");
+  addWishBtn.href = "#";
+  addWishBtn.className = "btn-addwish-b2 dis-block pos-relative";
+  addWishBtn.dataset.productId = product._id;
+  block2TxtChild2.appendChild(addWishBtn);
+
+  const heartIcon1 = document.createElement("img");
+  heartIcon1.className = "icon-heart1 dis-block trans-04";
+  heartIcon1.src = "/public/userAssets/images/icons/icon-heart-01.png";
+  heartIcon1.alt = "ICON";
+  addWishBtn.appendChild(heartIcon1);
+
+  const heartIcon2 = document.createElement("img");
+  heartIcon2.className = "icon-heart2 dis-block trans-04 ab-t-l";
+  heartIcon2.src = "/public/userAssets/images/icons/icon-heart-02.png";
+  heartIcon2.alt = "ICON";
+  addWishBtn.appendChild(heartIcon2);
+
+  return productDiv;
+}
+
+    });
+</script>
 
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>

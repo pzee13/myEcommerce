@@ -12,7 +12,7 @@ const Sales = require("../controllers/salesController")
 const fs = require("fs")
 
 
-const loadDashboard = async( req, res ) => {
+const loadDashboard = async( req, res, next) => {
         
     try {
         const admin = req.session.admin_id
@@ -27,6 +27,7 @@ const loadDashboard = async( req, res ) => {
         const currentMonthStartDate = new Date(currentYear, currentMonth, 1, 0, 0, 0);
         const previousMonthStartDate = new Date(currentYear, currentMonth - 1, 1, 0, 0, 0);
         const previousMonthEndDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+        const currentYearStartDate = new Date(currentYear, 0, 1, 0, 0, 0)
         
         console.log('Today:', today);
         console.log('Yesterday:', yesterday);
@@ -34,6 +35,7 @@ const loadDashboard = async( req, res ) => {
         console.log('Current Month Start Date:', currentMonthStartDate);
         console.log('Previous Month Start Date:', previousMonthStartDate);
         console.log('Previous Month End Date:', previousMonthEndDate);
+        console.log('Current year start date:', currentYearStartDate);
         
         const promises = [
             Sales.currentMonthRevenue( currentMonthStartDate, now ),
@@ -47,8 +49,9 @@ const loadDashboard = async( req, res ) => {
             User.find({isBlock : false, isVerified : true}).count(),
             Product.find({status : true}).count(),
             Sales.dailyChart(),
-            Sales.categorySales()
-            
+            Sales.categorySales(),
+            Sales.YearlyRevenue(currentYearStartDate, now),
+            Sales.monthlyChart()
         ]
         
         const results = await Promise.all( promises )
@@ -65,6 +68,8 @@ const loadDashboard = async( req, res ) => {
         const productCount = results[9] 
         const dailyChart = results[10]
         const categorySales = results[11]
+        const YearlyRevenue = results[12]
+        const monthlyChart = results[13]
 
 console.log('revenueCurrentMonth:', revenueCurrentMonth);
 console.log('revenuePreviousMonth:', revenuePreviousMonth);
@@ -78,6 +83,8 @@ console.log('userCount:', userCount);
 console.log('productCount:', productCount);
 console.log('dailyChart:', dailyChart);
 console.log('categorySales:', categorySales);
+console.log('Yearly:',YearlyRevenue)
+console.log('Monthlychart:',monthlyChart)
 
         console.log('paymentMethodAmount:', paymentMethodAmount);
 
@@ -111,10 +118,12 @@ console.log('categorySales:', categorySales);
             completedOrders : completedOrders,
             productCount : productCount,
             dailyChart : dailyChart,
-            categorySales : categorySales
+            categorySales : categorySales,
+            YearlyRevenue:YearlyRevenue,
+            monthlyChart:monthlyChart
         } )
     } catch (error) {
-        res.redirect('/500')
+        next(error)
 
     }
 

@@ -12,17 +12,17 @@ const fs = require("fs")
 
 
 
-const loadAddOffer = async( req, res ) => {
+const loadAddOffer = async( req, res , next ) => {
     try {  
     res.render('addOffer')
     } catch (error) {
-        console.log(error.message)
-        res.redirect('/500')
+        
+        next(error)
 
     }
 }
 
-const addOffer = async ( req, res ) => {
+const addOffer = async ( req, res , next ) => {
     try {
         const { search, page } = req.query
         const { startingDate, expiryDate, percentage } = req.body
@@ -43,13 +43,13 @@ const addOffer = async ( req, res ) => {
          res.redirect('/admin/offers')
         }
     } catch (error) {
-        console.log(error.message)
-        res.redirect('/500')
+        
+        next(error)
     }
 }
 
 
-const loadOffers = async( req, res ) => {
+const loadOffers = async( req, res , next ) => {
     try {
         const offers = await Offer.find()
         res.render('offers',{
@@ -57,13 +57,13 @@ const loadOffers = async( req, res ) => {
             now : new Date()
         })
     } catch (error) {
-        console.log(error.message)
-        res.redirect('/500')
+        
+        next(error)
 
     }
 }
 
-const loadEditOffer = async ( req, res ) => {
+const loadEditOffer = async ( req, res , next ) => {
     try {
         const id = req.params.id
         const offer = await Offer.findOne({ _id:id})
@@ -71,13 +71,13 @@ const loadEditOffer = async ( req, res ) => {
             offer : offer
         })
     } catch (error) {
-        console.log(error.message)
-        res.redirect('/500')
+        
+        next(error)
 
     }
 }
 
-const editOffer = async ( req, res ) => {
+const editOffer = async ( req, res , next ) => {
     try {
         const { id, name, startingDate, expiryDate, percentage } = req.body
         await Offer.updateOne({ _id : id }, {
@@ -90,8 +90,8 @@ const editOffer = async ( req, res ) => {
         })
         res.redirect('/admin/offers')
     } catch (error) {
-        console.log(error.message)
-        res.redirect('/500')
+        
+        next(error)
 
     }
 }
@@ -107,7 +107,7 @@ const cancelOffer = async ( req, res ) => {
         res.json({ cancelled : true})
     } catch (error) {
         res.json({cancelled: false,message:'Cant cancel some errors'})
-        res.redirect('/500')
+       
 
     }
 }

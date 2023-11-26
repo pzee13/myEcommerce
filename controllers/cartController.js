@@ -10,7 +10,7 @@ const fs = require("fs")
 
 
 
-const loadCart = async(req,res)=>{
+const loadCart = async(req,res,next)=>{
     try{
         const user_id = req.session.user_id
         console.log(user_id)
@@ -30,7 +30,7 @@ const loadCart = async(req,res)=>{
 }
     catch(error)
     {
-        console.log(error.message);
+        next(error)
     }
 }
 

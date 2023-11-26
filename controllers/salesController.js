@@ -23,7 +23,7 @@ const calculateTodayIncome = async (today, now) => {
                         $lt: now
                     },
                     'products.paymentStatus': {
-                        $nin: ["Pending", "Failure"]
+                        $nin: ["Pending", "Failure","Canceled","Refunded"]
                     }
                 }
             },
@@ -65,7 +65,7 @@ const yesterdayIncome =  async ( today, yesterday) => {
                             $lt : today
                         },
                         'products.paymentStatus': {
-                            $nin: ["Pending", "Failure"]
+                            $nin: ["Pending", "Failure","Canceled","Refunded"]
                         }
         }
         },
@@ -98,7 +98,7 @@ const totalRevenue = async () =>  {
     const revenue = await Order.aggregate([
         {
          $match: {
-                "products.paymentStatus": { $nin: ["Pending", "Failure"] }
+                "products.paymentStatus": { $nin: ["Pending", "Failure","Canceled","Refunded"] }
             }
         },
         {
@@ -130,7 +130,7 @@ const currentMonthRevenue = async (currentMonthStartDate, now) => {
                     },
                     "products.paymentStatus":
                     {
-                        $nin: ["Pending", "Failure"]
+                        $nin: ["Pending", "Failure","Canceled","Refunded"]
                     }
                 }
             },
@@ -169,7 +169,7 @@ const previousMonthRevenue = async (previousMonthStartDate, previousMonthEndDate
                     },
                     "products.paymentStatus":
                     {
-                        $nin: ["Pending", "Failure"]
+                        $nin: ["Pending", "Failure","Canceled","Refunded"]
                     }
                 }
             },
@@ -200,7 +200,7 @@ const paymentMethodAmount = async () => {
     const paymentMethodTotal = await Order.aggregate([
         {
             $match: {
-                "products.paymentStatus": { $nin: ["Pending", "Failure"] }
+                "products.paymentStatus": { $nin: ["Pending", "Failure","Canceled","Refunded"] }
             }
         },
         {
@@ -240,7 +240,7 @@ const categorySales = async () => {
     const catSales = await Order.aggregate([
         {
             $match: {
-                "products.paymentStatus": { $nin: ["Pending", "Failure"] }
+                "products.paymentStatus": { $nin: ["Pending", "Failure","Canceled","Refunded"] }
             }
         },
         {
@@ -289,7 +289,7 @@ const dailyChart = async () => {
         {
             $match : {
                 "products.paymentStatus" :  {
-                    $nin: ["Pending", "Failure"]
+                    $nin: ["Pending", "Failure","Canceled","Refunded"]
                 }
             }
         },
@@ -320,7 +320,7 @@ const dailyChart = async () => {
     return result
 }
 
-const getSalesReport = async (req, res) => {
+const getSalesReport = async (req, res ,next) => {
     try {
       var shortDateFormat = 'YYYY-MM-DD';
       const { seeAll, sortData, sortOrder } = req.query;
@@ -359,10 +359,76 @@ const getSalesReport = async (req, res) => {
     
       });
     } catch (error) {
-      console.log(error.message);
+      next(error)
     }
   };
   
+
+  const YearlyRevenue = async (currentYearStartDate, now) => {
+        const currentYearRevenue = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: {
+                        $gte: currentYearStartDate,
+                        $lt: now
+                    },
+                    "products.paymentStatus": {
+                        $nin: ["Pending", "Failure", "Canceled", "Refunded"]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m", date: "$orderDate" } },
+                    currentYearRevenue: {
+                        $sum: "$totalAmount"
+                    }
+                }
+            }
+        ]);
+
+        console.log('currentYearRevenue:', currentYearRevenue);
+
+        const result = currentYearRevenue.length > 0 ? currentYearRevenue[0].currentYearRevenue : 0;
+        return result;
+   
+};
+
+const monthlyChart = async () => {
+    const monthlyOrders = await Order.aggregate([
+        {
+            $match: {
+                "products.paymentStatus": {
+                    $nin: ["Pending", "Failure", "Canceled", "Refunded"]
+                }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: "%Y-%m",
+                        date: "$orderDate"
+                    },
+                },
+                monthlyRevenue: {
+                    $sum: "$totalAmount"
+                }
+            }
+        },
+        {
+            $sort: {
+                _id: 1
+            }
+        },
+        {
+            $limit: 12
+        }
+    ]);
+
+    const result = monthlyOrders || 0;
+    return result;
+};
 
 
 module.exports = {
@@ -374,5 +440,7 @@ module.exports = {
     paymentMethodAmount,
     categorySales,
     dailyChart,
-    getSalesReport
+    getSalesReport,
+    YearlyRevenue,
+    monthlyChart
 }

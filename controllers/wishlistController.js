@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt')
 const path = require("path")
 const fs = require("fs")
 
-const loadWishlist = async (req, res) => {
+const loadWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const userId = req.session.user_id 
@@ -27,14 +27,14 @@ const loadWishlist = async (req, res) => {
             res.render('wishlist3', { data: wishlist ,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
         }
     } catch (error) {
-        console.error(error.message);
-        res.status(500).render('505-error');
+        
+        next(error);
     }
 };
 
 
 
-const addToWishlist = async (req, res) => {
+const addToWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const productId = req.query.id;
@@ -68,7 +68,7 @@ const addToWishlist = async (req, res) => {
 };
 
 
-const removeFromWishlist = async (req, res) => {
+const removeFromWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const productId = req.query.id;

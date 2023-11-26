@@ -8,7 +8,7 @@
       <div class="card">
         <div class="card-body">
           <h2 class="card-title">PRODUCTS</h2>
-          <form class="forms-sample" action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+          <form id="addProductForm" class="forms-sample" action="" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -60,33 +60,44 @@
               <textarea class="form-control text-white" id="exampleTextarea1" rows="4" name="description"></textarea>
               <span id="descriptionError" class="text-danger"></span>
             </div><br>
-            <div class="form-group">
-              <label for="images1">Image 1</label>
-              <div class="input-group col-xs-12">
-                <input id="images1" type="file" name="images[]" multiple class="form-control btn btn-primary" placeholder="Upload Image" required>
-                <span class="input-group-append"></span>
-              </div>
-              <div id="selectedImagesContainer1" class="selected-images-container"></div>
-            </div>
-
-            <div class="form-group">
-              <label for="images2">Image 2</label>
-              <div class="input-group col-xs-12">
-                <input id="images2" type="file" name="images[]" multiple class="form-control btn btn-primary" placeholder="Upload Image" required>
-                <span class="input-group-append"></span>
-              </div>
-              <div id="selectedImagesContainer2" class="selected-images-container"></div>
-            </div>
-
-            <div class="form-group">
-              <label for="images3">Image 3</label>
-              <div class="input-group col-xs-12">
-                <input id="images3" type="file" name="images[]" multiple class="form-control btn btn-primary" placeholder="Upload Image" required>
-                <span class="input-group-append"></span>
-              </div>
-              <div id="selectedImagesContainer3" class="selected-images-container"></div>
-            </div>
+            <div class="row d-flex justify-content-center">
+              <!-- Image 1 -->
               
+              <div class="col-lg-3">
+                <div id="imagePreview1" class="image-preview"></div>
+                <label for="imageInput1" class="image-label">Image 1
+                    <input name="images" type="file" accept="image/*" id="imageInput1" class="form-control-file" required>
+                </label>
+                <p id="image-error1" class="error-message"></p>
+                <!-- Add a hidden input field for the cropped image data -->
+                <input type="hidden" name="croppedImageData1" id="croppedImageData1">
+                <p id="cropped-image-error1" class="error-message"></p>
+            </div>
+            <!-- Image 2 -->
+            <div class="col-lg-3">
+              <div id="imagePreview2" class="image-preview"></div>
+                <label for="imageInput2" class="image-label">Image 2
+                    <input name="images" type="file" accept="image/*" id="imageInput2" class="form-control-file" required>
+                </label>
+                <p id="image-error2" class="error-message"></p>
+                <!-- Add a hidden input field for the cropped image data -->
+                <input type="hidden" name="croppedImageData2" id="croppedImageData2">
+                <p id="cropped-image-error2" class="error-message"></p>
+            </div>
+            <!-- Image 3 -->
+            <div class="col-lg-3">
+              <div id="imagePreview3" class="image-preview"></div>
+                <label for="imageInput3" class="image-label">Image 3
+                    <input name="images" type="file" accept="image/*" id="imageInput3" class="form-control-file" required>
+                </label>
+                <p id="image-error3" class="error-message"></p>
+                <!-- Add a hidden input field for the cropped image data -->
+                <input type="hidden" name="croppedImageData3" id="croppedImageData3">
+                <p id="cropped-image-error3" class="error-message"></p>
+            </div>
+            <!-- Image 4 -->
+            
+            </div>
             <div class="row mt-5">
               <div class="col-md-12 text-center">
                 <button type="submit" class="btn btn-primary mr-2">Submit</button>
@@ -99,6 +110,17 @@
     </div>
   </div>
 </div>
+
+<style>
+  .crop-image {
+    max-width: 15cm;
+    max-height: 10cm;
+    width: 100%; /* Ensure the image takes the full width of the container */
+    height: auto; /* Maintain aspect ratio */
+    display: inline-block;
+    margin-right: 10px; /* Adjust as needed for spacing between crop boxes */
+  }
+</style>
 
 <script>
   // ========== image deleting ==============
@@ -138,6 +160,14 @@
     const price = parseFloat(document.getElementById("inlineFormInputName1").value);
     const quantity = parseInt(document.getElementById("quantity").value);
     const description = document.getElementById("exampleTextarea1").value;
+    document.getElementById('image-error1').textContent = '';
+        document.getElementById('image-error2').textContent = '';
+        document.getElementById('image-error3').textContent = '';
+    
+        document.getElementById('cropped-image-error1').textContent = '';
+        document.getElementById('cropped-image-error2').textContent = '';
+        document.getElementById('cropped-image-error3').textContent = '';
+ 
 
     console.log("Product Name:", productName);
   console.log("Category:", category);
@@ -146,16 +176,7 @@
   console.log("Quantity:", quantity);
   console.log("Description:", description);
 
-    const imageInputs = document.querySelectorAll('[id^="images"]');
-    let hasSelectedImages = false;
-
-    // Loop through all image inputs
-    imageInputs.forEach((imageInput, index) => {
-      const selectedFiles = imageInput.files;
-      if (selectedFiles.length > 0) {
-        hasSelectedImages = true;
-      }
-    });
+   
 
     if (productName.trim() === "") {
       document.getElementById("productNameError").textContent = "Product Name is required.";
@@ -194,12 +215,30 @@
       document.getElementById("descriptionError").textContent = "";
     }
 
-    if (!hasSelectedImages) {
-      document.getElementById("imageError").textContent = "Please select at least one image.";
-      return false;
-    } else {
-      document.getElementById("imageError").textContent = "";
-    }
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+        for (let i = 0; i < imageInputs.length; i++) {
+            const imageInput = imageInputs[i];
+            const imageError = document.getElementById(`image-error${i + 1}`);
+            const croppedImageError = document.getElementById(`cropped-image-error${i + 1}`);
+            const croppedImageData = document.getElementById(`croppedImageData${i + 1}`).value;
+
+            if (!imageInput.files.length) {
+                imageError.textContent = `Please upload Image ${i + 1}.`;
+                return false;
+            }
+
+            // You can add additional image validation here if needed.
+
+            // Validate cropped images
+            if (!croppedImageData) {
+                croppedImageError.textContent = `Please save Cropped Image ${i + 1}.`;
+                return false;
+            }
+
+            // Clear the image errors if validation passes
+            imageError.textContent = '';
+            croppedImageError.textContent = '';
+        }
 
     return true;
   }
@@ -215,121 +254,112 @@
 </script>
 
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const fileInputs = document.querySelectorAll('[id^="images"]');
-    fileInputs.forEach((fileInput, index) => {
-      fileInput.addEventListener('change', (event) => handleImageSelect(event, index + 1));
-    });
+<script defer>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof Cropper !== 'undefined') {
+      var imageInputs = document.querySelectorAll('[id^="imageInput"]');
+      var form = document.getElementById('addProductForm');
+
+      imageInputs.forEach(function (input, index) {
+        var cropper;
+        var imgElement = document.createElement('img');
+
+        imgElement.classList.add('crop-image');
+        input.parentNode.insertBefore(imgElement, input.nextSibling);
+
+        var previewContainer = document.createElement('div');
+        previewContainer.id = 'imagePreview' + (index + 1);
+        previewContainer.classList.add('image-preview');
+        input.parentNode.insertBefore(previewContainer, imgElement.nextSibling);
+
+        input.addEventListener('change', function (e) {
+          var files = e.target.files;
+          if (files && files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+              imgElement.src = event.target.result;
+
+              cropper = new Cropper(imgElement, {
+                aspectRatio: 1,
+                viewMode: 2,
+                autoCropArea: 1,
+              });
+
+              input.addEventListener('click', function (event) {
+                event.preventDefault();
+              });
+
+              var saveButton = document.createElement('button');
+              saveButton.innerText = 'Save Cropped Image';
+              saveButton.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                // Get the cropped canvas
+                var croppedCanvas = cropper.getCroppedCanvas();
+
+                // Convert canvas to data URL
+                var croppedImageData = croppedCanvas.toDataURL('image/jpeg', 0.8); // Adjust quality as needed (0 to 1)
+                console.log('Cropped Image Data:', croppedImageData);
+
+                // Set the value of the hidden input with the cropped image data
+                document.getElementById('croppedImageData' + (index + 1)).value = croppedImageData;
+
+                // Convert data URI to File
+                var fileName = 'cropped_image_' + (index + 1) + '.jpeg';
+                var croppedImageFile = dataURItoFile(croppedImageData, fileName);
+
+                // Append the File to the FormData object
+                var formData = new FormData(form);
+                formData.append('croppedImage' + (index + 1), croppedImageFile);
+
+                // Display the preview of the cropped image
+                var previewImage = document.createElement('img');
+                previewImage.src = croppedImageData;
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(previewImage);
+              });
+
+              imgElement.parentNode.insertBefore(saveButton, imgElement.nextSibling);
+            };
+
+            reader.readAsDataURL(files[0]);
+          }
+        });
+      });
+
+      document.getElementById('cropAndSubmit').addEventListener('click', function (event) {
+        event.preventDefault();
+        if (validateForm()) {
+          cropImagesAndSubmit();
+        }
+      });
+
+      function cropImagesAndSubmit() {
+        form.submit();
+      }
+
+    } else {
+      console.error('CropperJS is not defined. Check the CDN script paths.');
+    }
   });
 
-  function handleImageSelect(event, index) {
-    const files = event.target.files;
-    const selectedImagesContainer = document.getElementById(`selectedImagesContainer${index}`);
-    selectedImagesContainer.innerHTML = '';
+  function dataURItoFile(dataURI, fileName) {
+  var byteString = atob(dataURI.split(',')[1]);
+  var extension = fileName.split('.').pop(); // Get the file extension from the fileName
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        const image = document.createElement('img');
-        image.src = e.target.result;
-        image.classList.add('selected-image');
-
-        // Assign a unique identifier to the image
-        const imageId = `image_${index}_${i}`;
-        image.setAttribute('id', imageId);
-
-        image.addEventListener('click', function () {
-          openImagePopup(e.target.result, imageId);
-        });
-
-        selectedImagesContainer.appendChild(image);
-
-        // Initialize Cropper for each image
-        const cropper = new Cropper(image, {
-          aspectRatio: 1, // Set your desired aspect ratio
-          viewMode: 1, // Contain within the container
-        });
-      };
-
-      reader.readAsDataURL(file);
-    }
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
   }
 
-  function openImagePopup(imageSrc, imageId) {
-    const popupOverlay = document.createElement('div');
-    popupOverlay.classList.add('image-popup-overlay');
-
-    const popupContainer = document.createElement('div');
-    popupContainer.classList.add('image-popup-container');
-
-    const popupImage = document.createElement('img');
-    popupImage.classList.add('image-popup');
-    popupImage.src = imageSrc;
-    popupContainer.appendChild(popupImage);
-
-    const cropper = new Cropper(popupImage, {
-      aspectRatio: 1, // Allow free-form cropping
-      viewMode: 1, // Contain within the container
-    });
-
-    const cropButton = document.createElement('button');
-    cropButton.textContent = 'Crop';
-    cropButton.classList.add('crop-button');
-    cropButton.addEventListener('click', function () {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      // Use the croppedCanvas for further processing or display
-      console.log(croppedCanvas);
-
-      // Set the data attribute to mark the image as cropped
-      document.getElementById(imageId).dataset.cropped = 'true';
-
-      // Remove the popup and overlay
-      document.body.removeChild(popupOverlay);
-    });
-
-    const saveButton = document.createElement('button');
-    saveButton.textContent = 'Save';
-    saveButton.classList.add('save-button');
-    saveButton.addEventListener('click', function () {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      const croppedImage = croppedCanvas.toDataURL('image/jpeg');
-      // Use the croppedImage for further processing or upload
-
-      // Replace the original image with the cropped image
-      document.getElementById(imageId).src = croppedImage;
-      // Set the data attribute to mark the image as cropped
-      document.getElementById(imageId).dataset.cropped = 'true';
-
-      // Remove the popup and overlay
-      document.body.removeChild(popupOverlay);
-    });
-
-    popupContainer.appendChild(cropButton);
-    popupContainer.appendChild(saveButton);
-
-    popupOverlay.appendChild(popupContainer);
-    document.body.appendChild(popupOverlay);
-
-    popupOverlay.addEventListener('click', function (event) {
-      if (event.target === popupOverlay) {
-        closeImagePopup(popupOverlay);
-      }
-    });
-  }
-
-  function closeImagePopup(popupOverlay) {
-    document.body.removeChild(popupOverlay);
-  }
-
-  function cancelForm() {
-    window.location.href = '/admin/home';
-  }
-
-  // ... (existing scripts)
-
+  // Use the file extension as the MIME type when creating the Blob
+  var blob = new Blob([ab], { type: 'image/' + extension });
+  return new File([blob], fileName, { type: 'image/' + extension });
+}
 </script>
+
+
+
 
 <%- include('../admin/layouts/footer.ejs') %>

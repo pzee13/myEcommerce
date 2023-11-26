@@ -9,6 +9,8 @@ const bannerController = require("../controllers/bannerController")
 const offerController = require("../controllers/offerController")
 const chatController = require("../controllers/chatController")
 
+const errorHandler =require('../middleware/errHandler')
+
 const session = require('express-session');
 const config = require('../config/config');
 const mult = require('../middleware/multer')
@@ -71,7 +73,7 @@ admin_route.get('/block_users',auth.isLogin,adminController.blockUser)
 
 admin_route.get('/add_product',auth.isLogin,productController.loadaddProducts)
 
-admin_route.post('/add_product',mult.upload.array('images[]',3),productController.addProduct)
+admin_route.post('/add_product',mult.upload.array('images',3),productController.addProduct)
 
 admin_route.get('/view_products',auth.isLogin,productController.viewProducts)
 
@@ -141,7 +143,7 @@ admin_route.patch('/remove_Offer-category',auth.isLogin,categoryController.remov
 
 // admin_route.get('/chat',auth.isLogin,chatController.loadAdChat)
 
-admin_route.get('/500',adminController.load500)
+admin_route.use(errorHandler); 
 
 admin_route.get('*', (req, res) => {
   console.log(req.url)
