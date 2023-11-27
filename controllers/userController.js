@@ -421,38 +421,127 @@ const loaduserHome = async (req, res) => {
     }
 }
 
-const viewProducts = async (req, res) => {
-    try {
-        const page = req.query.page || 1; // Get the current page from query parameters
-        const pageSize = 12; // Set your desired page size
-        const userId = req.session.user_id;
+// const viewProducts = async (req, res) => {
+//     try {
+//         const page = req.query.page || 1; // Get the current page from query parameters
+//         const pageSize = 12; // Set your desired page size
+//         const userId = req.session.user_id;
         
-        // Assuming Cart is a Mongoose model and the user_id is stored as a string
-        const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+//         // Assuming Cart is a Mongoose model and the user_id is stored as a string
+//         const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
 
-        const skip = (page - 1) * pageSize;
-        const products = await Product.find({ status: 1 }).populate('category').populate('offer').skip(skip)
-            .limit(pageSize);
+//         const skip = (page - 1) * pageSize;
+//         const products = await Product.find({ status: 1 }).populate('category').populate('offer').skip(skip)
+//             .limit(pageSize);
 
-        const totalProducts = await Product.countDocuments({ status: 1 }); // Count only products with status 1
-        const totalPages = Math.ceil(totalProducts / pageSize);
+//         const totalProducts = await Product.countDocuments({ status: 1 }); // Count only products with status 1
+//         const totalPages = Math.ceil(totalProducts / pageSize);
 
-        const categories = await Category.find();
+//         const categories = await Category.find();
 
-        res.render('userProduct', {
-            product: products,
-            category: categories,
-            currentPage: page,
-            totalPages: totalPages,
-            products: products1,
-            userIsLoggedIn: req.session.user_id ? true : false
-        });
-    } catch (error) {
+//         res.render('userProduct', {
+//             product: products,
+//             category: categories,
+//             currentPage: page,
+//             totalPages: totalPages,
+//             products: products1,
+//             userIsLoggedIn: req.session.user_id ? true : false
+//         });
+//     } catch (error) {
        
-        next(error)
-    }
-};
+//         next(error)
+//     }
+// };
 
+
+const viewProducts = async (req, res, next) => {
+    try {
+      const page = req.query.page || 1;
+      const pageSize = 12;
+      const userId = req.session.user_id;
+  
+      // Assuming Cart is a Mongoose model and the user_id is stored as a string
+      const productsInCart = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+  
+      let search = '';
+      let minPrice = 1;
+      let maxPrice = 20000;
+      let sortValue = -1;
+      let categoryFilter = null;
+     
+  
+      if (req.query.search) {
+        search = req.query.search;
+      }
+  
+      if (req.query.minPrice) {
+        minPrice = req.query.minPrice;
+      }
+  
+      if (req.query.maxPrice) {
+        maxPrice = req.query.maxPrice;
+      }
+  
+      if (req.query.sortValue) {
+        if (req.query.sortValue === '2') {
+          sortValue = 1;
+        } else if (req.query.sortValue === '1') {
+          sortValue = -1;
+        }
+      }
+  
+      if (req.query.category) {
+        categoryFilter = req.query.category;
+      }
+  
+      const query = {
+        status: 1,
+        $or: [
+          { name: { $regex: '.*' + search + '.*', $options: 'i' } },
+          { brand: { $regex: '.*' + search + '.*', $options: 'i' } },
+          { productName: { $regex: '.*' + search + '.*', $options: 'i' } },
+        ],
+        price: { $gte: minPrice, $lte: maxPrice },
+      };
+  
+      if (categoryFilter) {
+        query.category = categoryFilter;
+      }
+  
+   
+      const skip = (page - 1) * pageSize;
+      const products = await Product.find(query)
+        .populate('category')
+        .populate('offer')
+        .skip(skip)
+        .limit(pageSize)
+        .sort({ price: sortValue });
+  
+      const totalProducts = await Product.countDocuments(query);
+      const totalPages = Math.ceil(totalProducts / pageSize);
+  
+      const categories = await Category.find();
+     
+  
+      res.render('userProduct', {
+        product: products,
+        category: categories,
+        currentPage: page,
+        totalPages: totalPages,
+        products: productsInCart,
+        userIsLoggedIn: req.session.user_id ? true : false,
+        search: search,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        sortValue: req.query.sortValue,
+        categoryFilter: categoryFilter,
+       
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 
 
 
@@ -953,10 +1042,64 @@ const editReview = async (req, res) => {
 
 // Add the route for handling edit review requests
 
-const getInvoice = async (req, res) => {
+// const getInvoice = async (req, res,next) => {
+//     try {
+//       const orderId = req.params.orderId;
+//       console.log("aa:",orderId)
+  
+//       // Retrieve order details from the database or any other data source
+//       const order = await Order.findOne({ _id: orderId })
+//         .populate({
+//           path: 'products.product_Id',
+//         })
+//         .sort({ orderDate: -1 });
+  
+//       // Generate the PDF document
+//       const doc = new PDFDocument();
+//       doc.pipe(res);
+  
+//       // Add content to the PDF, including the custom heading
+//       doc.text(`Invoice of Order ${order.orderID}`, { align: 'center', fontSize: 16, underline: true });
+//       doc.moveDown();
+  
+//       // Add product details
+//       doc.fontSize(12).text('Product Details:', { underline: true });
+//       doc.moveDown();
+//       order.products.forEach((product) => {
+//         doc.text(`Product Name: ${product.product_Id.productName}`);
+//         doc.text(`Quantity: ${product.quantity}`);
+//         doc.text(`Total: $${product.total}`);
+//         doc.moveDown();
+//       });
+  
+//       // Add additional order details
+//       doc.fontSize(12).text('Additional Order Details:', { underline: true });
+//       doc.moveDown();
+//       doc.text(`Order Total Amount: $${order.totalAmount}`);
+//       doc.text(`Order Date: ${order.orderDate.toLocaleDateString()}`);
+//       // Add more order details as needed...
+  
+//       // End and finalize the PDF
+//       const pdfBuffer = await new Promise((resolve) => {
+//         doc.on('end', () => {
+//           resolve(doc);
+//         });
+//         doc.end();
+//       });
+  
+//       // Set response headers for download
+//       res.setHeader('Content-Type', 'application/pdf');
+//       res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
+//       res.status(200).send(pdfBuffer);
+//     } catch (err) {
+//       next(err)
+//     }
+//   };
+  
+const getInvoice = async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
-      console.log("aa:",orderId)
+      console.log("aa:", orderId);
   
       // Retrieve order details from the database or any other data source
       const order = await Order.findOne({ _id: orderId })
@@ -973,20 +1116,47 @@ const getInvoice = async (req, res) => {
       doc.text(`Invoice of Order ${order.orderID}`, { align: 'center', fontSize: 16, underline: true });
       doc.moveDown();
   
-      // Add product details
+      // Add delivery address
+      doc.fontSize(12).text('Delivery Address:', { underline: true });
+      doc.text(order.deliveryAddress);
+      doc.moveDown();
+  
+      // Add product details as a table
       doc.fontSize(12).text('Product Details:', { underline: true });
       doc.moveDown();
+  
+      // Table header
+      doc.font('Helvetica-Bold').text('Product Name', 100, doc.y, { width: 200, align: 'left' });
+      doc.text('Quantity', 200, doc.y, { width: 100, align: 'left' });
+      doc.text('Total', 300, doc.y, { width: 100, align: 'left' });
+      doc.moveDown();
+  
+      // Table rows
       order.products.forEach((product) => {
-        doc.text(`Product Name: ${product.product_Id.productName}`);
-        doc.text(`Quantity: ${product.quantity}`);
-        doc.text(`Total: $${product.total}`);
+        doc.font('Helvetica').text(product.product_Id.productName, 100, doc.y, { width: 200, align: 'left' });
+        doc.text(product.quantity.toString(), 300, doc.y, { width: 100, align: 'left' });
+  
+        // Format total as currency
+        const formattedTotal = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(product.total);
+        doc.text(formattedTotal, 400, doc.y, { width: 100, align: 'left' });
+  
         doc.moveDown();
       });
+  
+      // Add coupon details
+      if (order.coupon) {
+        doc.fontSize(12).text('Applied Coupon:', { underline: true });
+        doc.text(`Coupon Code: ${order.coupon.code}`);
+        doc.text(`Discount: $${order.coupon.discountTotal}`);
+        // Add more coupon details as needed...
+        doc.moveDown();
+      }
   
       // Add additional order details
       doc.fontSize(12).text('Additional Order Details:', { underline: true });
       doc.moveDown();
-      doc.text(`Order Total Amount: $${order.totalAmount}`);
+      const formattedTotalAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(order.totalAmount);
+      doc.text(`Order Total Amount: ${formattedTotalAmount}`);
       doc.text(`Order Date: ${order.orderDate.toLocaleDateString()}`);
       // Add more order details as needed...
   
@@ -1003,12 +1173,11 @@ const getInvoice = async (req, res) => {
       res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
       res.status(200).send(pdfBuffer);
     } catch (err) {
-      next(err)
+      next(err);
     }
   };
   
-
-
+  
 
 module.exports = {
     loginLoad,

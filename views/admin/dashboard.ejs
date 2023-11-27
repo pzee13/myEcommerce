@@ -149,6 +149,14 @@
             </div>
           </div>
         </div>
+        <div class="col-lg-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Monthly Revenue (Bar Graph)</h4>
+              <canvas id="monthlyBarChart" style="height:250px"></canvas>
+            </div>
+          </div>
+        </div>
 
       </div>
       <div class="row">
@@ -437,6 +445,16 @@ const months = `<%- JSON.stringify(monthlyChart.map(item => item._id)) %>`;
 
 const trimmedMonths = JSON.parse(months).map(item => item.trim());
 
+const monthLabels = trimmedMonths.map(month => {
+  const [year, monthNumber] = month.split('-');
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const monthName = monthNames[parseInt(monthNumber, 10) - 1]; // Adjust for 0-based index
+  return `${monthName} ${year}`;
+});
+
   $(function() {
     
   'use strict';
@@ -487,6 +505,34 @@ const trimmedMonths = JSON.parse(months).map(item => item.trim());
         'rgba(75, 192, 192, 1)',
         'rgba(153, 102, 255, 1)',
         'rgba(255, 159, 64, 1)'
+      ],
+      borderWidth: 1,
+      fill: false
+    }]
+  };
+
+  var monthData = {
+    labels: monthLabels,
+    datasets: [{
+      label: 'revenue',
+      data: JSON.parse(mrevenue),
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+        // Add more colors if needed
+      ],
+      borderColor: [
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+        // Add more colors if needed
       ],
       borderWidth: 1,
       fill: false
@@ -635,12 +681,38 @@ const trimmedMonths = JSON.parse(months).map(item => item.trim());
   var monthlyData= {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [{
-     label: 'Monthly Revenue',
-        data: [/* Monthly revenue data */],
+     label: monthLabels,
+        data: JSON.parse(mrevenue),
       borderColor: ['rgba(75, 192, 192, 1)'],
       borderWidth: 2,
       fill: false
    }]
+};
+
+var monthlyOptions = {
+   scales: {
+      yAxes: [{
+         ticks: {
+            beginAtZero: true
+         },
+         gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+         }
+      }],
+      xAxes: [{
+         gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+         }
+      }]
+   },
+   legend: {
+      display: false
+   },
+   elements: {
+      point: {
+         radius: 0
+      }
+   }
 };
     
 
@@ -825,6 +897,15 @@ const trimmedMonths = JSON.parse(months).map(item => item.trim());
       options: doughnutPieOptions
     });
   }
+
+  if ($("#monthlyBarChart").length) {
+  var monthlyBarChartCanvas = $("#monthlyBarChart").get(0).getContext("2d");
+  var monthlyBarChart = new Chart(monthlyBarChartCanvas, {
+    type: 'bar',
+    data: monthlyData,
+    options: monthlyOptions
+  });
+}
 });
 </script>
 

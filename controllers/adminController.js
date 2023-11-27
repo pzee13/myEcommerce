@@ -303,7 +303,7 @@ const verifyadlogin = async (req, res,next) => {
 
   const updateOrderStatus = async (req, res,next) => {
     try {
-      
+
         const { productId, orderId, value } = req.body;
         console.log(value);
         console.log(orderId);
@@ -343,6 +343,14 @@ const verifyadlogin = async (req, res,next) => {
 
         if(product.status === 'Delivered'){
           return res.status(400).json({ success: false, message: 'Product is already delivered' });
+        }
+
+        if(product.status === 'Return placed'){
+          return res.status(400).json({ success: false, message: 'Product is already delivered' });
+        }
+
+        if(product.status === 'Returned'){
+          return res.status(400).json({ success: false, message: 'Product Returned back' });
         }
 
         // Update the status of the product in the order
@@ -419,7 +427,7 @@ const verifyadlogin = async (req, res,next) => {
 // };
 
 
-const cancelOrder = async (req, res,next) => {
+const cancelOrder = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
     const productId = req.params.productId;
@@ -455,7 +463,7 @@ const cancelOrder = async (req, res,next) => {
     const ftotal = order.totalAmount
 
     if (order.coupon) {
-      console.log("s1",refundedAmount)
+      console.log("s1", refundedAmount)
       const couponData = await Coupon.findOne({ code: order.coupon.code });
       order.totalAmount += order.coupon.discountTotal
 
@@ -467,31 +475,41 @@ const cancelOrder = async (req, res,next) => {
           }
           return total;
         }, 0);
-       
-        refundedAmount  = ftotal - order.totalAmount
+
+        refundedAmount = ftotal - order.totalAmount; // Update refundedAmount
         // Calculate coupon refund amount
-       } else{
+      } else {
         const couponRefundPercentage = couponData.discountPercentage || 0;
         couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
         refundedAmount -= couponRefundAmount;
-        console.log("s2",refundedAmount)
-        order.totalAmount -= (refundedAmount + order.coupon.discountTotal)
+        console.log("s2", refundedAmount)
+        order.totalAmount -= (refundedAmount + order.coupon.discountTotal);
       }
     }
 
+    if (refundedAmount < 0) {
+      order.totalAmount -= Math.abs(refundedAmount);
+      refundedAmount = 0;
+    }
+    console.log('total:', order.totalAmount);
 
     // Set the status of the product with the specified productId to 'Canceled' within the order
     for (const product of order.products) {
       if (product.product_Id._id.toString() === productId) {
         product.status = 'Canceled';
+
+        if (refundedAmount > 0) {
+          product.paymentStatus = 'Refunded';
+        } else {
+          product.paymentStatus = 'Canceled';
+        }
+
         // Save the product status
         await Product.findByIdAndUpdate(product.product_Id._id, {
           $inc: { quantity: product.quantity },
         });
 
-        if (order.paymentOption === 'Online' || order.paymentOption === 'Wallet') {
-          
-
+        if (order.paymentOption == "Online" || order.paymentOption == "Wallet") {
           // Refund the amount to the user's wallet
           const userId = order.user;
           await User.findByIdAndUpdate({ _id: userId }, {
@@ -501,7 +519,7 @@ const cancelOrder = async (req, res,next) => {
                 date: new Date(),
                 amount: refundedAmount,
                 description: `Refunded for Order cancel - Order ${order.orderID}`,
-                transactionType: 'Credit',
+                transactionType: 'Credit'
               },
             },
           });
@@ -513,12 +531,116 @@ const cancelOrder = async (req, res,next) => {
 
     res.json({ success: true, message: 'Order has been canceled' });
   } catch (error) {
-    
+    next(error);
     res.status(500).json({ success: false, message: 'Failed to cancel the order' });
   }
 };
 
+const returnOrder = async (req, res, next) => {
+  try {
+    const orderId = req.params.orderId;
+    const productId = req.params.productId;
 
+    // Find the order by orderId
+    const order = await Order.findOne({ _id: orderId });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    let canReturn = true;
+    let refundedAmount = 0;
+
+    for (const product of order.products) {
+      if (product.product_Id._id.toString() === productId) {
+        console.log(product.status)
+        if (product.status !== 'Return Placed') {
+          canReturn = false;
+          break; // Exit the loop if any product cannot be returned
+        } else {
+          refundedAmount += product.total; // Accumulate the refunded amount
+        }
+      }
+    }
+
+    if (!canReturn) {
+      return res.status(400).json({ success: false, message: 'Order cannot be returned' });
+    }
+
+    let couponRefundAmount = 0;
+
+    const ftotal = order.totalAmount
+
+    if (order.coupon) {
+      console.log("s1", refundedAmount)
+      const couponData = await Coupon.findOne({ code: order.coupon.code });
+      if (!couponData) {
+        // Handle the case where no coupon data is found
+        console.log("Coupon not found");
+        order.totalAmount = ftotal - refundedAmount; // Update the totalAmount without coupon
+      } else {
+        order.totalAmount += order.coupon.discountTotal;
+
+        if (Math.abs(order.totalAmount - refundedAmount) < couponData.minimumSpend) {
+          // If refund amount is below minimum spend, remove coupon discount
+          const nonReturnedProductsTotal = order.products.reduce((total, product) => {
+            if (product.product_Id._id.toString() !== productId && product.status !== 'Returned') {
+              return total + product.total;
+            }
+            return total;
+          }, 0);
+          order.totalAmount = nonReturnedProductsTotal; // Update order totalAmount
+          refundedAmount = ftotal - order.totalAmount; // Update refundedAmount
+        } else {
+          const couponRefundPercentage = couponData.discountPercentage;
+          couponRefundAmount = (couponRefundPercentage / 100) * refundedAmount;
+          refundedAmount -= couponRefundAmount;
+          console.log("s2", refundedAmount);
+          order.totalAmount -= refundedAmount + order.coupon.discountTotal;
+        }
+      }
+    }
+
+    if (refundedAmount < 0) {
+      order.totalAmount -= Math.abs(refundedAmount);
+    }
+    console.log('total:', order.totalAmount);
+
+    // Refund the amount to the user's wallet
+    const userId = order.user;
+    await User.findByIdAndUpdate({ _id: userId }, {
+      $inc: { wallet: refundedAmount },
+      $push: {
+        walletHistory: {
+          date: new Date(),
+          amount: refundedAmount,
+          description: `Refunded for Order Return - Order ${order.orderID}`,
+          transactionType: 'Credit',
+        },
+      },
+    });
+
+    // Set the status of the product to 'Returned' within the order
+    for (const product of order.products) {
+      if (product.product_Id._id.toString() === productId) {
+        product.status = 'Returned';
+        product.paymentStatus = 'Refunded';
+        // Save the product status
+        await Product.findByIdAndUpdate(product.product_Id._id, {
+          $inc: { quantity: product.quantity },
+        });
+      }
+    }
+
+    // Adjust the order total amount
+    await order.save();
+
+    res.json({ success: true, message: 'Order has been returned' });
+  } catch (error) {
+    next(error);
+    res.status(500).json({ success: false, message: 'Failed to return the order' });
+  }
+};
 
 
 const adLogout = async(req,res,next)=>{
@@ -571,5 +693,6 @@ module.exports = {
     updateOrderStatus,
     adorderDetails,
     cancelOrder,
+    returnOrder
 
 }   

@@ -469,7 +469,7 @@ const cancelOrder = async (req, res) => {
       if(product.product_Id._id.toString() === productId)
       {
         console.log(product.status)
-      if (product.status === 'Delivered' || product.status === 'Canceled' || product.status==='Returned') {
+      if (product.status === 'Delivered' || product.status === 'Canceled' || product.status==='Returned' || product.status == 'Return Placed') {
         canCancel = false;
         break; // Exit the loop if any product cannot be canceled
       } else {
@@ -898,13 +898,11 @@ const orderReturn = async (req, res, next) => {
     const currentDate = new Date();
 
     // Check if the product was delivered within the last seven days
-    const orderData = await Order.findOne(
-      {
-        _id: orderId,
-        'products.product_Id': productId,
-        'products.status': 'Delivered', // Check if the product is delivered
-      }
-    );
+    const orderData = await Order.findOne({
+      _id: orderId,
+      'products.product_Id': productId,
+      'products.status': 'Delivered', // Check if the product is delivered
+    });
 
     // Validate if the orderData is found
     if (!orderData) {
@@ -936,64 +934,27 @@ const orderReturn = async (req, res, next) => {
     returnDate.setDate(currentDate.getDate() + 4);
 
     // Apply coupon condition and calculate refund amount
-    let refundAmount = productData.total;
-
-    if (orderData.coupon) {
-      const couponData = await Coupon.findOne({ code: orderData.coupon.code });
-
-      if (couponData) {
-        const couponRefundPercentage = couponData.discountPercentage;
-        const couponRefundAmount = (couponRefundPercentage / 100) * productData.total;
-        refundAmount -= couponRefundAmount;
-      }
-    }
-
-    // Update product status to 'returning within few days'
+   
+    // Update product status to 'Return Placed'
     await Order.findOneAndUpdate(
       { _id: orderId, 'products.product_Id': productId },
       {
         $set: {
-          'products.$.status': 'Returned',
+          'products.$.status': 'Return Placed',
           'products.$.returnDate': returnDate,
-        },
-      } 
-    );
-
-    // Update product stock in the inventory
-    for (const product of orderData.products) {
-      if (product.product_Id._id.toString() === productId) {
-        product.status = 'Returned';
-
-        product.paymentStatus = 'Refunded'
-         // Save the product status
-        await Product.findByIdAndUpdate(product.product_Id._id, {
-          $inc: { quantity: product.quantity },
-        });
-
-    // Update the user's wallet with the calculated refund amount
-    await User.findByIdAndUpdate(
-      { _id: userId },
-      {
-        $inc: { wallet: refundAmount },
-        $push: {
-          walletHistory: {
-            date: currentDate,
-            amount: refundAmount,
-            description: `Refunded for order Return - Order ${orderData.orderID}`,
-            transactionType:'Credit'
-          },
         },
       }
     );
-      
+
+    // Update the user's wallet with the calculated refund amount
+   
 
     res.json({ success: true });
-      }}
   } catch (err) {
     next(err);
-    
   }
 };
+
 
 
 // const getEligibleOrders = async () => {

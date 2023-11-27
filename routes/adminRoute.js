@@ -93,6 +93,8 @@ admin_route.patch('/OrderUpdate',auth.isLogin,adminController.updateOrderStatus)
 
 admin_route.post('/cancel_order/:orderId/:productId',auth.isLogin,adminController.cancelOrder)
 
+admin_route.post('/return_order/:orderId/:productId',auth.isLogin,adminController.returnOrder)
+
 admin_route.get('/adcoupon',auth.isLogin,couponController.couponAdmin)
 
 admin_route.post('/add_coupon',auth.isLogin,couponController.addCoupon)

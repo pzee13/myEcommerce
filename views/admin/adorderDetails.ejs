@@ -69,7 +69,7 @@
                                                                 <button class="btn btn-danger cancel-product"
                                                                     data-product-id="<%= product.product_Id._id %>"
                                                                     data-order-id="<%= order._id %>">
-                                                                    <% if (product.status === 'Canceled') { %> Canceled <% } else { %> Cancel <% } %>
+                                                                    <% if (product.status === 'Canceled') { %> Canceled <% } else if (product.status === 'Delivered') { %> Return <% }else if (product.status === 'Return Placed') { %> Return <% } else { %> Cancel <% } %>
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -170,7 +170,30 @@
                 icon: 'info',
                 confirmButtonText: 'OK'
             });
-        } else {
+        } else if (currentStatus === 'returned') {
+            Swal.fire({
+                title: 'Product Returned back',
+                text: 'This product is already returned.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }
+        else if (currentStatus === 'return placed') {
+                Swal.fire({
+                    title: 'Return Product',
+                    text: 'Are you sure you want to return this product?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User confirmed, proceed with return
+                        returnProduct(productId, orderId);
+                    }
+                });
+            }
+        else {
             Swal.fire({
                 title: 'Cancel Product',
                 text: 'Are you sure you want to cancel this product?',
@@ -209,6 +232,39 @@
     });
 });
 
+
+function returnProduct(productId, orderId) {
+    // Perform AJAX request for returning the product
+    $.ajax({
+        type: 'POST',
+        url: `/admin/return_order/${orderId}/${productId}`, // Replace with your actual route
+        success: function (data) {
+            if (data.success) {
+                button.prop('disabled', true); // Disable the button
+                                statusCell.text('Returned'); // Update the status in the UI
+                                statusCell.removeClass('text-success'); // Optional: Remove success text color
+                                statusCell.addClass('text-danger'); // Optional: Add a different color for canceled status
+                                button.text('Returned'); 
+                // Product returned successfully, update the UI
+                // (you can disable the button or update other UI elements)
+                Swal.fire({
+                    title: 'Success',
+                    icon: 'success',
+                    text: 'Product returned successfully',
+                    timer: 2000,
+                });
+            } else {
+                // Handle error
+                console.log(data.error);
+            }
+        },
+        error: function (err) {
+            // Handle AJAX error
+            console.error(err);
+        },
+    });
+}
+
 </script>
 
 
@@ -230,6 +286,21 @@
             Swal.fire({
                 title: 'Product Already delivered',
                 text: 'This product is already delivered.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }
+        else if (statusCell.text().trim().toLowerCase() === 'return placed') {
+            Swal.fire({
+                title: 'Product Already delivered',
+                text: 'This product is went for return confirmation.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }else if (statusCell.text().trim().toLowerCase() === 'returned') {
+            Swal.fire({
+                title: 'Product returned back',
+                text: 'This product is already returned back.',
                 icon: 'info',
                 confirmButtonText: 'OK'
             });

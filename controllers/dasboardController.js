@@ -51,7 +51,7 @@ const loadDashboard = async( req, res, next) => {
             Sales.dailyChart(),
             Sales.categorySales(),
             Sales.YearlyRevenue(currentYearStartDate, now),
-            Sales.monthlyChart()
+            Sales.monthlyChart(currentYearStartDate, now)
         ]
         
         const results = await Promise.all( promises )
