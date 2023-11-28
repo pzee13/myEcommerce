@@ -172,11 +172,17 @@ document.querySelectorAll('.remove-from-cart-button').forEach(button => {
             const response = await fetch(`/cart_remove?id=${productId}&price=${price}`, {
                 method: 'GET'
             });
+            const responseText = await response.text();
+            const responseBody = JSON.parse(responseText);
 
+            console.log('Remove from cart response:', responseBody)
+            console.log('Remove from cart response:', response);
             if (response.ok) {
                 // Item removed successfully, remove the row from the cart UI
                 rowToRemove.remove();
-                Swal.fire("Item removed from cart") // Remove the row from the cart table
+                Swal.fire("Item removed from cart")
+                $('.js-show-cart').attr('data-notify', responseBody.cartCount);
+ // Remove the row from the cart table
                 // You can also update the total price in the UI if needed
             } else {
                 // Handle errors or display a message to the user

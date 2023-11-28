@@ -33,6 +33,10 @@ const userSchema = mongoose.Schema({
                     type:String,
                     default:''
                 },
+                referralCode: {
+                  type: String,
+                  unique: true,
+              },
                 wallet : {
                     type : Number,
                     default : 0

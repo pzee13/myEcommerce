@@ -20,9 +20,9 @@ const loadCart = async(req,res,next)=>{
             const products = await Cart.findOne({user_id:user_id}).populate('items.product_Id')
 
         if (!products) {
-        res.render('cart2',{ products: { totalPrice: 0, items: [] },userIsLoggedIn: req.session.user_id ? true : false });
+        res.render('cart2',{ products: { totalPrice: 0, items: [] }});
     } else {
-        res.render('cart2', { products,userIsLoggedIn: req.session.user_id ? true : false });
+        res.render('cart2', { products });
     }
 }else{
     res.redirect('/login')
@@ -81,7 +81,9 @@ const addCart = async (req, res, next) => {
                         }
                     });
 
-                    res.json({ count: 'ADDED' });
+                    const updatedCart = await Cart.findOne({ user_id: userid });
+
+                    res.json({ count: 'ADDED', cartCount: updatedCart.items.length});
                 } else {
                     res.json({ limit: 'Limit exceeded' });
                 }
@@ -100,8 +102,8 @@ const addCart = async (req, res, next) => {
                         $inc: { count: 1, totalPrice: total },
                     }
                 );
-
-                res.json({ count: 'ADDED' });
+                const updatedCart = await Cart.findOne({ user_id: userid });
+                res.json({ count: 'ADDED' ,cartCount: updatedCart.items.length});
             }
         } else {
             const NewCart = new Cart({
@@ -118,7 +120,7 @@ const addCart = async (req, res, next) => {
 
             await NewCart.save();
 
-            res.json({ count: 'ADDED' });
+            res.json({ count: 'ADDED' ,cartCount:1});
         }}else{
             if (cartdata) {
                 const findProduct = await Cart.findOne({
@@ -142,8 +144,8 @@ const addCart = async (req, res, next) => {
                                 totalPrice: cartdata.totalPrice + total
                             }
                         });
-    
-                        res.json({ count: 'ADDED' });
+                        const updatedCart = await Cart.findOne({ user_id: userid });
+                        res.json({ count: 'ADDED' ,cartCount: updatedCart.items.length});
                     } else {
                         res.json({ limit: 'Limit exceeded' });
                     }
@@ -162,8 +164,8 @@ const addCart = async (req, res, next) => {
                             $inc: { count: 1, totalPrice: total },
                         }
                     );
-    
-                    res.json({ count: 'ADDED' });
+                    const updatedCart = await Cart.findOne({ user_id: userid });
+                    res.json({ count: 'ADDED' ,cartCount: updatedCart.items.length});
                 }
             } else {
                 const NewCart = new Cart({
@@ -180,7 +182,7 @@ const addCart = async (req, res, next) => {
     
                 await NewCart.save();
     
-                res.json({ count: 'ADDED' });
+                res.json({ count: 'ADDED',cartCount:1});
             }
         }
     }
@@ -411,12 +413,14 @@ const cartRemove = async (req, res, next) => {
 
         const ab = await Cart.findOneAndUpdate({ user_id: userid }, { $pull: { items: { product_Id: id } } });
 
-        if (ab.items.length === 1) {
+        if (ab.items.length === 0) {
             await Cart.findOneAndDelete({ user_id: userid });
         }
-
+        const updatedCart = await Cart.findOne({ user_id: userid });
         // Return a JSON response to indicate success
-        res.json({ success: true, message: 'Item removed from cart' });
+        res.json({ success: true, message: 'Item removed from cart',cartCount: updatedCart.items.length });
+        console.log('Cart count:', ab.items.length);
+       
     } catch (err) {
         next(err);
     }

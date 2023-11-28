@@ -337,8 +337,6 @@
                         <button type="button" class="flex-c-m stext-101 cl0 size-112 bg7 bor11 hov-btn3 p-lr-15 trans-04 m-b-10 submit-review-button" onclick="submitEditReview()">
                             Submit
                         </button>
-                        
-                        
                     </div>
                 </form>
             </div>
@@ -394,11 +392,13 @@
                 quantity: productQuantity,
             });
 
-            if (response.data.count) {
+            if (response.data && response.data.count) {
                
                 Swal.fire("Product added to Cart")
+                console.log('Cart count:', response.data.cartCount);
+                $('.js-show-cart').attr('data-notify', response.data.cartCount);
                 // You can add a success message or other actions here
-            } else if (response.data.limit) {
+            } else if (response.data && response.data.limit) {
                 
                 Swal.fire("Limit Exceeded")
                 // Handle the case where the limit is exceeded

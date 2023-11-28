@@ -377,7 +377,7 @@ const loadOrderPlaced = async (req, res, next) => {
           .sort({ orderDate: -1 });
   }
 
-  const products = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+  
 
   if (!order) {
       return res.status(404).json({
@@ -386,7 +386,7 @@ const loadOrderPlaced = async (req, res, next) => {
       });
   }
 
-    res.render("orderSuccess", { order ,products,userIsLoggedIn: req.session.user_id ? true : false});
+    res.render("orderSuccess", { order });
   } catch (err) {
     next(err);
   }
@@ -396,13 +396,13 @@ const loadOrderPlaced = async (req, res, next) => {
 const loadOrder = async(req,res,next)=>{
   try{
     const userId = req.session.user_id;
-    const products = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+    
     const orders = await Order.find({user:userId}).populate('user') .populate({
       path: 'products.product_Id',
       model: 'product', // Replace with your actual product model name
       select: 'productName', // Include the field(s) you want to populate
     }).sort({ orderDate: -1 });
-      res.render("orders",{orders:orders,userIsLoggedIn: req.session.user_id ? true : false,products})
+      res.render("orders",{orders:orders})
   }
   catch(error)
   {
@@ -432,7 +432,7 @@ const orderDetails = async (req, res, next) => {
           .sort({ orderDate: -1 });
   }
 
-  const products = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+  
 
   if (!order) {
       return res.status(404).json({
@@ -441,7 +441,7 @@ const orderDetails = async (req, res, next) => {
       });
   }
 
-    res.render("orderDetails", { order ,products,userIsLoggedIn: req.session.user_id ? true : false});
+    res.render("orderDetails", { order });
   } catch (err) {
     next(err);
   }

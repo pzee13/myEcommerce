@@ -240,7 +240,7 @@ const searchProducts = async (req, res,next) => {
     })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
-      .populate('category'); // Populate the category field
+      .populate('category').populate('offer'); // Populate the category field
 
     const totalProducts = await Product.countDocuments({
       $or: [
@@ -253,11 +253,14 @@ const searchProducts = async (req, res,next) => {
     // Fetch categories for the sidebar
     const categories = await Category.find();
 
+    const availableOffers = await Offer.find({ status : true, expiryDate : { $gte : new Date() }})
+
     res.render('viewProduct', {
       data: products,
       category: categories,
       currentPage: page,
       totalPages: totalPages,
+      availableOffers:availableOffers
     });
   } catch (error) {
  

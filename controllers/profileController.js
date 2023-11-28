@@ -18,7 +18,7 @@ const loadProfile = async (req, res, next) => {
         }
         else{
         const id = req.session.user_id;
-        const products = await Cart.findOne({user_id:id}).populate('items.product_Id')
+        
         const user = await User.findById(id);
         const orders = await Order.find({ user: id}).populate({
             path: 'products.product_Id',
@@ -32,7 +32,7 @@ const loadProfile = async (req, res, next) => {
            
           
             console.log("Wallet Balance:", user.wallet)
-            res.render('userProfile', { user, address:address,products:products ,order:orders,userIsLoggedIn: req.session.user_id ? true : false,wallet:user.wallet});
+            res.render('userProfile', { user, address:address ,order:orders,wallet:user.wallet});
            
         } else {
             res.redirect('/login');
@@ -154,12 +154,78 @@ const updateProfile = async (req, res, next) => {
 
         await userData.save();
 
-        res.redirect('/profile');
+        res.redirect('/profile#tab-account');
     } catch (err) {
         next(err);
         
     }
 };
+
+const isStrongPassword = password => {
+    // Define the criteria for a strong password
+    const minLength = 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasDigit = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+
+    // Check if the password meets all criteria
+    return (
+        password.length >= minLength &&
+        hasUppercase &&
+        hasLowercase &&
+        hasDigit &&
+        hasSpecialChar
+    );
+};
+
+
+const changePassword = async (req, res) => {
+    try {
+        const userId = req.session.user_id;
+        const currentPassword = req.body.currentPassword;
+        const newPassword = req.body.newPassword;
+        const confirmPassword = req.body.confirmPassword;
+
+        // Fetch user data
+        const userData = await User.findById(userId);
+
+        if (!userData) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData.password);
+
+        if (!isCurrentPasswordValid) {
+            return res.status(400).json({ success: false, error: 'Current password is incorrect' });
+        }
+
+        // Check if the new password meets strong validation criteria on the server-side
+        const isStrong = isStrongPassword(newPassword); // Rename the variable
+        if (!isStrong) {
+            return res.status(400).json({ success: false, error: 'New password does not meet strong criteria' });
+        }
+
+        // Check if the new password and confirm password match
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ success: false, error: 'Passwords do not match' });
+        }
+
+        // Hash and update the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        userData.password = hashedPassword;
+
+        await userData.save();
+
+        // Password changed successfully
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+}
+
+
 
 
 // const updateProfile = async (req, res, next) => {
@@ -244,7 +310,7 @@ const addAddress = async (req,res,next) => {
         }
 
         // Redirect to the profile page or any other suitable page
-        res.redirect('/profile');
+        res.redirect('/profile#tab-address');
     } catch (err) {
         next(err);
        
@@ -354,13 +420,15 @@ const deleteAddress = async (req, res, next) => {
             { $pull: { address: { _id: addressId } } }
         );
             console.log(result)
+           
         if (result.ok === 1) {
-            res.redirect('/profile#tab-address')
+            
             return res.status(200).json({ message: 'Address deleted successfully' });
             
         } else {
             return res.status(404).json({ message: 'Address not found' });
         }
+   
     } catch (error) {
         console.error('An error occurred while deleting the address', error);
         res.status(500).json({ message: 'Error deleting the address' });
@@ -370,7 +438,7 @@ const deleteAddress = async (req, res, next) => {
 const loadWallet = async (req, res, next) => {
     try {
         const userId = req.session.user_id;
-        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+        
 
         const user = await User.aggregate([
             { $match: { _id:new mongoose.Types.ObjectId(userId)} },
@@ -394,8 +462,7 @@ const loadWallet = async (req, res, next) => {
         ]);
 
         if (user.length > 0) {
-            res.render('wallet', { wallet: user[0].wallet, walletHistory: user[0].walletHistory ,
-                products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+            res.render('wallet', { wallet: user[0].wallet, walletHistory: user[0].walletHistory});
         } else {
             res.status(404).send('User not found');
         }
@@ -413,5 +480,6 @@ module.exports = {
     // loadEditAddress,
     EditAddress,
     deleteAddress,
-    loadWallet
+    loadWallet,
+    changePassword
 }

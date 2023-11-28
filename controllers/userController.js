@@ -13,6 +13,7 @@ const path = require("path")
 const otpGenerator = require("otp-generator")
 const Cart = require('../models/cartModel')
 const PDFDocument = require('pdfkit')
+const shortid = require('shortid');
 const dotenv = require("dotenv").config()
 
 const Order = require("../models/orderModel")
@@ -167,6 +168,24 @@ const insertUser = async (req, res) => {
             req.session.lname = req.body.lname;
             req.session.mobileno = req.body.mobileno;
             req.session.email = req.body.email;
+
+            if (req.body.referralCode) {
+                // Check if the referral code provided by the user exists
+                const referringUser = await User.findOne({ referralCode: req.body.referralCode });
+          
+                if (referringUser) {
+                  req.session.referralUserId = referringUser._id; // Save referring user ID in session
+                } else {
+                  res.render('registration', { message: 'Invalid referral code. Please use a valid referral code.' });
+                  return;
+                }
+              }
+
+              // Generate a unique referral code using shortid
+              const referralCode = shortid.generate();
+              req.session.referralCode = referralCode; //
+          
+
             if(req.body.fname && req.body.email && req.session.lname && req.session.mobileno){
                 if(req.body.password === req.body.cpassword) {
                     req.session.password = spassword;
@@ -204,11 +223,37 @@ const verifyOTP = async (req, res)=>{
                 lastName: req.session.lname,
                 email: req.session.email,
                 mobile: req.session.mobileno,
+                referralCode: req.session.referralCode,
                 password: req.session.password,
                 isVerified:1
             });
 
             const result = await user.save()
+
+            if(req.session.referralUserId){
+                const referringUser = await User.findById(req.session.referralUserId);
+
+                const bonusAmount = 100;
+
+                referringUser.wallet += bonusAmount;
+                referringUser.walletHistory.push({
+                  date: new Date(),
+                  amount: bonusAmount,
+                  description: `Referral bonus by referring user ${result.firstName}`,
+                  transactionType: 'Credit',
+                });
+                await referringUser.save();
+      
+                result.wallet += bonusAmount;
+                result.walletHistory.push({
+                   date: new Date(),
+                  amount: bonusAmount,
+                  description: "Referral bonus",
+                  transactionType: 'Credit',
+                });
+                await result.save();
+            }
+
             res.redirect("/login")
         }
         else{
@@ -307,11 +352,11 @@ const loaduserHome = async (req, res) => {
     try {
         const userId = req.session.user_id 
         
-      const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+    
       const banners = await Banner.find()
       const products = await Product.find({ status: 1 }).populate('category').populate('offer')
       const categories = await Category.find()
-      res.render('userHome',{product:products,userIsLoggedIn: req.session.user_id ? true : false,banners:banners,products:products1,category:categories});
+      res.render('userHome',{product:products,banners:banners,category:categories});
         
     } catch (error) {
       ;
@@ -466,7 +511,7 @@ const viewProducts = async (req, res, next) => {
       let search = '';
       let minPrice = 1;
       let maxPrice = 20000;
-      let sortValue = -1;
+  
       let categoryFilter = null;
      
   
@@ -481,14 +526,7 @@ const viewProducts = async (req, res, next) => {
       if (req.query.maxPrice) {
         maxPrice = req.query.maxPrice;
       }
-  
-      if (req.query.sortValue) {
-        if (req.query.sortValue === '2') {
-          sortValue = 1;
-        } else if (req.query.sortValue === '1') {
-          sortValue = -1;
-        }
-      }
+
   
       if (req.query.category) {
         categoryFilter = req.query.category;
@@ -510,17 +548,45 @@ const viewProducts = async (req, res, next) => {
   
    
       const skip = (page - 1) * pageSize;
-      const products = await Product.find(query)
+      let products = await Product.find(query)
         .populate('category')
         .populate('offer')
         .skip(skip)
         .limit(pageSize)
-        .sort({ price: sortValue });
+        
+
+        let sortValue = -1;
+            if (req.query.sortValue) {
+                if (req.query.sortValue === '2') {
+                    sortValue = 1;
+                } else if (req.query.sortValue === '1') {
+                    sortValue = -1;
+                } else {
+                    sortValue = -1;
+                }
+            }
   
       const totalProducts = await Product.countDocuments(query);
       const totalPages = Math.ceil(totalProducts / pageSize);
   
       const categories = await Category.find();
+
+      if (req.query.sortValue && req.query.sortValue != 3) {
+        products = await Product.find(query)
+            .populate('category')
+            .populate('offer')
+            .sort({ price: sortValue })
+            .limit(pageSize)
+            .skip((page - 1) * pageSize);
+    } else {
+        products = await Product.find(query)
+            .populate('category')
+            .populate('offer')
+            .sort({ createdAt: sortValue })
+            .limit(pageSize)
+            .skip((page - 1) * pageSize);
+    }
+
      
   
       res.render('userProduct', {
@@ -597,7 +663,7 @@ const filterCategory = async (req, res) => {
         const id = req.query.id; // You should adjust this based on your route structure
         const product = await Product.findById({_id:id}).populate('category').populate('offer');
         const userId = req.session.user_id 
-        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+      
         if (!product) {
             return res.status(404).render('404-error', { message: 'Product not found' });
         }
@@ -606,7 +672,7 @@ const filterCategory = async (req, res) => {
 
         const userReviews = reviews.filter(review => review.user.userId === userId)
 
-        res.render('productDetails', { product:product,products:products1,userIsLoggedIn: req.session.user_id ? true : false,userId:userId,reviews:reviews,userReviews:userReviews});
+        res.render('productDetails', { product:product,userId:userId,reviews:reviews,userReviews:userReviews});
     } catch (error) {
        
         next(error)
@@ -635,69 +701,69 @@ const filterCategory = async (req, res) => {
 //         res.status(500).render('error', { message: 'Internal Server Error' });
 //     }
 // };
-const searchProducts = async (req, res) => {
-    try {
-        const keyword = req.query.keyword;
-        const page = req.query.page || 1;
-        const pageSize = 10;
+// const searchProducts = async (req, res) => {
+//     try {
+//         const keyword = req.query.keyword;
+//         const page = req.query.page || 1;
+//         const pageSize = 10;
 
-        // Check if the keyword is present for search or if it's a clear request
-        if (keyword && keyword.trim() !== '') {
-            // Perform a case-insensitive search on product names and descriptions
-            const products = await Product.find({
-                $and: [
-                    { status: 1 }, // Add the condition to search only products with status 1
-                    {
-                        $or: [
-                            { productName: { $regex: keyword, $options: 'i' } },
-                            { description: { $regex: keyword, $options: 'i' } },
-                        ],
-                    },
-                ],
-            })
-                .skip((page - 1) * pageSize)
-                .limit(pageSize)
-                .populate('category');
+//         // Check if the keyword is present for search or if it's a clear request
+//         if (keyword && keyword.trim() !== '') {
+//             // Perform a case-insensitive search on product names and descriptions
+//             const products = await Product.find({
+//                 $and: [
+//                     { status: 1 }, // Add the condition to search only products with status 1
+//                     {
+//                         $or: [
+//                             { productName: { $regex: keyword, $options: 'i' } },
+//                             { description: { $regex: keyword, $options: 'i' } },
+//                         ],
+//                     },
+//                 ],
+//             })
+//                 .skip((page - 1) * pageSize)
+//                 .limit(pageSize)
+//                 .populate('category');
 
-            const totalProducts = await Product.countDocuments({
-                $and: [
-                    { status: 1 }, // Add the condition to count only products with status 1
-                    {
-                        $or: [
-                            { productName: { $regex: keyword, $options: 'i' } },
-                            { description: { $regex: keyword, $options: 'i' } },
-                        ],
-                    },
-                ],
-            });
+//             const totalProducts = await Product.countDocuments({
+//                 $and: [
+//                     { status: 1 }, // Add the condition to count only products with status 1
+//                     {
+//                         $or: [
+//                             { productName: { $regex: keyword, $options: 'i' } },
+//                             { description: { $regex: keyword, $options: 'i' } },
+//                         ],
+//                     },
+//                 ],
+//             });
 
-            const totalPages = Math.ceil(totalProducts / pageSize);
+//             const totalPages = Math.ceil(totalProducts / pageSize);
 
-            // Fetch categories for the sidebar
-            const categories = await Category.find();
+//             // Fetch categories for the sidebar
+//             const categories = await Category.find();
 
-            const userId = req.session.user_id;
-            const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
+//             const userId = req.session.user_id;
+//             const products1 = await Cart.findOne({ user_id: userId }).populate('items.product_Id');
 
-            res.render('userProduct', {
-                product: products,
-                category: categories,
-                currentPage: page,
-                totalPages: totalPages,
-                products: products1,
-                userIsLoggedIn: req.session.user_id ? true : false,
-                keyword: keyword, // Pass the keyword to the view for display or further processing
-            });
-        } else {
-            // If there's no keyword or it's empty, redirect to the product listing route without search parameters
-            res.redirect('/product');
-        }
+//             res.render('userProduct', {
+//                 product: products,
+//                 category: categories,
+//                 currentPage: page,
+//                 totalPages: totalPages,
+//                 products: products1,
+//                 userIsLoggedIn: req.session.user_id ? true : false,
+//                 keyword: keyword, // Pass the keyword to the view for display or further processing
+//             });
+//         } else {
+//             // If there's no keyword or it's empty, redirect to the product listing route without search parameters
+//             res.redirect('/product');
+//         }
 
-    } catch (error) {
+//     } catch (error) {
        
-        next(error)
-    }
-};
+//         next(error)
+//     }
+// };
 
 
   const walletHistory = async (req, res,next) => {
@@ -710,8 +776,8 @@ const searchProducts = async (req, res) => {
         { $sort: { "walletHistory.date": -1 } }
       ]);
     //   console.log(walletData);
-      const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
-      res.render("walletHistory", { walletData,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+    
+      res.render("walletHistory", { walletData});
     } catch (err) {
 
      next(err)
@@ -1197,7 +1263,7 @@ module.exports = {
     viewProducts,
     resendOTP,
     getProductDetails,
-    searchProducts,
+    // searchProducts,
     walletHistory,
     addMoneyWallet,
     verifyWalletpayment,

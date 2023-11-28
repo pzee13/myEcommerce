@@ -37,6 +37,13 @@ user_route.use('/public',express.static(path.join(__dirname,'../public')))
 user_route.use('/userlogin',express.static(path.join(__dirname,'../public/userlogin')))
 user_route.use('/assets',express.static(path.join(__dirname,'../public/userlogin/assets')))
 
+
+const fetchUserData = require("../middleware/userData")
+user_route.use(fetchUserData)
+
+const fetchCartData =require("../middleware/cartCount")
+user_route.use(fetchCartData)
+
 user_route.get('/signup',userController.loadRegister)
 
 user_route.post('/signup',userController.insertUser)
@@ -71,7 +78,7 @@ user_route.get('/logout',auth.isLogin,userController.userLogout)
 
 user_route.get('/product',userController.viewProducts) 
 
-user_route.get('/search_product',userController.searchProducts)
+// user_route.get('/search_product',userController.searchProducts)
 
 user_route.get('/filter_by_price',userController.filterPrice)
 
@@ -98,6 +105,8 @@ user_route.get('/remove_wishlist',wishlistController.removeFromWishlist)
 user_route.get('/profile',auth.isLogin,profileController.loadProfile)
 
 user_route.post('/update_profile',auth.isLogin,profileController.updateProfile)
+
+user_route.post('/change_password',auth.isLogin,profileController.changePassword)
 
 user_route.post('/add_address',profileController.addAddress)
 

@@ -14,17 +14,17 @@ const loadWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const userId = req.session.user_id 
-        const products1 = await Cart.findOne({user_id:userId}).populate('items.product_Id')
+     
 
         // Find the user's wishlist and populate the products
         const wishlist = await Wishlist.find({ user_id }).populate('products');
 
         if (wishlist.length === 0) {
             // Wishlist is empty, return an empty array
-            res.render('wishlist3', { data: [] ,userIsLoggedIn: req.session.user_id ? true : false,products:products1});
+            res.render('wishlist3', { data: [] });
             console.log(wishlist)
         } else {
-            res.render('wishlist3', { data: wishlist ,products:products1,userIsLoggedIn: req.session.user_id ? true : false});
+            res.render('wishlist3', { data: wishlist });
         }
     } catch (error) {
         

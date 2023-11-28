@@ -71,28 +71,53 @@
                                         </div>
                                     </div>
                                 
-                                    <label for="email">Email address *</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
-                                    <span class="error" id="email-error"></span>
+                                    <div class="form-group">
+                                        <label for="email">Email address *</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" >
+                                        <span class="error" id="email-error"></span>
+                                    </div>
                                 
-                                    <label for="mobile">Mobile No *</label>
-                                    <input type="text" class= "form-control" id="mobile" name="mobile" value="<%= user.mobile %>" required>
-                                    <span class="error" id="mobile-error"></span>
+                                    <div class="form-group">
+                                        <label for="mobile">Mobile No *</label>
+                                        <input type="text" class="form-control" id="mobile" name="mobile" value="<%= user.mobile %>" >
+                                        <span class="error" id="mobile-error"></span>
+                                    </div>
                                 
-                                    <label for="password">Current password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword">
-                                
-                                    <label for="newPassword">New password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control" id="newPassword" name="newPassword">
-                                
-                                    <label for="confirmPassword">Confirm new password</label>
-                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
-                                    <span class="error" id="confirmPassword-error"></span>
+                                   
                                 
                                     <button type="submit" class="btn btn-outline-primary-2">
                                         <span>SAVE CHANGES</span>
                                     </button>
                                 </form>
+                                <form id="password-change-form">
+                                    <!-- Your existing form fields -->
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current password *</label>
+                                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" oninput="validateCurrentPassword()">
+                                        <span class="error" id="currentPassword-error"></span>
+                                    </div>
+                                
+                                
+                                    <div class="form-group">
+                                        <label for="newPassword">New password *</label>
+                                        <input type="password" class="form-control" id="newPassword" name="newPassword" oninput="validatePasswordLength()">
+                                        <span class="error" id="newPassword-error"></span>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="confirmPassword">Confirm new password *</label>
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" oninput="validatePasswordMatch()">
+                                        <span class="error" id="confirmPassword-error"></span>
+                                    </div>
+                                    <div id="success-message" class="success-message"></div>
+                                    <div id="failed-message" class="error"></div>
+                                    
+                                
+                                    <button type="button" onclick="changePassword()" class="btn btn-outline-primary-2">
+                                        <span>CHANGE PASSWORD</span>
+                                    </button>
+                                </form>
+                                
                             </div><!-- .End .tab-pane -->
                             
                             <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
@@ -232,9 +257,14 @@
                                             <input type="text" class="form-control" id="state" name="state">
                                             <p id="state-error" style="color: red;"></p>
                                         </div>
+                                        <div class="form-group col-12">
+                                            <p id="fname-error" class="error-message" style="color: red;"></p>
+                                            <!-- Add similar error elements for other fields -->
+                                            <p id="all-error" class="error-message" style="color: red;"></p>
+                                        </div>
                                         <!-- Add input fields for other address details here -->
                                         <div class="form-group col-12">
-                                            <p id="all-error" style="color: red;"></p>
+                                            
                                             <button type="submit" class="btn btn-outline-primary-2">
                                                 <span>Add Address</span>
                                             </button>
@@ -471,6 +501,12 @@
     }
 </style>
 
+<style>
+    .success-message {
+        color: green; /* or any other color that indicates success */
+    }
+</style>
+
 <script>
     // Add an event listener for the "Edit" links
     document.addEventListener('DOMContentLoaded', function() {
@@ -510,21 +546,7 @@
     });
 </script>
 
-<script>
-    // Add an event listener to the form to handle the validation
-    const form = document.querySelector('profile-form');
-    const newPasswordInput = document.getElementById('newPassword');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
 
-    form.addEventListener('submit', function (event) {
-        if (newPasswordInput.value !== '') {
-            if (confirmPasswordInput.value === '') {
-                alert('Please confirm the new password.');
-                event.preventDefault(); // Prevent form submission
-            }
-        }
-    });
-</script>
 
 
 <!-- Inside your HTML file -->
@@ -693,10 +715,10 @@
 
                             if (data.success) {
                                 console.log("hii")
-                                window.location.reload()
                                 if (addressDiv) {
                                     addressDiv.remove(); // Remove the div from the DOM
                                     Swal.fire('Address div removed successfully.');
+                                    window.location.href = '/profile#tab-address'
                                 } else {
                                     Swal.fire('Address card not found in the DOM');
                                 }
@@ -756,94 +778,96 @@ window.addEventListener('hashchange', activateTabFromHash);
 
 <script>
     function validAddress() {
-    const firstname = document.getElementById('fname1').value;
-    const lastname =  document.getElementById('lname1').value;
-    const mobile = document.getElementById('mobile1').value;
-    const email = document.getElementById('email1').value;
-    const housename = document.getElementById('housename').value;
-    const state = document.getElementById('state').value;
-    const district = document.getElementById('district').value;
-    const city = document.getElementById('city').value;
-    const pincode = document.getElementById('pin').value;
+        // Get form values
+        const firstname = document.getElementById('fname1').value;
+        const lastname =  document.getElementById('lname1').value;
+        const mobile = document.getElementById('mobile1').value;
+        const email = document.getElementById('email1').value;
+        const housename = document.getElementById('housename').value;
+        const state = document.getElementById('state').value;
+        const district = document.getElementById('district').value;
+        const city = document.getElementById('city').value;
+        const pincode = document.getElementById('pin').value;
 
-    document.getElementById('fname-error').textContent = '';
-    document.getElementById('lname-error').textContent = '';
-    document.getElementById('email-error').textContent = '';
-    document.getElementById('housename-error').textContent = '';
-    document.getElementById('state-error').textContent = '';
-    document.getElementById('mobile-error').textContent = '';
-    document.getElementById('district-error').textContent = '';
-    document.getElementById('city-error').textContent = '';
-    document.getElementById('pin-error').textContent = '';
-    document.getElementById('all-error').textContent= '';
+        // Clear all existing error messages
+        clearAllErrors();
 
+        // Validate each field
+        if (!firstname) {
+            displayError('fname-error', 'First Name field should not be empty!');
+            return false;
+        }
 
+        if (!lastname) {
+            displayError('lname-error', 'Last Name field should not be empty!');
+            return false;
+        }
 
-    if (!firstname) {
-        document.getElementById('fname-error').textContent = 'First Name field should not be empty!';
-        return false;
+        if (!state) {
+            displayError('state-error', 'State field should not be empty!');
+            return false;
+        }
+
+        if (!housename) {
+            displayError('housename-error', 'House Name field should not be empty!');
+            return false;
+        }
+
+        const mobileRegex = /^[6-9]\d{9}$/;
+        if (!mobile || !mobileRegex.test(mobile)) {
+            displayError('mobile-error', 'Mobile number should be a 10-digit valid number');
+            return false;
+        }
+
+        if (new Set(mobile).size === 1) {
+            displayError('mobile-error', 'Mobile number should not consist of the same digit.');
+            return false;
+        }
+
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+        if (!email || !emailRegex.test(email)) {
+            displayError('email-error', 'Please enter a valid email address. (eg: example@gmail.com)');
+            return false;
+        }
+
+        if (!district) {
+            displayError('district-error', 'District field should not be empty!');
+            return false;
+        }
+
+        if (!city) {
+            displayError('city-error', 'City field should not be empty!');
+            return false;
+        }
+
+        const pincodeRegex = /^\d{6}$/;
+        if (!pincode || !pincode.match(pincodeRegex)) {
+            displayError('pin-error', 'Pincode should be a 6-digit numeric value.');
+            return false;
+        }
+
+        // Check if any field is empty
+        if (!firstname || !lastname || !mobile || !email || !housename || !city || !state || !district || !pincode) {
+            displayError('all-error', 'All address fields are required.');
+            return false;
+        }
+
+        // If everything is valid, return true
+        return true;
     }
 
-    if (!lastname) {
-        document.getElementById('lname-error').textContent = 'Last Name field should not be empty!';
-        return false;
+    // Function to clear all error messages
+    function clearAllErrors() {
+        const errorElements = document.querySelectorAll('.error-message');
+        errorElements.forEach((element) => {
+            element.textContent = '';
+        });
     }
 
-    if (!state) {
-        document.getElementById('state-error').textContent = 'State field should not be empty!';
-        return false;
+    // Function to display an error message for a specific field
+    function displayError(elementId, message) {
+        document.getElementById(elementId).textContent = message;
     }
-
-    if (!housename) {
-        document.getElementById('housename-error').textContent = 'housename field should not be empty!';
-        return false;
-    }
-
-    const mobileRegex = /^[6-9]\d{9}$/;
-
-if (!mobile || !mobileRegex.test(mobile)) {
-    document.getElementById('mobile-error').textContent = 'Mobile number should be a 10-digit valid number';
-    return false;
-}
-
-if (new Set(mobile).size === 1) {
-    document.getElementById('mobile-error').textContent = 'Mobile number should not consist of the same digit.';
-    return false;
-}
-
-const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
-
-if (!email || !emailRegex.test(email)) {
-  document.getElementById('email-error').textContent = 'Please enter a valid email address. (eg: example@gmail.com)';
-  return false;
-}
-
-    if (!district) {
-        document.getElementById('district-error').textContent = 'District field should not be empty!';
-        return false;
-    }
-
-    if (!city) {
-        document.getElementById('city-error').textContent = 'City field should not be empty!';
-        return false;
-    }
-
-    const pincodeRegex = /^\d{6}$/;
-
-    if (!pincode || !pincode.match(pincodeRegex)) {
-        document.getElementById('pin-error').textContent = 'Pincode should be a 6-digit numeric value.';
-        return false;
-    }
-
-    if (!firstname || !lastname || !mobile || !email || !housename || !city || !state || !district || !pincode) {
-        document.getElementById('all-error').textContent = 'All address fields are required.';
-        return false;
-    }
-
-    return true;
-}
-
-
 </script>
 
 
@@ -932,55 +956,163 @@ if (!email || !emailRegex.test(email)) {
 </script>
 
 <script>
-  function validUser() {
-    const fname = document.getElementById('fname');
-    const lname = document.getElementById('lname');
-    const email = document.getElementById('email');
-    const mobile = document.getElementById('mobile');
-    const confirmPassword = document.getElementById('confirmPassword');
-    const newPassword = document.getElementById('newPassword');
-
-    const fnameError = document.getElementById('fname-error');
-    const lnameError = document.getElementById('lname-error');
-    const emailError = document.getElementById('email-error');
-    const mobileError = document.getElementById('mobile-error');
-    const confirmPasswordError = document.getElementById('confirmPassword-error');
-
-    fnameError.textContent = '';
-    lnameError.textContent = '';
-    emailError.textContent = '';
-    mobileError.textContent = '';
-    confirmPasswordError.textContent = '';
-
-    let isValid = true;
-
-    if (fname.value === '') {
-        fnameError.textContent = 'First Name is required';
-        isValid = false;
-    }
-
-    if (lname.value === '') {
-        lnameError.textContent = 'Last Name is required';
-        isValid = false;
-    }
-
-    if (email.value === '') {
+    function validUser() {
+      const fname = document.getElementById('fname');
+      const lname = document.getElementById('lname');
+      const email = document.getElementById('email');
+      const mobile = document.getElementById('mobile');
+   
+  
+      const fnameError = document.getElementById('fname-error');
+      const lnameError = document.getElementById('lname-error');
+      const emailError = document.getElementById('email-error');
+      const mobileError = document.getElementById('mobile-error');
+   
+  
+      fnameError.textContent = '';
+      lnameError.textContent = '';
+      emailError.textContent = '';
+      mobileError.textContent = '';
+    
+  
+      let isValid = true;
+  
+      if (fname.value === '') {
+          fnameError.textContent = 'First Name is required';
+          isValid = false;
+      }
+  
+      if (lname.value === '') {
+          lnameError.textContent = 'Last Name is required';
+          isValid = false;
+      }
+  
+      if (email.value === '') {
         emailError.textContent = 'Email is required';
         isValid = false;
+    } else {
+        // Enhanced email validation using a regular expression
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email.value)) {
+            emailError.textContent = 'Invalid email format';
+            isValid = false;
+        }
+    }
+  
+      if (mobile.value === '') {
+          mobileError.textContent = 'Mobile is required';
+          isValid = false;
+      } else if (/^(\d)\1+$/.test(mobile.value)) {
+          mobileError.textContent = 'Mobile number should not consist of the same digit.';
+          isValid = false;
+      } else {
+          const mobileRegex = /^[6-9]\d{9}$/;
+          if (!mobileRegex.test(mobile.value)) {
+              mobileError.textContent = 'Mobile number should be a 10-digit valid number';
+              isValid = false;
+          }
+      }
+  
+     
+      return isValid;
+  }
+  </script>
+
+  <script>
+
+function validateCurrentPassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const currentPasswordError = document.getElementById('currentPassword-error');
+
+    // Validate that the current password is not empty
+    if (currentPassword.length === 0) {
+        currentPasswordError.textContent = 'Current password is required';
+    } else {
+        currentPasswordError.textContent = '';
+    }
+}
+
+function validatePasswordLength() {
+    const newPassword = document.getElementById('newPassword').value;
+    const newPasswordError = document.getElementById('newPassword-error');
+
+    if (newPassword.length < 8) {
+        newPasswordError.textContent = 'Password must be at least 8 characters long';
+    } else {
+        newPasswordError.textContent = '';
+    }
+}
+
+function validatePasswordMatch() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const confirmPasswordError = document.getElementById('confirmPassword-error');
+
+    if (newPassword !== confirmPassword) {
+        confirmPasswordError.textContent = 'Passwords do not match';
+    } else {
+        confirmPasswordError.textContent = '';
+    }
+}
+
+function changePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Validate current password, length, and match on the client-side
+    if (currentPassword.length === 0) {
+        document.getElementById('currentPassword-error').textContent = 'Current password is required';
+        return;
     }
 
-    if (mobile.value === '') {
-        mobileError.textContent = 'Mobile is required';
-        isValid = false;
+    if (newPassword.length < 8) {
+        document.getElementById('newPassword-error').textContent = 'Password must be at least 8 characters long';
+        return;
     }
 
-    if (newPassword.value !== confirmPassword.value) {
-        confirmPasswordError.textContent = 'New Password and Confirm Password do not match';
-        isValid = false;
+    if (newPassword !== confirmPassword) {
+        document.getElementById('confirmPassword-error').textContent = 'Passwords do not match';
+        return;
     }
 
-    return isValid;
+    // Perform AJAX request to validate current password and update password
+    fetch('/change_password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            confirmPassword,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the server
+        if (data.success) {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            // Password changed successfully, redirect or display a success message
+            const successMessage = document.getElementById('success-message');
+            successMessage.textContent = 'Password changed successfully!';
+            setTimeout(() => {
+                successMessage.textContent = '';
+            }, 3000);
+        } else {
+            // Display an error message to the user
+            document.getElementById('failed-message').textContent = data.error;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Handle other errors if needed
+    });
 }
 </script>
+  
 
 <%- include('../userMainlayouts/mainfooter.ejs') %>
