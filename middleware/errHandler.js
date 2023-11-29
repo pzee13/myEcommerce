@@ -1,6 +1,9 @@
 const errorHandler = (err, req, res, next) => {
     console.log("err:", err.name);
 
+    const errStatus = err.statusCode || 500;
+    console.log("errStatus:", errStatus);
+
     if (err.name === 'CastError' || err.name === 'MulterError') {
         console.log(err);
         // Handle CastError and MulterError specifically

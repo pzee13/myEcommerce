@@ -51,7 +51,8 @@ const loadDashboard = async( req, res, next) => {
             Sales.dailyChart(),
             Sales.categorySales(),
             Sales.YearlyRevenue(currentYearStartDate, now),
-            Sales.monthlyChart(currentYearStartDate, now)
+            Sales.monthlyChart(currentYearStartDate, now),
+            Sales.getMostSellingProducts()
         ]
         
         const results = await Promise.all( promises )
@@ -70,6 +71,7 @@ const loadDashboard = async( req, res, next) => {
         const categorySales = results[11]
         const YearlyRevenue = results[12]
         const monthlyChart = results[13]
+        const getMostSellingProducts =results[14]
 
 console.log('revenueCurrentMonth:', revenueCurrentMonth);
 console.log('revenuePreviousMonth:', revenuePreviousMonth);
@@ -85,6 +87,7 @@ console.log('dailyChart:', dailyChart);
 console.log('categorySales:', categorySales);
 console.log('Yearly:',YearlyRevenue)
 console.log('Monthlychart:',monthlyChart)
+console.log('Most:',getMostSellingProducts)
 
         console.log('paymentMethodAmount:', paymentMethodAmount);
 
@@ -120,7 +123,8 @@ console.log('Monthlychart:',monthlyChart)
             dailyChart : dailyChart,
             categorySales : categorySales,
             YearlyRevenue:YearlyRevenue,
-            monthlyChart:monthlyChart
+            monthlyChart:monthlyChart,
+            MostSelling:getMostSellingProducts
         } )
     } catch (error) {
         next(error)

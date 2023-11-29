@@ -9,7 +9,10 @@ const checkoutController = require("../controllers/checkoutController")
 const orderController = require("../controllers/orderController")
 
 const errorHandler =require('../middleware/errHandler')
-
+const fetchUserData = require("../middleware/userData")
+const fetchCartData =require("../middleware/cartCount")
+const fetchWislistData = require("../middleware/wishlistCount")
+const auth = require("../middleware/userAuth")
 
 const session = require("express-session")
 
@@ -31,18 +34,21 @@ user_route.use(session({
     saveUninitialized:true
 }))
 
-const auth = require("../middleware/userAuth")
+
 
 user_route.use('/public',express.static(path.join(__dirname,'../public')))
 user_route.use('/userlogin',express.static(path.join(__dirname,'../public/userlogin')))
 user_route.use('/assets',express.static(path.join(__dirname,'../public/userlogin/assets')))
 
 
-const fetchUserData = require("../middleware/userData")
+
 user_route.use(fetchUserData)
 
-const fetchCartData =require("../middleware/cartCount")
+
 user_route.use(fetchCartData)
+
+
+user_route.use(fetchWislistData)
 
 user_route.get('/signup',userController.loadRegister)
 

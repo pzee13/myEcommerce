@@ -59,8 +59,8 @@ const addToWishlist = async (req, res,next) => {
             });
             await newWishlist.save();
         }
-
-        return res.json({ success: true, message: 'Product added to the wishlist successfully' });
+        const newestWishlist = await Wishlist.findOne({ user_id });
+        return res.json({ success: true, message: 'Product added to the wishlist successfully' ,count:newestWishlist.products.length});
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
@@ -83,10 +83,11 @@ const removeFromWishlist = async (req, res,next) => {
                 // Remove the product from the array
                 userWishlist.products.splice(productIndex, 1);
                 await userWishlist.save();
-                return res.json({ success: true, message: 'Product removed from the wishlist successfully' });
+                const newestWishlist = await Wishlist.findOne({ user_id });
+                return res.json({ success: true, message: 'Product removed from the wishlist successfully',count:newestWishlist.products.length});
             }
         }
-
+     
         return res.json({ success: false, message: 'Product not found in the wishlist' });
     } catch (error) {
         console.error(error);

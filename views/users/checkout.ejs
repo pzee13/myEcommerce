@@ -310,6 +310,7 @@
             <div class="modal-body text-center">
                 <h6>Coupons:</h6>
                 <ul class="list-unstyled">
+                 
                     <% for (const coupon of unusedCoupons) { %>
                         <li class="mb-2">
                             <span id="couponCode<%= coupon._id %>" class="mr-2"><%= coupon.code %></span> - <%= coupon.discountPercentage %>% Discount

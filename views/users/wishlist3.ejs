@@ -68,10 +68,18 @@ document.querySelectorAll('.remove-from-wishlist').forEach(button => {
                     const response = await fetch(`/remove_wishlist?id=${productId}`, {
                         method: 'GET',
                     });
+                    const responseText = await response.text();
+                    const responseBody = JSON.parse(responseText);
+
+                    console.log('Remove from wishlist response:', responseBody);
 
                     if (response.ok) {
+
                         // Item removed successfully, you can update the UI as needed
                         event.target.closest('.custom-card').remove();
+
+                        // Update the wishlist notification count in the header
+                        $('.js-addwish-detail').attr('data-notify', responseBody.count);
                     } else {
                         // Handle errors or display a message to the user
                         console.log('Error: Something went wrong while removing from the wishlist.');

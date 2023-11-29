@@ -19,11 +19,13 @@ const loadCheckout0 = async (req, res,next) => {
           "items.product_Id"
       );
       const address = await Address.findOne({ user_id:id },{address:1})
+      let unusedCoupons = [];
+
       if(products)
       {
       if(address)
       {
-        const unusedCoupons = await Coupon.find({// Coupons with no associated user ID
+        unusedCoupons = await Coupon.find({// Coupons with no associated user ID
           expireDate: { $gt: new Date() } // Coupons that are not expired
         });
       res.render('checkout', { products,address,UserData,unusedCoupons })

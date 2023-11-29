@@ -475,6 +475,7 @@
                     if (data.success) {
                         // Product added to the wishlist successfully
                         // You can update your UI or show a success message to the user here
+                        $('.js-addwish-detail').attr('data-notify', data.count);
                         Swal.fire('Product added to your wishlist!');
                     } else {
                         // Handle errors, e.g., show an error message to the user
@@ -487,6 +488,7 @@
                     Swal.fire('An error occurred while adding the product to your wishlist.');
                 });
         }
+     
     });
 </script>
 

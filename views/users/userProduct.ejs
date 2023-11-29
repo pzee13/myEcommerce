@@ -340,6 +340,7 @@
             .then(data => {
                 if (data.success) {
                     // Product added to the wishlist successfully
+                    $('.js-addwish-detail').attr('data-notify', data.count);
                     Swal.fire('Product added to your wishlist!');
                 } else {
                     // Handle errors or show an error message
@@ -352,6 +353,8 @@
                 Swal.fire('An error occurred while adding the product to your wishlist.');
             });
         }
+        
+       
     });
 </script>
 

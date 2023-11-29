@@ -38,7 +38,18 @@
                   </div>
                 </div>
               </div>
-              
+              <div class="table-container">
+                <div class="sort-container mb-3">
+                  <form action="/admin/sales_report" method="post">
+                    <label for="from-date">From Date:</label>
+                    <input type="date" id="from-date" name="fromDate" required>
+                    <label for="to-date">To Date:</label>
+                    <input type="date" id="to-date" name="toDate" required>
+                    <button class="button" type="submit" id="get-report-btn" style="background-color: #558157; color: white; border: none; padding: 4px 20px; text-align: center; font-size: 16px; cursor: pointer; border-radius: 4px;">Get Report</button>
+                </form>
+                    
+            </div>
+            </div>
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Recent sales</h4>
@@ -242,7 +253,3 @@ const formattedDate = formatDateToString(date);
 </script>
 
 <%- include('../admin/layouts/footer.ejs') %>
-
-
-
-
