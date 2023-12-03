@@ -143,7 +143,7 @@ const verifyadlogin = async (req, res,next) => {
       
 
       if(req.session.user_id===id){
-        req.session.user_id=null;
+        req.session.destroy();
       }
     }
   

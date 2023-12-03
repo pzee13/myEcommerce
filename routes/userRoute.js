@@ -94,11 +94,11 @@ user_route.get('/productDetails', userController.getProductDetails)
 
 user_route.get('/cart',auth.isLogin,cartController.loadCart)
 
-user_route.post('/cart',cartController.addCart)
+user_route.post('/cart',auth.isLogin,cartController.addCart)
 
-user_route.patch('/update_quantity/:id/:quantity',cartController.updateQuantity)
+user_route.patch('/update_quantity/:id/:quantity',auth.isLogin,cartController.updateQuantity)
 
-user_route.patch('/update_cart',cartController.updateCart);
+user_route.patch('/update_cart',auth.isLogin,cartController.updateCart);
 
 user_route.get('/cart_remove',auth.isLogin,cartController.cartRemove)
 
@@ -106,7 +106,7 @@ user_route.get('/wish_list',auth.isLogin,wishlistController.loadWishlist)
 
 user_route.post('/wish_list',auth.isLogin,wishlistController.addToWishlist)
 
-user_route.get('/remove_wishlist',wishlistController.removeFromWishlist)
+user_route.get('/remove_wishlist',auth.isLogin,wishlistController.removeFromWishlist)
 
 user_route.get('/profile',auth.isLogin,profileController.loadProfile)
 
@@ -116,15 +116,15 @@ user_route.post('/change_password',auth.isLogin,profileController.changePassword
 
 user_route.post('/add_address',profileController.addAddress)
 
-user_route.post('/edit_address',profileController.EditAddress)
+user_route.post('/edit_address',auth.isLogin,profileController.EditAddress)
 
 user_route.delete('/delete_address/:addressId',auth.isLogin,profileController.deleteAddress)
 
 user_route.get('/checkout',auth.isLogin,checkoutController.loadCheckout0)
 
-user_route.post('/checkout_address',checkoutController.addAddressForCheckout)
+user_route.post('/checkout_address',auth.isLogin,checkoutController.addAddressForCheckout)
 
-user_route.post('/place_order',orderController.placeOrder)
+user_route.post('/place_order',auth.isLogin,orderController.placeOrder)
 
 user_route.get('/order_placed',auth.isLogin,orderController.loadOrderPlaced)
 
@@ -132,9 +132,9 @@ user_route.get('/orders',auth.isLogin,orderController.loadOrder)
 
 user_route.get('/order_details',auth.isLogin,orderController.orderDetails)
 
-user_route.post('/cancel_order/:orderId/:productId', orderController.cancelOrder);
+user_route.post('/cancel_order/:orderId/:productId',auth.isLogin, orderController.cancelOrder);
 
-user_route.post('/return_order/:orderId/:productId', orderController.orderReturn);
+user_route.post('/return_order/:orderId/:productId',auth.isLogin, orderController.orderReturn);
 
 user_route.post('/verify_payment',auth.isLogin,orderController.validatePaymentVerification)
 

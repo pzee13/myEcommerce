@@ -166,6 +166,13 @@ const placeOrder = async (req, res) => {
   );
     }
 
+    if ((status === 'placed' || paymentOption === 'Online') && req.session.coupon && req.session.user_id) {
+      await Coupon.findOneAndUpdate(
+        { code: req.session.coupon.code },
+        { $push: { user: req.session.user_id } }
+      );
+    }
+
     if (status == 'placed') {
     
       for (const item of cartItems.items) {
@@ -722,7 +729,7 @@ const couponCheck = async (req, res, next) => {
             const discountTotal = Math.floor((couponData.discountPercentage / 100) * total);
             const newTotal = total - discountTotal;
 
-            await Coupon.findOneAndUpdate({ code: couponCode }, { $push: { user: userId } });
+            
 
             // Store coupon information in session
             req.session.coupon = {

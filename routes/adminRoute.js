@@ -52,7 +52,7 @@ admin_route.get('/add_category',auth.isLogin,categoryController.loadaddCategory)
 
 // admin_route.get('/home',auth.isLogin,adminController.loadadHome)
 
-admin_route.post('/add_category',categoryController.addCategory)
+admin_route.post('/add_category',auth.isLogin,categoryController.addCategory)
 
 admin_route.get('/users',auth.isLogin,adminController.loadusers)
 
@@ -62,7 +62,7 @@ admin_route.get('/unlist_category',auth.isLogin,categoryController.unlistCategor
  
 admin_route.get('/edit_category',auth.isLogin,categoryController.loadEditCatogories)
 
-admin_route.post('/edit_category',categoryController.adeditCategory)
+admin_route.post('/edit_category',auth.isLogin,categoryController.adeditCategory)
 
 admin_route.get('/view_users',auth.isLogin,adminController.loadviewUsers)
 
@@ -73,13 +73,13 @@ admin_route.get('/block_users',auth.isLogin,adminController.blockUser)
 
 admin_route.get('/add_product',auth.isLogin,productController.loadaddProducts)
 
-admin_route.post('/add_product',mult.upload.array('images',3),productController.addProduct)
+admin_route.post('/add_product',mult.upload.array('images',3),auth.isLogin,productController.addProduct)
 
 admin_route.get('/view_products',auth.isLogin,productController.viewProducts)
 
 admin_route.get('/edit_product',auth.isLogin,productController.loadeditProducts)
 
-admin_route.post('/edit_product',mult.upload.array('images',3),productController.editProduct)
+admin_route.post('/edit_product',mult.upload.array('images',3),auth.isLogin,productController.editProduct)
 
 admin_route.get('/unlist_product',auth.isLogin,productController.unlistProduct)
 
