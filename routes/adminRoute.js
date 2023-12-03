@@ -111,7 +111,7 @@ admin_route.get('/home',auth.isLogin,dashboardController.loadDashboard)
 
 admin_route.get('/sales_report',auth.isLogin,salesController.getSalesReport)
 
-admin_route.post('/sales_report',auth.isLogin,salesController.getSalesReport)
+admin_route.post('/sales_report',auth.isLogin,salesController.filterSalesReport)
 
 admin_route.get('/add_banner',auth.isLogin,bannerController.loadAddbanner)
 

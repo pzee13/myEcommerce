@@ -141,9 +141,9 @@ const showverifyOTPPage = async (req, res) => {
       next(error)
     }
   }
-
-
-const insertUser = async (req, res) => {
+  
+ 
+const insertUser = async (req, res,next) => {
     try {
         
         // Generate OTP
@@ -208,7 +208,7 @@ const insertUser = async (req, res) => {
 
 
     } catch (error) {
-        ;
+        
         next(error)
     }
 }
@@ -269,10 +269,10 @@ const verifyOTP = async (req, res)=>{
 const resendOTP = async (req,res,next)=>{
     try{
         const currentTime = Date.now()/1000;
-        console.log("current",currentTime)
+      
         if (req.session.otp.expiry != null) {
         if(currentTime > req.session.otp.expiry){
-            console.log("expire",req.session.otp.expiry);
+
             const newDigit = otpGenerator.generate(6, { 
                 digits: true,
                 alphabets: false, 
@@ -348,7 +348,7 @@ const verifyLogin = async (req, res,next) => {
     }
 }
 
-const loaduserHome = async (req, res) => {
+const loaduserHome = async (req, res,next) => {
     try {
         const userId = req.session.user_id 
         
@@ -502,7 +502,7 @@ const loaduserHome = async (req, res) => {
 const viewProducts = async (req, res, next) => {
     try {
       const page = req.query.page || 1;
-      const pageSize = 12;
+      const pageSize = 6;
       const userId = req.session.user_id;
   
       // Assuming Cart is a Mongoose model and the user_id is stored as a string
@@ -612,49 +612,48 @@ const viewProducts = async (req, res, next) => {
 
 
 
-const filterPrice = async (req, res) => {
-    const minPrice = parseFloat(req.query.minPrice);
-    const maxPrice = parseFloat(req.query.maxPrice);
+// const filterPrice = async (req, res) => {
+//     const minPrice = parseFloat(req.query.minPrice);
+//     const maxPrice = parseFloat(req.query.maxPrice);
+  
+//     // Check if minPrice and maxPrice are valid numbers
+//     if (isNaN(minPrice) || isNaN(maxPrice)) {
+//         return res.status(400).json({ error: "Invalid minPrice or maxPrice values." });
+//     }
 
-    // Check if minPrice and maxPrice are valid numbers
-    if (isNaN(minPrice) || isNaN(maxPrice)) {
-        return res.status(400).json({ error: "Invalid minPrice or maxPrice values." });
-    }
 
-    console.log("min:", minPrice);
-    console.log("max:", maxPrice);
 
-    try {
-        // Fetch products based on the min and max price and status 1 from your database
-        const filteredProducts = await Product.find({
-            status: 1, // Add the condition to filter only products with status 1
-            'price': { $gt: minPrice, $lte: maxPrice },
-        }).populate("category offer");
+//     try {
+//         // Fetch products based on the min and max price and status 1 from your database
+//         const filteredProducts = await Product.find({
+//             status: 1, // Add the condition to filter only products with status 1
+//             'price': { $gt: minPrice, $lte: maxPrice },
+//         }).populate("category offer")
 
-        console.log('P:', filteredProducts);
-        res.json({ products: filteredProducts });
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: "An error occurred while fetching filtered products by price." });
-    }
-};
+    
+//         res.json({ products: filteredProducts });
+//     } catch (error) {
+     
+//         res.status(500).json({ error: "An error occurred while fetching filtered products by price." });
+//     }
+// };
 
-const filterCategory = async (req, res) => {
-    const categoryId = req.query.categoryId;
+// const filterCategory = async (req, res) => {
+//     const categoryId = req.query.categoryId;
 
-    try {
-        // Fetch products based on the category and status 1 from your database
-        const filteredProducts = await Product.find({
-            status: 1, // Add the condition to filter only products with status 1
-            category: categoryId,
-        }).populate("category offer");
+//     try {
+//         // Fetch products based on the category and status 1 from your database
+//         const filteredProducts = await Product.find({
+//             status: 1, // Add the condition to filter only products with status 1
+//             category: categoryId,
+//         }).populate("category offer");
 
-        res.json({ products: filteredProducts });
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: "An error occurred while fetching filtered products by category." });
-    }
-};
+//         res.json({ products: filteredProducts });
+//     } catch (error) {
+    
+//         res.status(500).json({ error: "An error occurred while fetching filtered products by category." });
+//     }
+// };
 
 
 
@@ -775,7 +774,7 @@ const filterCategory = async (req, res) => {
         { $unwind: "$walletHistory" },
         { $sort: { "walletHistory.date": -1 } }
       ]);
-    //   console.log(walletData);
+   
     
       res.render("walletHistory", { walletData});
     } catch (err) {
@@ -788,26 +787,26 @@ const filterCategory = async (req, res) => {
 
   const addMoneyWallet = async (req,res,next)=>{
     try {
-        console.log("monry comong");
+      
 
     const {amount}=req.body
-    console.log('amount',amount);
+   
     const id=crypto.randomBytes(8).toString('hex')
-    console.log(id);
+
     var options={ 
         amount:amount*100,
         currency:'INR',
         receipt:""+id
     }
-    // console.log('//',options);
+  
     
     instance.orders.create(options, (err, order) => {
-        // console.log('///orr',order);
+       
         if(err){
-            // console.log('err');
+         
             res.json({status: false})
         }else{
-            // console.log('stts');
+        
             res.json({ status: true, order:order })
         }
     
@@ -823,13 +822,13 @@ const filterCategory = async (req, res) => {
 const verifyWalletpayment = async(req,res,next)=>{
     try{
   
-      console.log("entered into post verify wallet payment");
+
   
      
       const userId=req.session.user_id
   
       const body = req.body;
-      console.log("data",body)
+   
       const amount = parseInt(body.order.amount)/100;
           let hmac = crypto.createHmac('sha256',process.env.Razorpay_KEY_SECRET)
   
@@ -859,7 +858,7 @@ const verifyWalletpayment = async(req,res,next)=>{
             );
 
             const updatedUser = await User.findById(userId);
-            console.log('udddd')
+         
             res.json({status: true,wallet:updatedUser.wallet})
         }else{
             res.json({status: false})
@@ -872,123 +871,27 @@ const verifyWalletpayment = async(req,res,next)=>{
     }
   }
 
-//   const submitReview =  async (req, res) => {
-//     try {
-//         console.log("hii")
-//         const { productId, rating, comment, name } = req.body;
-  
-//         // Validate rating
-//         if (rating < 1 || rating > 5) {
-//             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
-//         }
-  
-//         // Find the product by ID
-//         const product = await Product.findById(productId);
-  
-//         if (!product) {
-//             return res.json({ success: false, message: 'Product not found.' });
-//         }
-
-//         const user = await User.findOne({ name: name });
-
-//         if (!user) {
-//             return res.json({ success: false, message: 'User not found.' });
-//         }
-
-  
-//         // Add the review to the product's reviews array
-//         product.reviews.push({
-//             user: user._id, // Assuming you want to store the user's name as the reviewer
-//             rating,
-//             comment,
-//             date: new Date(),
-//         });
-
-//         console.log(product)
-  
-//         // Save the updated product with the new review
-//         await product.save();
-  
-//         res.json({ success: true, message: 'Review submitted successfully!' });
-//     } catch (error) {
-//        
-//         res.status(500).json({ success: false, message: 'Internal server error' });
-//     }
-//   };
-
-// const submitReview = async (req, res) => {
-//     try {
-//         console.log("Start of submitReview function");
-
-//         const { productId, rating, comment, userId } = req.body;
-//         console.log("Destructured variables:", { productId, rating, comment, userId });
-
-//         // Validate rating
-//         console.log("Validating rating");
-//         if (rating < 1 || rating > 5) {
-//             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
-//         }
-
-//         // Find the product by ID
-//         console.log("Finding product by ID");
-//         const product = await Product.findById(productId);
-
-//         if (!product) {
-//             console.log("Product not found");
-//             return res.json({ success: false, message: 'Product not found.' });
-//         }
-
-//         // Check if the user with the provided userId exists
-//         const user = await User.findById(userId);
-
-//         if (!user) {
-//             console.log("User not found");
-//             return res.json({ success: false, message: 'User not found.' });
-//         }
-
-//         // Add the review to the product's reviews array
-//         console.log("Adding review to product's reviews array");
-//         product.reviews.push({
-//             user: userId, // Assuming you want to store the user's ID as the reviewer
-//             rating,
-//             comment,
-//             date: new Date(),
-//         });
-
-//         console.log("Updated product with review:", product);
-
-//         // Save the updated product with the new review
-//         console.log("Saving updated product");
-//         await product.save();
-
-//         console.log("Review submitted successfully!");
-//         res.json({ success: true, message: 'Review submitted successfully!' });
-//     } catch (error) {
-//         console.error("Error:", error);
-//         res.status(500).json({ success: false, message: 'Internal server error' });
-//     }
-// };
 
 
 const submitReview = async (req, res) => {
     try {
-        console.log("Start of submitReview function");
+
 
         const { productId, rating, comment, userId } = req.body;
-        console.log("Destructured variables:", { productId, rating, comment, userId });
+      
 
         // Validate rating
-        console.log("Validating rating");
+   
         if (rating < 1 || rating > 5) {
             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
         }
 
         // Find the product by ID
-        console.log("Finding product by ID");
+    
         const product = await Product.findById(productId);
 
         if (!product) {
-            console.log("Product not found");
+       
             return res.json({ success: false, message: 'Product not found.' });
         }
 
@@ -996,14 +899,14 @@ const submitReview = async (req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            console.log("User not found");
+          
             return res.json({ success: false, message: 'User not found.' });
         }
 
         const existingReview = product.reviews.find(review => review.user.userId === userId);
 
         if (existingReview) {
-            console.log("User has already reviewed the product");
+        
             return res.json({ success: false, message: 'You have already reviewed this product.' });
         }
 
@@ -1015,13 +918,13 @@ const submitReview = async (req, res) => {
         });
 
         if (!deliveredOrder) {
-            console.log("User has not received the product yet");
+       
             return res.json({ success: false, message: 'You can only review or rate a product after receiving it.' });
         }
-        console.log(deliveredOrder)
+ 
 
         // Add the review to the product's reviews array
-        console.log("Adding review to product's reviews array");
+   
         product.reviews.push({
             
             user: {
@@ -1034,39 +937,38 @@ const submitReview = async (req, res) => {
             date: new Date(),
         });
 
-        console.log("Updated product with review:", product);
+      
 
         // Save the updated product with the new review
-        console.log("Saving updated product");
+      
         await product.save();
 
-        console.log("Review submitted successfully!");
         res.json({ success: true, message: 'Review submitted successfully!' });
     } catch (error) {
-        console.error("Error:", error);
+ 
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
 const editReview = async (req, res) => {
     try {
-        console.log("Start of editReview function");
+      
 
         const { reviewId, productId, rating, comment, userId } = req.body;
-        console.log("Destructured variables:", { reviewId, productId, rating, comment, userId });
+       
 
         // Validate rating
-        console.log("Validating rating");
+       
         if (rating < 1 || rating > 5) {
             return res.json({ success: false, message: 'Invalid rating. Please select a rating between 1 and 5.' });
         }
 
         // Find the product by ID
-        console.log("Finding product by ID");
+   
         const product = await Product.findById(productId);
 
         if (!product) {
-            console.log("Product not found");
+
             return res.json({ success: false, message: 'Product not found.' });
         }
 
@@ -1074,7 +976,7 @@ const editReview = async (req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            console.log("User not found");
+          
             return res.json({ success: false, message: 'User not found.' });
         }
 
@@ -1082,7 +984,7 @@ const editReview = async (req, res) => {
         const existingReviewIndex = product.reviews.findIndex(review => review._id.toString() === reviewId);
 
         if (existingReviewIndex === -1) {
-            console.log("Review not found");
+          
             return res.json({ success: false, message: 'Review not found.' });
         }
 
@@ -1092,16 +994,16 @@ const editReview = async (req, res) => {
         existingReview.comment = comment;
         existingReview.date = new Date();
 
-        console.log("Updated product with edited review:", product);
+        
 
         // Save the updated product with the edited review
-        console.log("Saving updated product");
+
         await product.save();
 
-        console.log("Review edited successfully!");
+ 
         res.json({ success: true, message: 'Review edited successfully!' });
     } catch (error) {
-        console.error("Error:", error);
+    
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
@@ -1165,7 +1067,7 @@ const editReview = async (req, res) => {
 const getInvoice = async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
-      console.log("aa:", orderId);
+      
   
       // Retrieve order details from the database or any other data source
       const order = await Order.findOne({ _id: orderId })
@@ -1271,8 +1173,8 @@ module.exports = {
     submitReview,
     editReview,
     getInvoice,
-    filterPrice,
-    filterCategory
+    // filterPrice,
+    // filterCategory
 
 
 

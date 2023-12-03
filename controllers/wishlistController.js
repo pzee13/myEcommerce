@@ -22,7 +22,7 @@ const loadWishlist = async (req, res,next) => {
         if (wishlist.length === 0) {
             // Wishlist is empty, return an empty array
             res.render('wishlist3', { data: [] });
-            console.log(wishlist)
+       
         } else {
             res.render('wishlist3', { data: wishlist });
         }
@@ -38,7 +38,7 @@ const addToWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const productId = req.query.id;
-        console.log(productId)
+      
         // Find the user's wishlist
         const userWishlist = await Wishlist.findOne({ user_id });
 
@@ -62,7 +62,7 @@ const addToWishlist = async (req, res,next) => {
         const newestWishlist = await Wishlist.findOne({ user_id });
         return res.json({ success: true, message: 'Product added to the wishlist successfully' ,count:newestWishlist.products.length});
     } catch (error) {
-        console.error(error);
+      
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
@@ -72,7 +72,7 @@ const removeFromWishlist = async (req, res,next) => {
     try {
         const user_id = req.session.user_id;
         const productId = req.query.id;
-        console.log(productId)
+
         // Find the user's wishlist and remove the product
         const userWishlist = await Wishlist.findOne({ user_id });
 
@@ -90,7 +90,7 @@ const removeFromWishlist = async (req, res,next) => {
      
         return res.json({ success: false, message: 'Product not found in the wishlist' });
     } catch (error) {
-        console.error(error);
+   
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };

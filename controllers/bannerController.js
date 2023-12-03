@@ -86,8 +86,7 @@ const loadEditBanner = async (req,res,next) => {
   const editBanner = async (req,res,next) => {
     try {
       const bannerId = req.params.id;
-      console.log("Banner ID:", bannerId);
-      console.log("Received Form Data:", req.body);
+    
   
       const updatedBannerData = {
         mainHead: req.body.mainHead,
@@ -95,10 +94,10 @@ const loadEditBanner = async (req,res,next) => {
         description: req.body.description,
         bannerURL: req.body.bannerURL,
       };
-      console.log("Updated Banner Data:", updatedBannerData);
+ 
   
       const result = await Banner.findByIdAndUpdate(bannerId, updatedBannerData);
-      console.log("MongoDB Update Result:",res,nextult);
+
   
       res.redirect('/admin/banners'); // Redirect to the banners page after editing
     } catch (error) {

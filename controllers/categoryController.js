@@ -41,7 +41,7 @@ const addCategory = async (req,res,next)=>{
       
       res.redirect('/admin/add_category')
     }} catch (error) {
-      console.log(error);
+     
       next(error)
     }
   }
@@ -62,7 +62,7 @@ const addCategory = async (req,res,next)=>{
         const availableOffers = await Offer.find({ status : true, expiryDate : { $gte : new Date() }})
       res.render('viewCategory', { Category: categories ,currentPage: page, totalPages,availableOffers:availableOffers });
     } catch (error) {
-      console.error(error);
+   
       next(error)
    }
   };
@@ -90,7 +90,7 @@ const addCategory = async (req,res,next)=>{
         res.redirect('/admin/view_category');
 
     } catch (error) {   
-      console.log(error);  
+ 
       next(error) 
     }
   };
@@ -99,10 +99,10 @@ const addCategory = async (req,res,next)=>{
   const loadEditCatogories = async (req,res,next) => {
     try {
       const id = req.query.id;
-      console.log("ID:", id);
+    
   
       const datacategory = await Category.findById(id);
-    //   console.log(category);
+
   
       if (datacategory) {
         res.render('editCategory', { category: datacategory }); // Pass the category object to the template

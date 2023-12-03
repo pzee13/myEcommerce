@@ -86,9 +86,9 @@ user_route.get('/product',userController.viewProducts)
 
 // user_route.get('/search_product',userController.searchProducts)
 
-user_route.get('/filter_by_price',userController.filterPrice)
+// user_route.get('/filter_by_price',userController.filterPrice)
 
-user_route.get('/filter_by_category',userController.filterCategory)
+// user_route.get('/filter_by_category',userController.filterCategory)
 
 user_route.get('/productDetails', userController.getProductDetails)
 

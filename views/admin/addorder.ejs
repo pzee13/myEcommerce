@@ -33,10 +33,11 @@
                                 </thead>
                                 <tbody>
                                     <% for (let i = 0; i < orders.length; i++) { %>
+                                        <% if (orders[i].user) { %>
                                         <tr>
                                             <td>
                                                 <!-- Product image and name -->
-                                                
+                                               
                                                     <% if (orders[i].products && orders[i].products.length > 0) { %>
                                                         <!-- Assuming you want to display the first product in the order -->
                                                         <img class="align-items-center" alt="image" src="/public/adminAssets/assets/images/products/<%= orders[i].products[0].product_Id.images[0] %>" />
@@ -73,6 +74,7 @@
                                                     class="btn btn-inverse-info">Manage</a>
                                             </td>
                                         </tr>
+                                        <% } %>
                                     <% } %>
                                 </tbody>
                             </table>

@@ -93,7 +93,7 @@ const couponAdmin = async (req, res,next) => {
       // Delete the coupon
       await Coupon.deleteOne({ _id: id });
   
-      console.log('Coupon deleted successfully');
+      
       res.json({ success: true });
     } catch (err) {
       next(err);

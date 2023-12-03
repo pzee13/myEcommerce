@@ -187,6 +187,7 @@
         
        
         <div class="row isotope-grid">
+            <%if(product && product.length > 0){%>
             <% product.forEach((product,index)=>{ %>
             <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item  category-<%= product.category.categoryName %>">
                 <!-- Block2 -->
@@ -245,19 +246,35 @@
                 </div>
             </div><% }) %>
         </div>
-        <div class="pagination" style="display: flex; justify-content: center;">
-            <% if (currentPage > 1) { %>
-                <a href="/product?page=<%= Number(currentPage) - 1 %>" class="page-link">Previous</a>
-            <% } %>
-        
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/product?page=<%= i %>" class="page-link <%= i === currentPage ? 'active' : '' %>"><%= i %></a>
-            <% } %>
-        
-            <% if (currentPage < totalPages) { %>
-                <a href="/product?page=<%= Number(currentPage) + 1 %>" class="page-link">Next</a>
-            <% } %>
-        </div>
+        <% }else{%>
+            <div class="col-12">
+                <h3 class="custom-title text-center" style="font-family: Poppins-Medium; color: #3333;"><strong>NO PRODUCTS AVAILABLE AT THIS MOMENT</strong></h3>
+            </div>
+              <% } %>
+              <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="/product?page=<%= currentPage - 1 %>&sortValue=<%= sortValue %>&category=<%= category.categoryName %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&search=<%= search %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="/product?page=<%= i %>&sortValue=<%= sortValue %>&category=<%= category.categoryName %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&search=<%= search %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <a class="page-link" href="/product?page=<%= currentPage + 1 %>&sortValue=<%= sortValue %>&category=<%= category.categoryName %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&search=<%= search %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
         
     </div>
     

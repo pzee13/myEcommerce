@@ -13,7 +13,7 @@ const fs = require("fs")
 const moment = require( 'moment' )
 
 
-const calculateTodayIncome = async (today, now) => {
+const calculateTodayIncome = async (today, now,next) => {
     try {
         const todayOrders = await Order.aggregate([
             {
@@ -49,8 +49,8 @@ const calculateTodayIncome = async (today, now) => {
 
         return todayIncomeValue 
     } catch (error) {
-        console.error('Error in calculateTodayIncome:', error);
-        throw error;
+    
+        next(error)
     }
 };
 
@@ -117,7 +117,7 @@ const totalRevenue = async () =>  {
     return totalRevenue
 }
 
-const currentMonthRevenue = async (currentMonthStartDate, now) => {
+const currentMonthRevenue = async (currentMonthStartDate, now,next) => {
     try {
         const currentMonthRevenue = await Order.aggregate([
             {
@@ -146,17 +146,17 @@ const currentMonthRevenue = async (currentMonthStartDate, now) => {
             }
         ]);
 
-        console.log('currentMonthRevenue:', currentMonthRevenue);
+        
 
         const result = currentMonthRevenue.length > 0 ? currentMonthRevenue[0].currentMonthRevenue : 0;
         return result;
     } catch (error) {
-        console.error('Error in currentMonthRevenue:', error);
-        throw error;
+  
+      next(error)
     }
 };
 
-const previousMonthRevenue = async (previousMonthStartDate, previousMonthEndDate) => {
+const previousMonthRevenue = async (previousMonthStartDate, previousMonthEndDate,next) => {
     try {
         const previousMonthRevenue = await Order.aggregate([
             {
@@ -185,13 +185,12 @@ const previousMonthRevenue = async (previousMonthStartDate, previousMonthEndDate
             }
         ]);
 
-        console.log('previousMonthRevenue:', previousMonthRevenue);
+        
 
         const result = previousMonthRevenue.length > 0 ? previousMonthRevenue[0].previousMonthRevenue : 0;
         return result;
     } catch (error) {
-        console.error('Error in previousMonthRevenue:', error);
-        throw error;
+        next(error)
     }
 };
 
@@ -387,125 +386,99 @@ const dailyChart = async () => {
 //     }
 //   };
 
-const getSalesReport = async (req, res, next) => {
+const getSalesReport = async (req, res ,next) => {
     try {
-        var shortDateFormat = 'YYYY-MM-DD';
-        const { from,to ,fromDate, toDate, seeAll, sortData, sortOrder } = req.query;
+      var shortDateFormat = 'YYYY-MM-DD';
+      const { seeAll, sortData, sortOrder } = req.query;
+  
+
+  
+      let page = Number(req.query.page) || 1;
+      const pag = {
+        SALES_PER_PAGE: 10, 
+      };
+  
+  
+      const orderCount = await Order.countDocuments();
+      const limit = seeAll === "seeAll" ? orderCount : pag.SALES_PER_PAGE;
+      const orders = await Order.find()
+        .populate('products.product_Id')
+        .sort({orderDate:-1})
+        .skip((page - 1) * pag.SALES_PER_PAGE)
+        .limit(limit);
+  
+      res.render('salesReport', {
+        admin: true,
+        orders: orders,
+      
+        seeAll: seeAll,
+        currentPage: page,
+        hasNextPage: page * pag.SALES_PER_PAGE < orderCount,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(orderCount / pag.SALES_PER_PAGE),
+        sortData,
+        sortOrder,
+        moment,
+        shortDateFormat,
+    
+      });
+    } catch (error) {
+      next(error)
+    }
+  };
+
+const filterSalesReport =async (req, res,next) => {
+    try {
+      // Extract the fromDate and toDate from the request body
+      const { fromDate, toDate } = req.body;
+
+      var shortDateFormat = 'YYYY-MM-DD';
+
+        const { seeAll, sortData, sortOrder } = req.query;
 
         let page = Number(req.query.page) || 1;
         const pag = {
             SALES_PER_PAGE: 10,
         };
-        const conditions = {};
-
-        if (fromDate && toDate) {
-            conditions.date = {
-              $gte: fromDate,
-              $lte: toDate,
-            };
-          } else if (fromDate) {
-            conditions.date = {
-              $gte: fromDate,
-            };
-          } else if (toDate) {
-            conditions.date = {
-              $lte: toDate,
-            };
-          }
-        const sort = {};
-
-        if (sortData) {
-            // Check if the sortData is valid and sortOrder is provided
-            if (['date', 'orderID', 'totalAmount'].includes(sortData) && ['Ascending', 'Descending'].includes(sortOrder)) {
-                sort[sortData] = sortOrder === 'Ascending' ? 1 : -1;
-            } else {
-                // If invalid sortData or sortOrder, default to date descending
-                sort['date'] = -1;
-            }
-        } else {
-            // Default to date descending if no sortData provided
-            sort['date'] = -1;
-        }
-
-        const orderCount = await Order.countDocuments(conditions);
-        const limit = seeAll === 'seeAll' ? orderCount : pag.SALES_PER_PAGE;
-        const orders = await Order.find(conditions)
-            .populate('products.product_Id')
-            .sort(sort)
-            .skip((page - 1) * pag.SALES_PER_PAGE)
-            .limit(limit);
-
-            console.log('MongoDB Query:', Order.find(conditions).sort(sort).skip((page - 1) * pag.SALES_PER_PAGE).limit(limit).explain('executionStats'));
-            console.log('from:', from);
-            console.log('to:', to);
-            console.log('seeAll:', seeAll);
-            console.log('sortData:', sortData);
-            console.log('sortOrder:', sortOrder);
-            
-        res.render('salesReport', {
-            admin: true,
-            orders: orders,
-            seeAll: seeAll,
-            currentPage: page,
-            hasNextPage: page * pag.SALES_PER_PAGE < orderCount,
-            hasPrevPage: page > 1,
-            nextPage: page + 1,
-            prevPage: page - 1,
-            lastPage: Math.ceil(orderCount / pag.SALES_PER_PAGE),
-            sortData: sortData,
-            sortOrder: sortOrder,
-            moment,
-            shortDateFormat
-        });
+  
+      // Convert fromDate and toDate to Date objects if needed
+      const fromDateObj = new Date(fromDate);
+      const toDateObj = new Date(toDate);
+        
+      const orderCount = await Order.countDocuments();
+      const limit = seeAll === "seeAll" ? orderCount : pag.SALES_PER_PAGE;
+      // Query orders within the date range
+      const orders = await Order.find({
+        orderDate: { $gte: fromDateObj, $lte: toDateObj },
+      }).populate('products.product_Id')
+      .skip((page - 1) * pag.SALES_PER_PAGE)
+      .exec();
+  
+      // Render your sales report page with the filtered orders
+      res.render('salesReport', {
+        admin: true,
+        orders: orders,
+      
+        seeAll: seeAll,
+        currentPage: page,
+        hasNextPage: page * pag.SALES_PER_PAGE < orderCount,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(orderCount / pag.SALES_PER_PAGE),
+        sortData,
+        sortOrder,
+        moment,
+        shortDateFormat, fromDate, toDate });
+  
     } catch (error) {
-        next(error);
+      // Handle errors appropriately
+      next(error)
     }
-};
+  }
 
-// const filterSalesReport = async (req, res, next) => {
-//     try {
-//       var shortDateFormat = 'YYYY-MM-DD';
-  
-//       // Use req.body instead of req.query for POST requests
-//       const { fromDate, toDate, seeAll, sortData, sortOrder } = req.method === 'POST' ? req.body : req.query;
-  
-//       // Rest of your existing code...
-  
-//       const conditions = {};
-  
-//       if (fromDate && toDate) {
-//         conditions.date = {
-//           $gte: fromDate,
-//           $lte: toDate,
-//         };
-//       } else if (fromDate) {
-//         conditions.date = {
-//           $gte: fromDate,
-//         };
-//       } else if (toDate) {
-//         conditions.date = {
-//           $lte: toDate,
-//         };
-//       }
-  
-//       // Rest of your existing code...
-  
-//       const orderCount = await Order.countDocuments(conditions);
-//       const limit = seeAll === 'seeAll' ? orderCount : pag.SALES_PER_PAGE;
-//       const orders = await Order.find(conditions)
-//         .populate('products.product_Id')
-//         .sort(sort)
-//         .skip((page - 1) * pag.SALES_PER_PAGE)
-//         .limit(limit);
-  
-//       // Rest of your existing code...
-  
-//       res.redirect('/admin/sales_report')
-//     } catch (error) {
-//       next(error);
-//     }
-//   };
-  
 
   
 
@@ -532,7 +505,7 @@ const getSalesReport = async (req, res, next) => {
             }
         ]);
 
-        console.log('currentYearRevenue:', currentYearRevenue);
+   
 
         const result = currentYearRevenue.length > 0 ? currentYearRevenue[0].currentYearRevenue : 0;
         return result;
@@ -575,7 +548,7 @@ const monthlyChart = async () => {
     return result;
 };
 
-const getMostSellingProducts = async () => {
+const getMostSellingProducts = async (next) => {
     try {
       const pipeline = [
     
@@ -612,15 +585,14 @@ const getMostSellingProducts = async () => {
     ];
   
       const mostSellingProducts = await Order.aggregate(pipeline);
-      console.log("mostSellingProducts:", mostSellingProducts);
+     
       if(!mostSellingProducts){
         return 0
       }
       
       return mostSellingProducts;
     } catch (error) {
-      console.error("Error fetching most selling products:", error);
-      return [];
+        next(error)
     }
   };
 
@@ -637,6 +609,7 @@ module.exports = {
     getSalesReport,
     YearlyRevenue,
     monthlyChart,
-    getMostSellingProducts
+    getMostSellingProducts,
+    filterSalesReport
   
 }

@@ -7,22 +7,26 @@ const dotenv = require("dotenv")
 
 const app = express();
 
-dotenv.config()
-
+dotenv.config()  
+ 
 const adminRoute = require("./routes/adminRoute");
 
 const userRoute = require("./routes/userRoute.js");
-const PORT =  process.env.PORT
+const PORT =  process.env.PORT 
+
+ 
 
 mongoose.connect(process.env.MONGO_DB).then(()=>{
-  console.log("Mongodb Connected...");
-})
+  console.log("Mongodb Connected...");     
+})                 
+ 
+
 
 app.use(
   session({
     secret: config.sessionSecret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: true, 
   }) 
 );
 

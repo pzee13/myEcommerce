@@ -56,7 +56,7 @@ const loadaddProducts = async (req, res,next) => {
       });
   
       const productData = await newProduct.save();
-      console.log(productData);
+    
   
       if (productData) {
         res.redirect('/admin/view_products');
@@ -102,10 +102,10 @@ const viewProducts = async(req,res,next) =>{
 const loadeditProducts = async (req, res,next) => {
   try {
     const id = req.query.id;
-    console.log("ID:", id);
+   
 
     const dataproduct = await Product.findById(id);
-  //   console.log(category);
+
      const categories = await Category.find({is_listed:true})
     if (dataproduct) {
       res.render('editProduct', { data: dataproduct ,Category:categories}); // Pass the category object to the template
@@ -156,10 +156,10 @@ const editProduct = async (req, res,next) => {
 
       // Handle image deletion
       if (req.body.deleteImages) {
-        console.log('Images to delete:', req.body.deleteImages); // Debugging
+   // Debugging
         // req.body.deleteImages should be an array of image filenames to delete
         for (const imageToDelete of req.body.deleteImages) {
-          console.log('Deleting image:', imageToDelete); // Debugging
+    // Debugging
           // Remove the deleted image from the existing images
           existingProduct.images = existingProduct.images.filter(
             (image) => image !== imageToDelete
@@ -167,10 +167,11 @@ const editProduct = async (req, res,next) => {
 
           // Optionally, you can delete the image file from your storage here
           const imagePath = path.join(__dirname, '../public/adminAssets/assets/images/products', imageToDelete);
-          console.log('Deleting image file:', imagePath); // Debugging
+           // Debugging
           fs.unlink(imagePath, (err) => {
             if (err) {
-              console.error('Error deleting file:', err);
+              
+              next(err)
             }
           });
         }
@@ -363,17 +364,17 @@ const applyProductOffer = async (req, res,next) => {
     const categoryDiscount = product.category && product.category.offer
       ? await Offer.findOne({ _id: product.category.offer })
       : 0;
-      console.log("categoryDiscount",categoryDiscount)
+
 
     // Calculate real price and discounted price for the product
     const discountPercentage = offer.percentage;
     const originalPrice = parseFloat(product.price);
     const discountedPrice = originalPrice - (originalPrice * discountPercentage) / 100;
 
-    console.log("categoryDiscount.percentage :",categoryDiscount.percentage )
+
     // Check if category offer is available and its discount is greater than product offer
     if (categoryDiscount && categoryDiscount.percentage > discountPercentage) {
-      console.log("Category offer has greater discount");
+    
       // You can handle this case as needed, e.g., not applying the product offer
       return res.json({ success: false, message: 'Category offer has greater discount' });
     }

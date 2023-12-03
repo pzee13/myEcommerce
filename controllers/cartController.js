@@ -13,7 +13,7 @@ const fs = require("fs")
 const loadCart = async(req,res,next)=>{
     try{
         const user_id = req.session.user_id
-        console.log(user_id)
+       
         
         if(user_id)
         {
@@ -44,7 +44,7 @@ const addCart = async (req, res, next) => {
             quantity = 1;
         }
         const product_Id = req.body.product_Id;
-        console.log('Add to cart called with quantity:', quantity, 'product ID:', req.body.product_Id);
+   
         const promises = [await Cart.findOne({ user_id: userid }),
         await Product.findOne({ _id: product_Id })];
         const result = await Promise.all(promises);
@@ -300,7 +300,7 @@ const updateQuantity = async (req, res) => {
 
         // Calculate new quantity and total
         const newQuantity = cartItem.quantity + quantityChange;
-        console.log(newQuantity)
+    
         if (newQuantity < 1) {
             return res.status(400).json({ success: false, message: 'Quantity cannot be less than 1' });
         }else if(newQuantity >= productQuantity){
@@ -322,7 +322,7 @@ const updateQuantity = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Quantity updated successfully', cart });
     } catch (error) {
-        console.error(error);
+       
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
@@ -371,7 +371,7 @@ const updateCart = async (req, res) => {
 
         return res.json({ success: true, message: 'Cart updated successfully', cart });
     } catch (error) {
-        console.error(error);
+    
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
@@ -419,7 +419,7 @@ const cartRemove = async (req, res, next) => {
         const updatedCart = await Cart.findOne({ user_id: userid });
         // Return a JSON response to indicate success
         res.json({ success: true, message: 'Item removed from cart',cartCount: updatedCart.items.length });
-        console.log('Cart count:', ab.items.length);
+   
        
     } catch (err) {
         next(err);

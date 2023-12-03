@@ -25,13 +25,13 @@ const loadProfile = async (req, res, next) => {
             model: 'product', // Replace with your actual product model name
             select: 'productName', // Include the field(s) you want to populate
           }).sort({ orderDate: -1 }).limit(10)
-        console.log(orders)
+   
 
         if (user) {
             const address = await Address.findOne({ user_id: id })
            
           
-            console.log("Wallet Balance:", user.wallet)
+            
             res.render('userProfile', { user, address:address ,order:orders,wallet:user.wallet});
            
         } else {
@@ -220,7 +220,7 @@ const changePassword = async (req, res) => {
         // Password changed successfully
         res.json({ success: true });
     } catch (err) {
-        console.error('Error:', err);
+        
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 }
@@ -334,7 +334,7 @@ const addAddress = async (req,res,next) => {
 const EditAddress = async (req, res, next) => {
     try {
         const id = req.body.editAddressId; // Get address ID from hidden field
-        console.log(id)
+
         const userId = req.session.user_id;
 
         await Address.findOneAndUpdate(
@@ -411,7 +411,7 @@ const EditAddress = async (req, res, next) => {
 const deleteAddress = async (req, res, next) => {
     try {
         const addressId = req.params.addressId;
-        console.log(addressId);
+    
         
         const userId = req.session.user_id;
 
@@ -419,7 +419,7 @@ const deleteAddress = async (req, res, next) => {
             { user_id: userId },
             { $pull: { address: { _id: addressId } } }
         );
-            console.log(result)
+           
            
         if (result.ok === 1) {
             
@@ -430,7 +430,7 @@ const deleteAddress = async (req, res, next) => {
         }
    
     } catch (error) {
-        console.error('An error occurred while deleting the address', error);
+ 
         res.status(500).json({ message: 'Error deleting the address' });
     }
 };
