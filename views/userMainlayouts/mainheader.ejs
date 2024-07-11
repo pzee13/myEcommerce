@@ -77,17 +77,22 @@
 			<div class="top-bar">
 				<div class="content-topbar flex-sb-m h-full container">
 					<div class="left-top-bar">
-						Free shipping for standard order over $100
+						Free shipping for every order from Formenn
 					</div>
 
 					<div class="right-top-bar flex-w h-full">
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
+						<a href="/faq" class="flex-c-m trans-04 p-lr-25">
 							Help & FAQs
 						</a>
+
+						<% if (!userData) { %>
+							<a href="/login" class="flex-c-m trans-04 p-lr-25">My Account</a>
+						<% } else { %>
 
 						<a href="/profile" class="flex-c-m trans-04 p-lr-25">
 							My Account
 						</a>
+						<% } %>
 						<% if (!userData) { %>
 						<a id="loginLink" href="/login" class="flex-c-m trans-04 p-lr-25">Login</a>
 						<% } else { %>
@@ -129,20 +134,17 @@
 								<a href="/product">Shop</a>
 							</li>
 
-							<li class="label1" data-label1="hot">
-								<a href="shoping-cart.html">Features</a>
+
+							<li>
+								<a href="/blog">Blog</a>
 							</li>
 
 							<li>
-								<a href="blog.html">Blog</a>
+								<a href="/about">About</a>
 							</li>
 
 							<li>
-								<a href="about.html">About</a>
-							</li>
-
-							<li>
-								<a href="contact.html">Contact</a>
+								<a href="/contact">Contact</a>
 							</li>
 						</ul>
 					</div>	
@@ -191,7 +193,10 @@
 		<div class="wrap-header-mobile">
 			<!-- Logo moblie -->		
 			<div class="logo-mobile">
-				<a href="index.html"><img src="/public/userAssets/images/icons/logo-01.png" alt="IMG-LOGO"></a>
+				<p style="display: flex; align-items: center;">
+					
+					<span style="font-weight: bold; color: #000000; font-size: 2em">Formenn</span>
+				</p>
 			</div>
 
 			<!-- Icon header -->
@@ -229,7 +234,7 @@
 
 				<li>
 					<div class="right-top-bar flex-w h-full">
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
+						<a href="/faq" class="flex-c-m p-lr-10 trans-04">
 							Help & FAQs
 						</a>
 
@@ -265,20 +270,18 @@
 					<a href="/product">Shop</a>
 				</li>
 
+				
+
 				<li>
-					<a href="shoping-cart.html" class="label1 rs1" data-label1="hot">Features</a>
+					<a href="/blog">Blog</a>
 				</li>
 
 				<li>
-					<a href="blog.html">Blog</a>
+					<a href="/about">About</a>
 				</li>
 
 				<li>
-					<a href="about.html">About</a>
-				</li>
-
-				<li>
-					<a href="contact.html">Contact</a>
+					<a href="/contact">Contact</a>
 				</li>
 			</ul>
 		</div>

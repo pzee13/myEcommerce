@@ -84,6 +84,14 @@ user_route.get('/logout',auth.isLogin,userController.userLogout)
 
 user_route.get('/product',userController.viewProducts) 
 
+user_route.get('/blog',userController.getBlog)
+
+user_route.get('/about',userController.getAbout)
+
+user_route.get('/contact',userController.getContact)
+
+user_route.get('/faq',userController.getFaq)
+
 // user_route.get('/search_product',userController.searchProducts)
 
 // user_route.get('/filter_by_price',userController.filterPrice)

@@ -81,7 +81,7 @@ const resetPasswordMail = async(firstName,lastName,email, token,next)=>{
                 from:'aswinpc9@gmail.com',
                 to:email,
                 subject:'For Reset Password',
-                html: `<p> Hi, ${firstName} ${lastName}, please click here to <a href="http://127.0.0.1:4000/forget-password?token=${token}"> Reset </a> your password</p>`
+                html: `<p> Hi, ${firstName} ${lastName}, please click here to <a href="https:/www.formenn.shop/forget-password?token=${token}"> Reset </a> your password</p>`
             }
             transporter.sendMail(mailOptions,function(error,info,next){
                 if(error)
@@ -502,7 +502,7 @@ const loaduserHome = async (req, res,next) => {
 const viewProducts = async (req, res, next) => {
     try {
       const page = req.query.page || 1;
-      const pageSize = 6;
+      const pageSize = 8;
       const userId = req.session.user_id;
   
       // Assuming Cart is a Mongoose model and the user_id is stored as a string
@@ -1144,8 +1144,57 @@ const getInvoice = async (req, res, next) => {
       next(err);
     }
   };
+
+
+  const getBlog = async(req,res,next)=>{
+
+    try{
+        
+        res.render('blog')
+    }
+    catch(error){
+        
+        next(error)
+    }
+}
+
+
+const getAbout = async(req,res,next)=>{
+
+    try{
+        
+        res.render('about')
+    }
+    catch(error){
+        
+        next(error)
+    }
+}
   
+const getContact = async(req,res,next)=>{
+
+    try{
+        
+        res.render('contact')
+    }
+    catch(error){
+        
+        next(error)
+    }
+}
   
+
+const getFaq = async(req,res,next)=>{
+
+    try{
+        
+        res.render('faq')
+    }
+    catch(error){
+        
+        next(error)
+    }
+}
 
 module.exports = {
     loginLoad,
@@ -1175,6 +1224,10 @@ module.exports = {
     getInvoice,
     // filterPrice,
     // filterCategory
+    getBlog,
+    getAbout,
+    getContact,
+    getFaq
 
 
 

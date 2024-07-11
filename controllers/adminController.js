@@ -5,11 +5,11 @@ const Product = require("../models/productModel")
 const Coupon = require("../models/couponModel")
 const bcrypt = require('bcrypt')
 const path = require("path")
-const Cart = require("../models/cartModel")
+const Cart = require("../models/cartModel") 
 const Order = require("../models/orderModel")
 const fs = require("fs")
 
-const securePassword = async(password)=>{
+const securePassword = async(password)=>{ 
     try {
         const passwordHash = await bcrypt.hash(password, 10)
         return passwordHash
@@ -17,7 +17,7 @@ const securePassword = async(password)=>{
     catch (error)
     {
         
-        next(error)
+        next(error) 
     }
 }
 
