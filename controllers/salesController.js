@@ -7,7 +7,7 @@ const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
 
 const Razorpay = require("razorpay")
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const path = require("path")
 const fs = require("fs")
 const moment = require( 'moment' )

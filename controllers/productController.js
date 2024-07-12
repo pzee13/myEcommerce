@@ -3,7 +3,7 @@ const User = require("../models/userModels/userModel")
 const Category = require("../models/categoryModel")
 const Product = require("../models/productModel")
 const Offer = require("../models/offerModel")
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const path = require("path")
 const fs = require("fs")
 

@@ -6,7 +6,7 @@ const Category = require("../models/categoryModel")
 const Address = require("../models/addressModel")
 const Wishlist = require("../models/wishlistModel")
 const Product = require("../models/productModel")
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const path = require("path")
 const fs = require("fs")
 
